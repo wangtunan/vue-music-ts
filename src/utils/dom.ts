@@ -1,9 +1,15 @@
 export function hasClass (el: HTMLElement, className: string): boolean {
-  return el.classList.contains(className)
+  if (el.classList) {
+    return el.classList.contains(className)
+  } else {
+    return ` ${el.className} `.indexOf(` ${className} `) > -1
+  }
 }
 
 export function addClass (el: HTMLElement, className: string): void {
-  if (!hasClass(el, className)) {
+  if (el.classList) {
     el.classList.add(className)
+  } else if (!hasClass(el, className)) {
+    el.className += ` ${className}`
   }
 }
