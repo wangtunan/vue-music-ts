@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`header.vue match shapshot 1`] = `
+<div class="m-header"><img src="@/assets/images/logo.png" alt="" class="header-logo">
+  <h1 class="header-title">Chicken Music</h1>
+</div>
+`;
