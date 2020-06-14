@@ -1,4 +1,4 @@
-import { MusicParams } from '@/types/index'
+import { MusicParams, Jsonpoptions } from '@/types/index'
 
 export const ERR_OK = 0
 
@@ -10,4 +10,9 @@ export const commonParams: MusicParams = {
   outCharset: 'utf-8',
   notice: 0,
   format: 'jsonp'
+}
+
+export const jsonpOptions: Jsonpoptions = {
+  param: 'jsonpCallback',
+  prefix: 'jp'
 }

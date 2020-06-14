@@ -24,3 +24,8 @@ export enum DirectionEnum {
   horizontal = 'horizontal',
   vertical = 'vertical'
 }
+
+export interface Jsonpoptions {
+  param: string;
+  prefix: string;
+}
