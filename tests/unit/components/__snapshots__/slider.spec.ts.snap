@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`slider.vue test snapshot 1`] = `
+exports[`slider.vue match snapshot 1`] = `
 <div class="m-slider">
   <div class="slider-group" style="width: 0px;"></div>
   <div class="slider-dots"></div>
