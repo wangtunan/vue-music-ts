@@ -15,6 +15,7 @@
               </slider>
             </div>
           </div>
+
           <!-- 列表 -->
           <div class="recommend-list">
             <h1 class="recommend-title">热门歌单推荐</h1>

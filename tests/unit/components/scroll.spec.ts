@@ -13,7 +13,7 @@ describe('scroll.vue', () => {
   it('match snapshot', () => {
     expect(wrapper).toMatchSnapshot()
   })
-  it('match snapshot', () => {
-    expect(wrapper.findAll('.scroll-slot').exists()).toBe(true)
+  it('render slot', () => {
+    expect(wrapper.find('.scroll-slot').exists()).toBe(true)
   })
 })
