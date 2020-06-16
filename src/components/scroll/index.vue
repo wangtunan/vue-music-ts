@@ -10,9 +10,10 @@ import { Direction, DirectionEnum } from '@/types/index'
 import BScroll from 'better-scroll'
 @Component
 export default class Scroll extends Vue {
-  private scroll!: BScroll
+  public scroll!: BScroll
   @Prop({ type: Number, default: 1 }) probeType!: number
   @Prop({ type: Boolean, default: false }) click!: boolean
+   @Prop({ type: Boolean, default: false }) listenScroll!: boolean
   @Prop({ type: String, default: DirectionEnum.vertical }) direction!: Direction
   @Prop({ type: Array, default () { return [] } }) data!: any
 
@@ -29,7 +30,7 @@ export default class Scroll extends Vue {
   public scrollTo (...args: any): void {
     this.scroll && this.scroll.scrollTo.apply(this.scroll, args)
   }
-  public scrollElement (...args: any): void {
+  public scrollToElement (...args: any): void {
     this.scroll && this.scroll.scrollToElement.apply(this.scroll, args)
   }
   private initScroll (): void {
@@ -39,8 +40,17 @@ export default class Scroll extends Vue {
         probeType: this.probeType,
         eventPassthrough: this.direction === DirectionEnum.horizontal ? DirectionEnum.vertical : DirectionEnum.horizontal
       })
+      this.listenEvent()
     } else {
       this.scroll.refresh()
+    }
+  }
+
+  private listenEvent (): void {
+    if (this.listenScroll) {
+      this.scroll.on('scroll', (pos) => {
+        this.$emit('scroll', pos)
+      })
     }
   }
 

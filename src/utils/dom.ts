@@ -13,3 +13,8 @@ export function addClass (el: HTMLElement, className: string): void {
     el.className += ` ${className}`
   }
 }
+
+export function getDomData (el: HTMLElement, name: string): string | null {
+  const prefix = 'data-'
+  return el.getAttribute(prefix + name)
+}

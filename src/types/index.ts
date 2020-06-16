@@ -29,3 +29,8 @@ export interface Jsonpoptions {
   param: string;
   prefix: string;
 }
+
+export interface Position {
+  x: number;
+  y: number;
+}

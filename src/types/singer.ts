@@ -15,3 +15,9 @@ export interface ListViewConfig {
 export interface MapListConfig {
   [propName: string]: ListViewConfig
 }
+
+export interface TouchConfig {
+  y1: number;
+  y2: number;
+  anchorIndex?: string | null;
+}

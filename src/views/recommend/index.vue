@@ -87,6 +87,7 @@ export default class Recommend extends Vue {
 }
 </script>
 <style lang="scss" scoped>
+  @import '~@/assets/styles/mixin.scss';
   @import '~@/assets/styles/variables.scss';
   .m-recommend {
     position: fixed;
@@ -141,11 +142,16 @@ export default class Recommend extends Vue {
       }
       .content-box {
         flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        overflow: hidden;
         font-size: 14px;
         .author {
           margin-bottom: 10px;
           line-height: 20px;
           color: $color-text;
+          @include ellipsis();
         }
         .desc {
           line-height: 20px;
