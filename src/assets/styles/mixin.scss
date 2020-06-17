@@ -3,3 +3,15 @@
   overflow: hidden;
   white-space: nowrap;
 }
+
+@mixin extend-click($extend: -10px) {
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    left: $extend;
+    right: $extend;
+    top: $extend;
+    bottom: $extend;
+  }
+}

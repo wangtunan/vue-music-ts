@@ -47,6 +47,11 @@
 
     <!-- 当前锚点项 -->
     <div v-show="showAnchorName" class="anchor-name">{{currentAnchorName}}</div>
+
+    <!-- 锚点固定项 -->
+    <div v-if="fixedTitle" ref="FixedTitle" class="anchor-fixed">
+      <p>{{fixedTitle}}</p>
+    </div>
   </scroll>
 </template>
 <script lang="ts">
@@ -62,7 +67,9 @@ import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
 })
 export default class ListView extends Vue {
   private touch!: TouchConfig
+  private fixedTop!: number
   private anchorHeight!: number
+  private titleHeight!: number
   private listHeight!: number[]
   private shortcutIndex = 0
   private scrollY = -1
@@ -116,6 +123,10 @@ export default class ListView extends Vue {
     const anchorList = this.$refs.Anchor as HTMLElement[]
     this.anchorHeight = anchorList[0].clientHeight
   }
+  computedTitleHeight (): void {
+    const listGroup = this.$refs.ListGroup as HTMLElement[]
+    this.titleHeight = (listGroup[0].firstChild as HTMLElement).clientHeight
+  }
 
   // 计算属性
   private get shortcutList () {
@@ -124,6 +135,13 @@ export default class ListView extends Vue {
   private get currentAnchorName () {
     return this.shortcutList[this.shortcutIndex]
   }
+  private get fixedTitle () {
+    if (this.scrollY > 0) {
+      return ''
+    }
+    const currentItem = this.list[this.shortcutIndex]
+    return currentItem ? currentItem.title : ''
+  }
 
   // watch监听
   @Watch('list')
@@ -131,6 +149,7 @@ export default class ListView extends Vue {
     this.$nextTick(() => {
       this.computedHeightList()
       this.computedAnchorHeight()
+      this.computedTitleHeight()
     })
   }
   @Watch('scrollY')
@@ -152,6 +171,16 @@ export default class ListView extends Vue {
         break
       }
     }
+  }
+  @Watch('diffY')
+  onDiffYChange (newY: number): void {
+    const fixedTop = (newY > 0 && newY < this.titleHeight) ? newY - this.titleHeight : 0
+    if (this.fixedTop === fixedTop) {
+      return
+    }
+    const fixedTitle = this.$refs.FixedTitle as HTMLElement
+    this.fixedTop = fixedTop
+    fixedTitle.style.transform = `translate3d(0, ${this.fixedTop}px, 0)`
   }
 
   // 生命周期
@@ -179,7 +208,7 @@ export default class ListView extends Vue {
       padding-left: 20px;
       height: 30px;
       line-height: 30px;
-      background-color: #333;
+      background-color: $color-highlight-background;
       font-size: 12px;
       color: $color-text-l;
     }
@@ -235,6 +264,21 @@ export default class ListView extends Vue {
       border-radius:5px;
       font-size: 14px;
       color: $color-theme;
+      font-weight: bold;
+    }
+    .anchor-fixed {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      & > p {
+        padding-left: 20px;
+        height: 30px;
+        line-height: 30px;
+        background-color: $color-highlight-background;
+        font-size: 12px;
+        color: $color-text-l;
+      }
     }
   }
 </style>
