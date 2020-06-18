@@ -7,7 +7,7 @@
       </div>
 
       <!-- 热搜&搜索历史 -->
-      <scroll :data="hotKeyList" class="scroll-box">
+      <scroll :data="combineData" class="scroll-box">
         <div>
           <div class="hot-box">
             <h3 class="hot-title">热门搜索</h3>
@@ -20,15 +20,32 @@
               </li>
             </ul>
           </div>
+          <div v-if="searchHistory.length" class="history-box">
+            <h3 class="history-title">
+              <span class="text">搜索历史</span>
+              <i class="icon-clear"></i>
+            </h3>
+            <ul>
+              <li
+                v-for="(item, index) in searchHistory"
+                :key="index"
+                class="history-item">
+                <span class="text">{{item}}</span>
+                <i class="icon-delete"></i>
+              </li>
+            </ul>
+          </div>
         </div>
       </scroll>
     </div>
   </transition>
 </template>
 <script lang="ts">
+import Search from '@/assets/js/search'
 import SearchBox from '@/components/search-box/index.vue'
 import Scroll from '@/components/scroll/index.vue'
-import { Component, Vue } from 'vue-property-decorator'
+import Player from '@/assets/js/player'
+import { Component, Mixins } from 'vue-property-decorator'
 import { HotKey } from '@/types/search'
 import { getHotKeys } from '@/api/search'
 import { ERR_OK } from '@/api/config'
@@ -39,13 +56,8 @@ const MAX_HOT = 10
     Scroll
   }
 })
-export default class Search extends Vue {
+export default class MSearch extends Mixins(Search, Player) {
   private hotKeyList: string[] = []
-  // methods方法
-  handleSearch (keyword: string): void {
-    console.log(keyword)
-  }
-
   // methods方法
   private getHotKeysData (): void {
     getHotKeys().then(res => {
@@ -56,6 +68,11 @@ export default class Search extends Vue {
     })
   }
 
+  // 计算书型
+  private get combineData () {
+    return this.hotKeyList.concat(this.searchHistory)
+  }
+
   // 生命周期
   private mounted (): void {
     this.getHotKeysData()
@@ -63,6 +80,7 @@ export default class Search extends Vue {
 }
 </script>
 <style lang="scss" scoped>
+  @import '~@/assets/styles/mixin.scss';
   @import '~@/assets/styles/variables.scss';
   .m-search {
     position: fixed;
@@ -81,6 +99,7 @@ export default class Search extends Vue {
       width: 100%;
       padding: 0 20px;
       box-sizing: border-box;
+      overflow: hidden;
     }
     .hot-box {
       margin-bottom: 20px;
@@ -98,6 +117,25 @@ export default class Search extends Vue {
         font-size: 13px;
         color: $color-text-d;
         background-color: $color-highlight-background;
+      }
+    }
+    .history-box {
+      .history-title, .history-item {
+        display: flex;
+        align-items: center;
+        height: 40px;
+        overflow: hidden;
+        color: $color-text-l;
+        font-weight: normal;
+        .text {
+          font-size: 14px;
+          flex: 1;
+        }
+        [class^="icon"] {
+          font-size: 14px;
+          color: $color-text-d;
+          @include extend-click();
+        }
       }
     }
   }
