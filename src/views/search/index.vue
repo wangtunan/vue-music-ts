@@ -3,47 +3,55 @@
     <div class="m-search">
       <!-- 搜索 -->
       <div class="search-box">
-        <search-box @search="handleSearch"/>
+        <search-box ref="SearchBox" @search="handleSearch"/>
       </div>
 
       <!-- 热搜&搜索历史 -->
-      <scroll :data="combineData" class="scroll-box">
+      <scroll v-show="!keyword" :data="combineData" class="scroll-box">
         <div>
-          <div class="hot-box">
+          <div v-if="hotKeyList.length" class="hot-box">
             <h3 class="hot-title">热门搜索</h3>
             <ul>
               <li
                 v-for="(item, index) in hotKeyList"
                 :key="index"
-                class="hot-item">
+                class="hot-item"
+                @click="handleAddClick(item)">
                 {{item}}
               </li>
             </ul>
           </div>
-          <div v-if="searchHistory.length" class="history-box">
+          <div v-show="searchHistory.length" class="history-box">
             <h3 class="history-title">
               <span class="text">搜索历史</span>
-              <i class="icon-clear"></i>
+              <i class="icon-clear" @click="handleClearHistory"></i>
             </h3>
-            <ul>
+            <transition-group name="slide-up" tag="ul">
               <li
-                v-for="(item, index) in searchHistory"
-                :key="index"
-                class="history-item">
+                v-for="item in searchHistory"
+                :key="item"
+                class="history-item"
+                @click="handleAddClick(item)">
                 <span class="text">{{item}}</span>
-                <i class="icon-delete"></i>
+                <i class="icon-delete" @click.stop="handleDeleteHistory(item)"></i>
               </li>
-            </ul>
+            </transition-group>
           </div>
         </div>
       </scroll>
+
+      <!-- 搜索结果 -->
+      <div v-show="keyword" class="suggestion-box">
+        <suggestion :keyword="keyword"/>
+      </div>
     </div>
   </transition>
 </template>
 <script lang="ts">
-import Search from '@/assets/js/search'
 import SearchBox from '@/components/search-box/index.vue'
 import Scroll from '@/components/scroll/index.vue'
+import Suggestion from '@/components/suggestion/index.vue'
+import Search from '@/assets/js/search'
 import Player from '@/assets/js/player'
 import { Component, Mixins } from 'vue-property-decorator'
 import { HotKey } from '@/types/search'
@@ -53,12 +61,18 @@ const MAX_HOT = 10
 @Component({
   components: {
     SearchBox,
-    Scroll
+    Scroll,
+    Suggestion
   }
 })
 export default class MSearch extends Mixins(Search, Player) {
   private hotKeyList: string[] = []
   // methods方法
+  public handleAddClick (keyword: string): void {
+    const searchBox = this.$refs.SearchBox as SearchBox
+    searchBox.setKeyword(keyword)
+    this.handleAddHistory(keyword)
+  }
   private getHotKeysData (): void {
     getHotKeys().then(res => {
       const { code, data } = res
@@ -132,11 +146,31 @@ export default class MSearch extends Mixins(Search, Player) {
           flex: 1;
         }
         [class^="icon"] {
-          font-size: 14px;
+          font-size: 12px;
           color: $color-text-d;
           @include extend-click();
         }
       }
+      .history-title {
+        [class^="icon"] {
+          font-size: 14px;
+        }
+      }
+      .history-item {
+        &.slide-up-enter-active, &.slide-up-leave-active {
+          transition: height 0.1s;
+        }
+        &.slide-up-enter, &.slide-up-leave-to {
+          height: 0;
+        }
+      }
+    }
+    .suggestion-box {
+      position: fixed;
+      left: 0;
+      top: 178px;
+      bottom: 0;
+      width: 100%;
     }
   }
 </style>

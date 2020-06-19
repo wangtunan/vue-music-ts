@@ -1,17 +1,33 @@
 import { Component, Vue } from 'vue-property-decorator'
+import { getHistoryList, saveHistory, deleteHistory, clearHistory } from '@/utils/cache'
 @Component
 export default class Search extends Vue {
   protected keyword = ''
-  protected searchHistory: string[] = ['曹操', '林俊杰', '周杰伦', '王菲', '潘玮柏', 'S.H.E', '张宇', '马天宇', '陈坤', '五月天', '伍佰']
+  protected searchHistory: string[] = []
 
   // methods方法
   public handleSearch (keyword: string): void {
     this.keyword = keyword.trim()
   }
-  public handleClearClick (): void {
-    // TDD
+  public handleClearHistory (): void {
+    clearHistory()
+    this.getHistoryList()
   }
-  public handleDeleteClick (): void {
-    // TDD
+  public handleDeleteHistory (keyword: string): void {
+    deleteHistory(keyword.trim())
+    this.getHistoryList()
+  }
+  public handleAddHistory (keyword: string): void {
+    this.keyword = keyword.trim()
+    saveHistory(this.keyword)
+    this.getHistoryList()
+  }
+  private getHistoryList (): void {
+    this.searchHistory = getHistoryList()
+  }
+
+  // 生命周期
+  private created (): void {
+    this.getHistoryList()
   }
 }

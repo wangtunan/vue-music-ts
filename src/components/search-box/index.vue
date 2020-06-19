@@ -14,8 +14,11 @@ export default class SearchBox extends Vue {
   @Prop({ type: String, default: '搜索歌曲、歌手' }) placeholder!: string
 
   // methods方法
-  handleClearClick (): void {
+  public handleClearClick (): void {
     this.keyword = ''
+  }
+  public setKeyword (keyword: string): void {
+    this.keyword = keyword.trim()
   }
 
   // 生命周期
