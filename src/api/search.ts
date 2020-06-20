@@ -14,7 +14,7 @@ export function getHotKeys (): Promise<MusicResponse> {
 }
 
 export function search (keyword: string, page: number, zhida: boolean, perpage: number): Promise<MusicResponse> {
-  const url = ''
+  const url = '/api/search'
   const params = {
     w: keyword,
     p: page,

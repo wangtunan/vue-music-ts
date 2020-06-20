@@ -8,7 +8,7 @@ export interface MusicParams {
   inCharset: string;
   outCharset: string;
   notice: number;
-  format: 'jsonp';
+  format: string;
   [propName: string]: any;
 }
 
@@ -33,4 +33,13 @@ export interface Jsonpoptions {
 export interface Position {
   x: number;
   y: number;
+}
+
+export interface Confirm {
+  message: string;
+  cancelButtonText?: string;
+  confirmButtonText?: string;
+  showCancelButton?: boolean;
+  showConfirmButton?: boolean;
+  [propName: string]: any;
 }

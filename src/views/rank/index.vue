@@ -1,5 +1,5 @@
 <template>
-  <transition name="slide">
+  <transition name="slide-in">
     <div class="m-rank">
       <!-- 列表 -->
       <scroll

@@ -1,5 +1,5 @@
 <template>
-  <transition name="slide">
+  <transition name="slide-in">
     <div class="m-recommend">
       <scroll class="recommend-box" :data="discList">
         <div>
@@ -24,6 +24,7 @@
                 v-for="(item, index) in discList"
                 :key="index"
                 class="recommend-item"
+                @click="handleItemClick(item)"
               >
                 <div class="img-box">
                   <img v-lazy="item.imgurl" alt="">
@@ -39,11 +40,13 @@
         <!-- loading -->
         <loading v-show="!discList.length" />
       </scroll>
+      <router-view />
     </div>
   </transition>
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import { Mutation } from 'vuex-class'
 import { getRecommendList, getDiscList } from '@/api/recommend'
 import { MusicResponse } from '@/types/index'
 import { BannerConfig, DiscConfig } from '@/types/recommend'
@@ -63,6 +66,10 @@ export default class Recommend extends Vue {
   private discList: DiscConfig[] = []
 
   // methods方法
+  public handleItemClick (item: DiscConfig): void {
+    this.$router.push(`/recommend/${item.dissid}`)
+    this.setDisc(item)
+  }
   public getRecommendListData (): void {
     getRecommendList().then((res: MusicResponse): void => {
       const { code, data } = res
@@ -79,6 +86,9 @@ export default class Recommend extends Vue {
       }
     })
   }
+
+  // mutations
+  @Mutation('disc/SET_DISC') setDisc!: (disc: DiscConfig) => void
 
   // 生命周期
   private mounted (): void {

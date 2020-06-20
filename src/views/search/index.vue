@@ -1,5 +1,5 @@
 <template>
-  <transition name="slide">
+  <transition name="slide-in">
     <div class="m-search">
       <!-- 搜索 -->
       <div class="search-box">
@@ -24,7 +24,7 @@
           <div v-show="searchHistory.length" class="history-box">
             <h3 class="history-title">
               <span class="text">搜索历史</span>
-              <i class="icon-clear" @click="handleClearHistory"></i>
+              <i class="icon-clear" @click="handleShowConfirm"></i>
             </h3>
             <transition-group name="slide-up" tag="ul">
               <li
@@ -42,8 +42,11 @@
 
       <!-- 搜索结果 -->
       <div v-show="keyword" class="suggestion-box">
-        <suggestion :keyword="keyword"/>
+        <suggestion :keyword="keyword" @select="handleSuggestionSelect" />
       </div>
+
+      <!-- confirm -->
+      <confirm :visible.sync="showConfirm" message="是否确定清空全部搜索历史？" @confirm="handleClearHistory" />
     </div>
   </transition>
 </template>
@@ -51,6 +54,7 @@
 import SearchBox from '@/components/search-box/index.vue'
 import Scroll from '@/components/scroll/index.vue'
 import Suggestion from '@/components/suggestion/index.vue'
+import Confirm from '@/components/confirm/index.vue'
 import Search from '@/assets/js/search'
 import Player from '@/assets/js/player'
 import { Component, Mixins } from 'vue-property-decorator'
@@ -62,16 +66,24 @@ const MAX_HOT = 10
   components: {
     SearchBox,
     Scroll,
-    Suggestion
+    Suggestion,
+    Confirm
   }
 })
 export default class MSearch extends Mixins(Search, Player) {
+  private showConfirm = false
   private hotKeyList: string[] = []
   // methods方法
   public handleAddClick (keyword: string): void {
     const searchBox = this.$refs.SearchBox as SearchBox
     searchBox.setKeyword(keyword)
     this.handleAddHistory(keyword)
+  }
+  public handleSuggestionSelect (): void {
+    this.handleAddHistory(this.keyword)
+  }
+  public handleShowConfirm (): void {
+    this.showConfirm = true
   }
   private getHotKeysData (): void {
     getHotKeys().then(res => {

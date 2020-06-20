@@ -1,5 +1,5 @@
 <template>
-  <transition name="slide">
+  <transition name="slide-in">
     <div class="m-singer">
       <list-view :list="singerList"/>
       <loading v-show="!singerList.length"/>
