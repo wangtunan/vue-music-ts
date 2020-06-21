@@ -51,3 +51,18 @@ export function getDiscList (): Promise<MusicResponse> {
   })
   return axios.get('/api/getDiscList', { params })
 }
+
+export function getSongList (disstid: string | number): Promise<MusicResponse> {
+  const url = '/api/getCdInfo'
+  const params = Object.assign({}, commonParams, {
+    disstid,
+    type: 1,
+    json: 1,
+    utf8: 1,
+    onlysong: 0,
+    platform: 'yqq',
+    hostUin: 0,
+    needNewCode: 0
+  })
+  return axios.get(url, { params })
+}

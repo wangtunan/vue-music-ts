@@ -19,6 +19,7 @@
             v-for="(singer, index) in group.items"
             :key="index"
             class="listview-singer"
+            @click="handleSingerClick(singer)"
           >
             <img class="avatar" v-lazy="singer.avatar" alt="">
             <p class="name">{{singer.name}}</p>
@@ -56,10 +57,12 @@
 </template>
 <script lang="ts">
 import Scroll from '@/components/scroll/index.vue'
+import Singer from '@/assets/js/singer'
 import { ListViewConfig, TouchConfig } from '@/types/singer'
 import { Position } from '@/types/index'
-import { getDomData } from '@/utils/dom'
+import { getDomData, getVendorsPrefix } from '@/utils/dom'
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
+const transform = getVendorsPrefix('transform')
 @Component({
   components: {
     Scroll
@@ -78,23 +81,26 @@ export default class ListView extends Vue {
   @Prop({ type: Array, default () { return [] } }) list!: ListViewConfig[]
 
   // methods方法
-  handleTouchStart (e: TouchEvent): void {
+  public handleTouchStart (e: TouchEvent): void {
     const anchorIndex = getDomData(e.target as HTMLElement, 'index')
     this.touch.y1 = e.touches[0].pageY
     this.touch.anchorIndex = anchorIndex
     this.showAnchorName = true
     this.scrollTo(anchorIndex as string)
   }
-  handleTouchMove (e: TouchEvent): void {
+  public handleTouchMove (e: TouchEvent): void {
     this.touch.y2 = e.touches[0].pageY
     const diffIndex = (this.touch.y2 - this.touch.y1) / this.anchorHeight | 0
     const anchorIndex = parseInt(this.touch.anchorIndex as string) + diffIndex
     this.scrollTo(anchorIndex)
   }
-  handleScroll (pos: Position): void {
+  public handleScroll (pos: Position): void {
     this.scrollY = pos.y
   }
-  scrollTo (index: string | number | null) {
+  public handleSingerClick (singer: Singer): void {
+    this.$emit('select', singer)
+  }
+  private scrollTo (index: string | number | null) {
     if (!index) {
       return
     }
@@ -108,7 +114,7 @@ export default class ListView extends Vue {
     listView.scrollToElement((this.$refs.ListGroup as HTMLElement[])[newIndex], 0)
     this.scrollY = listView.scroll.y
   }
-  computedHeightList (): void {
+  private computedHeightList (): void {
     const heightList = [0]
     let height = 0
     const listGroup: HTMLElement[] = this.$refs.ListGroup as HTMLElement[]
@@ -119,11 +125,11 @@ export default class ListView extends Vue {
     }
     this.listHeight = heightList
   }
-  computedAnchorHeight (): void {
+  private computedAnchorHeight (): void {
     const anchorList = this.$refs.Anchor as HTMLElement[]
     this.anchorHeight = anchorList[0].clientHeight
   }
-  computedTitleHeight (): void {
+  private computedTitleHeight (): void {
     const listGroup = this.$refs.ListGroup as HTMLElement[]
     this.titleHeight = (listGroup[0].firstChild as HTMLElement).clientHeight
   }
@@ -145,7 +151,7 @@ export default class ListView extends Vue {
 
   // watch监听
   @Watch('list')
-  onListChange (): void {
+  private onListChange (): void {
     this.$nextTick(() => {
       this.computedHeightList()
       this.computedAnchorHeight()
@@ -153,7 +159,7 @@ export default class ListView extends Vue {
     })
   }
   @Watch('scrollY')
-  onScrollYChange (newY: number): void {
+  private onScrollYChange (newY: number): void {
     if (newY > 0) {
       this.shortcutIndex = 0
       return
@@ -173,14 +179,15 @@ export default class ListView extends Vue {
     }
   }
   @Watch('diffY')
-  onDiffYChange (newY: number): void {
+  private onDiffYChange (newY: number): void {
     const fixedTop = (newY > 0 && newY < this.titleHeight) ? newY - this.titleHeight : 0
     if (this.fixedTop === fixedTop) {
       return
     }
     const fixedTitle = this.$refs.FixedTitle as HTMLElement
     this.fixedTop = fixedTop
-    fixedTitle.style.transform = `translate3d(0, ${this.fixedTop}px, 0)`
+    // @ts-ignore
+    fixedTitle.style[transform] = `translate3d(0, ${this.fixedTop}px, 0)`
   }
 
   // 生命周期

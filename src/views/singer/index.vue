@@ -1,8 +1,9 @@
 <template>
   <transition name="slide-in">
     <div class="m-singer">
-      <list-view :list="singerList"/>
+      <list-view :list="singerList" @select="handleSelectSinger" />
       <loading v-show="!singerList.length"/>
+      <router-view></router-view>
     </div>
   </transition>
 </template>
@@ -11,6 +12,7 @@ import ListView from '@/components/list-view/index.vue'
 import Loading from '@/components/loading/index.vue'
 import Singer from '@/assets/js/singer'
 import { Component, Vue } from 'vue-property-decorator'
+import { Mutation } from 'vuex-class'
 import { ListViewConfig, MusicSingerConfig, MapListConfig } from '@/types/singer'
 import { getSingerList } from '@/api/singer'
 import { ERR_OK } from '@/api/config'
@@ -24,7 +26,14 @@ const HOT_NAME = '热门'
 })
 export default class MSinger extends Vue {
   private singerList: ListViewConfig[] = []
+  // vuex
+  @Mutation('singer/SET_SINGER') setSinger!: (singer: Singer) => void
+
   // methods方法
+  public handleSelectSinger (singer: Singer): void {
+    this.$router.push(`/singer/${singer.id}`)
+    this.setSinger(singer)
+  }
   getSingerListData (): void {
     getSingerList().then(res => {
       const { code, data } = res

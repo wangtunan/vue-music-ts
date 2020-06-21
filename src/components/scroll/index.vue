@@ -13,7 +13,7 @@ export default class Scroll extends Vue {
   public scroll!: BScroll
   @Prop({ type: Number, default: 1 }) probeType!: number
   @Prop({ type: Boolean, default: false }) click!: boolean
-   @Prop({ type: Boolean, default: false }) listenScroll!: boolean
+  @Prop({ type: Boolean, default: false }) listenScroll!: boolean
   @Prop({ type: String, default: DirectionEnum.vertical }) direction!: Direction
   @Prop({ type: Array, default () { return [] } }) data!: any
 
@@ -34,8 +34,12 @@ export default class Scroll extends Vue {
     this.scroll && this.scroll.scrollToElement.apply(this.scroll, args)
   }
   private initScroll (): void {
+    const scrollDOM = this.$refs.Scroll as HTMLElement
+    if (!scrollDOM) {
+      return
+    }
     if (!this.scroll) {
-      this.scroll = new BScroll(this.$refs.Scroll as HTMLElement, {
+      this.scroll = new BScroll(scrollDOM, {
         click: this.click,
         probeType: this.probeType,
         eventPassthrough: this.direction === DirectionEnum.horizontal ? DirectionEnum.vertical : DirectionEnum.horizontal

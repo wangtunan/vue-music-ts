@@ -1,38 +1,136 @@
 <template>
-  <transition name="slide">
-    <div class="m-music-list">
-      <div class="music-list-header">
-        <span class="icon-back" @click="handleBackClick"></span>
-        <h1 class="title">{{title}}</h1>
-      </div>
-      <div class="music-list-image" :style="bgStyle">
-        <div class="image-cover"></div>
-        <div class="play-box">
-          <div class="play-btn">
-            <i class="icon-play"></i>
-            <span class="btn-text">随机播放全部</span>
-          </div>
+  <div class="m-music-list">
+    <!-- 头部 -->
+    <div ref="MusicHeader" class="music-list-header">
+      <span class="icon-back" @click="handleBackClick"></span>
+      <h1 class="title">{{title}}</h1>
+    </div>
+
+    <!-- 图片&按钮 -->
+    <div ref="MusicImage" class="music-list-image" :style="bgStyle">
+      <div class="image-cover"></div>
+      <div v-show="songs.length" class="play-box">
+        <div ref="PlayBtn" class="play-btn" @click="handlePlayClick">
+          <i class="icon-play"></i>
+          <span class="btn-text">随机播放全部</span>
         </div>
       </div>
     </div>
-  </transition>
+
+    <!-- layer -->
+    <div ref="MusicLayer" class="music-list-layer"></div>
+
+    <!-- 列表 -->
+    <scroll
+      ref="MusicScroll"
+      class="music-list-scroll"
+      :data="songs"
+      :probe-type="3"
+      :listen-scroll="true"
+      :style="scrollStyle"
+      @scroll="handleScroll"
+    >
+      <song-list :list="songs" @select="handleSelectSong" />
+      <loading v-show="!songs.length" />
+    </scroll>
+  </div>
 </template>
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator'
-@Component
+import Scroll from '@/components/scroll/index.vue'
+import Loading from '@/components/loading/index.vue'
+import SongList from '@/components/song-list/index.vue'
+import Song from '@/assets/js/song'
+import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
+import { Position } from '@/types/index'
+import { getVendorsPrefix } from '@/utils/dom'
+const transform = getVendorsPrefix('transform')
+@Component({
+  components: {
+    Scroll,
+    Loading,
+    SongList
+  }
+})
 export default class MusicList extends Vue {
+  private headerHeigth!: number
+  private minTranslateY!: number
+  private playBtn!: HTMLElement
+  private musicImage!: HTMLElement
+  private musicLayer!: HTMLElement
+  private scrollY = 0
+  private top = 0
   @Prop({ type: String, default: '' }) title!: string
   @Prop({ type: String, default: '' }) img!: string
+  @Prop({ type: Array, default () { return [] } }) songs!: Song[]
   // methods方法
   public handleBackClick (): void {
     this.$router.back()
   }
+  public handlePlayClick (): void {
+    console.log('play random')
+  }
+  public handleScroll (pos: Position): void {
+    this.scrollY = pos.y
+  }
+  public handleSelectSong (song: Song): void {
+    console.log(song)
+  }
+  private cacheDoms (): void {
+    this.musicImage = this.$refs.MusicImage as HTMLElement
+    this.musicLayer = this.$refs.MusicLayer as HTMLElement
+    this.playBtn = this.$refs.PlayBtn as HTMLElement
+  }
+  private computedHeight (): void {
+    const musicHeader = this.$refs.MusicHeader as HTMLElement
+    this.top = this.musicImage.clientHeight
+    this.headerHeigth = musicHeader.clientHeight
+    this.minTranslateY = -this.musicImage.clientHeight + this.headerHeigth
+  }
 
   // 计算属性
-  public get bgStyle (): object {
+  private get bgStyle (): object {
     return {
       'background-image': `url(${this.img})`
     }
+  }
+  private get scrollStyle (): object {
+    return {
+      top: `${this.top}px`
+    }
+  }
+
+  // watch监听器
+  @Watch('scrollY')
+  onScrollYChange (newY: number) {
+    const translateY = Math.max(this.minTranslateY, newY)
+    const percent = Math.abs(newY / this.musicImage.clientHeight)
+    let zIndex = 0
+    let scale = 1
+    if (newY > 0) {
+      zIndex = 10
+      scale = 1 + percent
+    }
+    // @ts-ignore
+    this.musicLayer.style[transform] = `translate3d(0,${translateY}px,0)`
+    if (newY < this.minTranslateY) {
+      zIndex = 10
+      this.musicImage.style.paddingTop = '0'
+      this.musicImage.style.height = `${this.headerHeigth}px`
+      this.playBtn.style.display = 'none'
+    } else {
+      this.musicImage.style.paddingTop = '70%'
+      this.musicImage.style.height = '0'
+      this.playBtn.style.display = ''
+    }
+    this.musicImage.style.zIndex = `${zIndex}`
+    // @ts-ignore
+    this.musicImage.style[transform] = `scale(${scale})`
+  }
+
+  // 生命周期
+  private mounted (): void {
+    this.cacheDoms()
+    this.computedHeight()
   }
 }
 </script>
@@ -116,6 +214,19 @@ export default class MusicList extends Vue {
         margin-left: 5px;
         font-size: 12px;
       }
+    }
+    .music-list-layer {
+      height: 100%;
+      overflow: hidden;
+      background-color: $color-background;
+    }
+    .music-list-scroll {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background-color: $color-background;
     }
   }
 </style>

@@ -3,6 +3,7 @@ import VueRouter, { RouteConfig } from 'vue-router'
 const Recommend = () => import('@/views/recommend/index.vue')
 const RecommendDetail = () => import('@/views/recommend-detail/detail.vue')
 const Singer = () => import('@/views/singer/index.vue')
+const SingerDetail = () => import('@/views/singer-detail/detail.vue')
 const Rank = () => import('@/views/rank/index.vue')
 const Search = () => import('@/views/search/index.vue')
 
@@ -24,7 +25,10 @@ const routes: Array<RouteConfig> = [
   {
     path: '/singer',
     name: 'Singer',
-    component: Singer
+    component: Singer,
+    children: [
+      { path: ':id', component: SingerDetail }
+    ]
   },
   {
     path: '/rank',
