@@ -70,7 +70,7 @@ export default class MTab extends Vue {
       text-align: center;
       color: $color-text-l;
       &.router-link-active {
-        color:$color-theme;
+        color: $color-theme;
       }
     }
     .tab-bar {

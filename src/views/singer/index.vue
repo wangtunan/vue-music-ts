@@ -1,11 +1,9 @@
 <template>
-  <transition name="slide-in">
-    <div class="m-singer">
-      <list-view :list="singerList" @select="handleSelectSinger" />
-      <loading v-show="!singerList.length"/>
-      <router-view></router-view>
-    </div>
-  </transition>
+  <div class="m-singer">
+    <list-view :list="singerList" @select="handleSelectSinger" />
+    <loading v-show="!singerList.length"/>
+    <router-view></router-view>
+  </div>
 </template>
 <script lang="ts">
 import ListView from '@/components/list-view/index.vue'

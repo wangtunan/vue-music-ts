@@ -1,35 +1,33 @@
 <template>
-  <transition name="slide-in">
-    <div class="m-rank">
-      <!-- 列表 -->
-      <scroll
-        :data="rankList"
-        class="rank-list">
-        <ul>
-          <li
-            v-for="(item, index) in rankList"
-            :key="index"
-            class="rank-item">
-            <div class="img-box">
-              <img v-lazy="item.picUrl" alt="">
-            </div>
-            <ul class="content-box">
-              <li
-                v-for="(song, index) in item.songList"
-                :key="index"
-                class="song-item">
-                <span>{{index + 1}}. </span>
-                <span class="name">{{song.songname}}-{{song.singername}}</span>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </scroll>
+  <div class="m-rank">
+    <!-- 列表 -->
+    <scroll
+      :data="rankList"
+      class="rank-list">
+      <ul>
+        <li
+          v-for="(item, index) in rankList"
+          :key="index"
+          class="rank-item">
+          <div class="img-box">
+            <img v-lazy="item.picUrl" alt="">
+          </div>
+          <ul class="content-box">
+            <li
+              v-for="(song, index) in item.songList"
+              :key="index"
+              class="song-item">
+              <span>{{index + 1}}. </span>
+              <span class="name">{{song.songname}}-{{song.singername}}</span>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </scroll>
 
-      <!-- loading -->
-      <loading v-show="!rankList.length" />
-    </div>
-  </transition>
+    <!-- loading -->
+    <loading v-show="!rankList.length" />
+  </div>
 </template>
 <script lang="ts">
 import Scroll from '@/components/scroll/index.vue'

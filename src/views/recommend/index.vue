@@ -1,48 +1,46 @@
 <template>
-  <transition name="slide-in">
-    <div class="m-recommend">
-      <scroll class="recommend-box" :data="discList">
-        <div>
-          <!-- 轮播 -->
-          <div class="slider-box">
-            <div v-if="recommendList.length" class="slider-content">
-              <slider>
-                <div v-for="(item, index) in recommendList" :key="index">
-                  <a :href="item.linkUrl">
-                    <img :src="item.picUrl" alt="">
-                  </a>
-                </div>
-              </slider>
-            </div>
-          </div>
-
-          <!-- 列表 -->
-          <div class="recommend-list">
-            <h1 class="recommend-title">热门歌单推荐</h1>
-            <ul>
-              <li
-                v-for="(item, index) in discList"
-                :key="index"
-                class="recommend-item"
-                @click="handleItemClick(item)"
-              >
-                <div class="img-box">
-                  <img v-lazy="item.imgurl" alt="">
-                </div>
-                <div class="content-box">
-                  <p class="author">{{item.creator.name}}</p>
-                  <p class="desc">{{item.dissname}}</p>
-                </div>
-              </li>
-            </ul>
+  <div class="m-recommend">
+    <scroll class="recommend-box" :data="discList">
+      <div>
+        <!-- 轮播 -->
+        <div class="slider-box">
+          <div v-if="recommendList.length" class="slider-content">
+            <slider>
+              <div v-for="(item, index) in recommendList" :key="index">
+                <a :href="item.linkUrl">
+                  <img :src="item.picUrl" alt="">
+                </a>
+              </div>
+            </slider>
           </div>
         </div>
-        <!-- loading -->
-        <loading v-show="!discList.length" />
-      </scroll>
-      <router-view />
-    </div>
-  </transition>
+
+        <!-- 列表 -->
+        <div class="recommend-list">
+          <h1 class="recommend-title">热门歌单推荐</h1>
+          <ul>
+            <li
+              v-for="(item, index) in discList"
+              :key="index"
+              class="recommend-item"
+              @click="handleItemClick(item)"
+            >
+              <div class="img-box">
+                <img v-lazy="item.imgurl" alt="">
+              </div>
+              <div class="content-box">
+                <p class="author">{{item.creator.name}}</p>
+                <p class="desc">{{item.dissname}}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!-- loading -->
+      <loading v-show="!discList.length" />
+    </scroll>
+    <router-view />
+  </div>
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'

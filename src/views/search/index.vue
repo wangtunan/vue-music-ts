@@ -1,54 +1,52 @@
 <template>
-  <transition name="slide-in">
-    <div class="m-search">
-      <!-- 搜索 -->
-      <div class="search-box">
-        <search-box ref="SearchBox" @search="handleSearch"/>
-      </div>
-
-      <!-- 热搜&搜索历史 -->
-      <scroll v-show="!keyword" :data="combineData" class="scroll-box">
-        <div>
-          <div v-if="hotKeyList.length" class="hot-box">
-            <h3 class="hot-title">热门搜索</h3>
-            <ul>
-              <li
-                v-for="(item, index) in hotKeyList"
-                :key="index"
-                class="hot-item"
-                @click="handleAddClick(item)">
-                {{item}}
-              </li>
-            </ul>
-          </div>
-          <div v-show="searchHistory.length" class="history-box">
-            <h3 class="history-title">
-              <span class="text">搜索历史</span>
-              <i class="icon-clear" @click="handleShowConfirm"></i>
-            </h3>
-            <transition-group name="slide-up" tag="ul">
-              <li
-                v-for="item in searchHistory"
-                :key="item"
-                class="history-item"
-                @click="handleAddClick(item)">
-                <span class="text">{{item}}</span>
-                <i class="icon-delete" @click.stop="handleDeleteHistory(item)"></i>
-              </li>
-            </transition-group>
-          </div>
-        </div>
-      </scroll>
-
-      <!-- 搜索结果 -->
-      <div v-show="keyword" class="suggestion-box">
-        <suggestion :keyword="keyword" @select="handleSuggestionSelect" />
-      </div>
-
-      <!-- confirm -->
-      <confirm :visible.sync="showConfirm" message="是否确定清空全部搜索历史？" @confirm="handleClearHistory" />
+  <div class="m-search">
+    <!-- 搜索 -->
+    <div class="search-box">
+      <search-box ref="SearchBox" @search="handleSearch"/>
     </div>
-  </transition>
+
+    <!-- 热搜&搜索历史 -->
+    <scroll v-show="!keyword" :data="combineData" class="scroll-box">
+      <div>
+        <div v-if="hotKeyList.length" class="hot-box">
+          <h3 class="hot-title">热门搜索</h3>
+          <ul>
+            <li
+              v-for="(item, index) in hotKeyList"
+              :key="index"
+              class="hot-item"
+              @click="handleAddClick(item)">
+              {{item}}
+            </li>
+          </ul>
+        </div>
+        <div v-show="searchHistory.length" class="history-box">
+          <h3 class="history-title">
+            <span class="text">搜索历史</span>
+            <i class="icon-clear" @click="handleShowConfirm"></i>
+          </h3>
+          <transition-group name="slide-up" tag="ul">
+            <li
+              v-for="item in searchHistory"
+              :key="item"
+              class="history-item"
+              @click="handleAddClick(item)">
+              <span class="text">{{item}}</span>
+              <i class="icon-delete" @click.stop="handleDeleteHistory(item)"></i>
+            </li>
+          </transition-group>
+        </div>
+      </div>
+    </scroll>
+
+    <!-- 搜索结果 -->
+    <div v-show="keyword" class="suggestion-box">
+      <suggestion :keyword="keyword" @select="handleSuggestionSelect" />
+    </div>
+
+    <!-- confirm -->
+    <confirm :visible.sync="showConfirm" message="是否确定清空全部搜索历史？" @confirm="handleClearHistory" />
+  </div>
 </template>
 <script lang="ts">
 import SearchBox from '@/components/search-box/index.vue'
