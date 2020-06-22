@@ -7,6 +7,9 @@
         class="song-item"
         @click="handleItemClick(item)"
       >
+        <div v-if="rank" class="song-rank">
+          <span :class="getRankClass(index)" v-text="getRankText(index)"></span>
+        </div>
         <div class="song-content">
           <p class="name">{{item.name}}</p>
           <p class="desc">{{item.singer}}-{{item.album}}</p>
@@ -21,11 +24,24 @@ import Song from '@/assets/js/song'
 import { Component, Vue, Prop } from 'vue-property-decorator'
 @Component
 export default class SongList extends Vue {
+  @Prop({ type: Boolean, default: false }) rank!: boolean
   @Prop({ type: Array, default () { return [] } }) list!: Song[]
 
   // methods方法
   public handleItemClick (item: Song): void {
     this.$emit('select', item)
+  }
+  private getRankClass (index: number): string {
+    if (index < 3) {
+      return `icon icon${index}`
+    } else {
+      return 'text'
+    }
+  }
+  private getRankText (index: number): number | undefined {
+    if (index > 2) {
+      return index + 1
+    }
   }
 }
 </script>
@@ -39,6 +55,31 @@ export default class SongList extends Vue {
       align-items: center;
       justify-content: center;
       height: 64px;
+      .song-rank {
+        flex: 0 0 25px;
+        width: 25px;
+        margin-right: 30px;
+        text-align: center;
+        .icon {
+          display: inline-block;
+          width: 25px;
+          height: 25px;
+          background-size: 25px 24px;
+          &.icon0 {
+            background-image: url('~@/assets/images/first.png');
+          }
+          &.icon1 {
+            background-image: url('~@/assets/images/second.png');
+          }
+          &.icon2 {
+            background-image: url('~@/assets/images/three.png');
+          }
+        }
+        .text {
+          color: $color-theme;
+          font-size: 18px;
+        }
+      }
       .song-content {
         flex: 1;
         line-height: 22px;

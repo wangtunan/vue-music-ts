@@ -30,7 +30,7 @@
       :style="scrollStyle"
       @scroll="handleScroll"
     >
-      <song-list :list="songs" @select="handleSelectSong" />
+      <song-list :list="songs" :rank="rank" @select="handleSelectSong" />
       <loading v-show="!songs.length" />
     </scroll>
   </div>
@@ -61,6 +61,7 @@ export default class MusicList extends Vue {
   private top = 0
   @Prop({ type: String, default: '' }) title!: string
   @Prop({ type: String, default: '' }) img!: string
+  @Prop({ type: Boolean, default: false }) rank!: boolean
   @Prop({ type: Array, default () { return [] } }) songs!: Song[]
   // methods方法
   public handleBackClick (): void {

@@ -11,3 +11,23 @@ export function getRankList (): Promise<MusicResponse> {
   })
   return jsonp(url, params, jsonpOptions)
 }
+
+export function getTopList (topId: string | number): Promise<MusicResponse> {
+  const url = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_cp.fcg'
+  const params = Object.assign({}, commonParams, {
+    topid: topId,
+    needNewCode: 1,
+    uin: 0,
+    tpl: 3,
+    page: 'detail',
+    type: 'top',
+    platform: 'h5'
+  })
+
+  return jsonp(url, params, jsonpOptions).then(res => {
+    return {
+      code: 0,
+      data: res.songlist
+    }
+  })
+}

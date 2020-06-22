@@ -116,9 +116,9 @@ export default class MSearch extends Mixins(Search, Player) {
       margin: 20px;
     }
     .scroll-box {
-      position: fixed;
+      position: absolute;
       left: 0;
-      top: 178px;
+      top: 80px;
       bottom: 0;
       width: 100%;
       padding: 0 20px;

@@ -8,7 +8,8 @@
         <li
           v-for="(item, index) in rankList"
           :key="index"
-          class="rank-item">
+          class="rank-item"
+          @click="handleRankClick(item)">
           <div class="img-box">
             <img v-lazy="item.picUrl" alt="">
           </div>
@@ -27,6 +28,9 @@
 
     <!-- loading -->
     <loading v-show="!rankList.length" />
+
+    <!-- router-view -->
+    <router-view></router-view>
   </div>
 </template>
 <script lang="ts">
@@ -36,6 +40,7 @@ import { Component, Vue } from 'vue-property-decorator'
 import { RankListConfig } from '@/types/rank'
 import { getRankList } from '@/api/rank'
 import { ERR_OK } from '@/api/config'
+import { Mutation } from 'vuex-class'
 @Component({
   components: {
     Scroll,
@@ -45,7 +50,11 @@ import { ERR_OK } from '@/api/config'
 export default class Rank extends Vue {
   private rankList: RankListConfig[] = []
   // methods方法
-  getRankListData (): void {
+  public handleRankClick (topList: RankListConfig): void {
+    this.$router.push(`/rank/${topList.id}`)
+    this.setTopList(topList)
+  }
+  private getRankListData (): void {
     getRankList().then(res => {
       const { code, data } = res
       if (code === ERR_OK) {
@@ -53,6 +62,9 @@ export default class Rank extends Vue {
       }
     })
   }
+
+  // vuex
+  @Mutation('top/SET_TOP_LIST') setTopList!: (topList: RankListConfig) => void
 
   // 生命周期
   private mounted (): void {
