@@ -13,3 +13,8 @@ export interface SingerState {
 export interface TopState {
   topList: RankListConfig
 }
+
+export interface historyState {
+  searchHistory: string[];
+  playHistory: any[]
+}

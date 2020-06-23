@@ -31,7 +31,11 @@ export default class App extends Vue {
     if (from.path !== '/') {
       const toIndex = this.tabArr.findIndex(item => item.path === to.path)
       const fromIndex = this.tabArr.findIndex(item => item.path === from.path)
-      this.transitionName = toIndex > fromIndex ? 'slide-left' : 'slide-right'
+      if (toIndex === -1 || fromIndex === -1) {
+        this.transitionName = ''
+      } else {
+        this.transitionName = toIndex > fromIndex ? 'slide-left' : 'slide-right'
+      }
     }
   }
 }

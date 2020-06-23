@@ -3,5 +3,6 @@
 exports[`header.vue match shapshot 1`] = `
 <div class="m-header"><img src="@/assets/images/logo.png" alt="" class="header-logo">
   <h1 class="header-title">Chicken Music</h1>
+  <router-link-stub to="/user" tag="div" class="header-mine"><i class="icon-mine"></i></router-link-stub>
 </div>
 `;

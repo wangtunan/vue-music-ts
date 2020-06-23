@@ -3,18 +3,18 @@
 exports[`tab.vue match snapshot 1`] = `
 <div class="m-tab">
   <div class="tab-container">
-    <router-link-stub tag="div" to="/recommend" class="tab-item">
-      推荐
-    </router-link-stub>
-    <router-link-stub tag="div" to="/singer" class="tab-item">
-      歌手
-    </router-link-stub>
-    <router-link-stub tag="div" to="/rank" class="tab-item">
-      排行
-    </router-link-stub>
-    <router-link-stub tag="div" to="/search" class="tab-item">
-      搜索
-    </router-link-stub>
-  </div> <span class="tab-bar" style="left: 12.5%;"></span>
+    <router-link-stub tag="div" to="/recommend" class="tab-item"><span class="tab-name">
+        推荐
+      </span></router-link-stub>
+    <router-link-stub tag="div" to="/singer" class="tab-item"><span class="tab-name">
+        歌手
+      </span></router-link-stub>
+    <router-link-stub tag="div" to="/rank" class="tab-item"><span class="tab-name">
+        排行
+      </span></router-link-stub>
+    <router-link-stub tag="div" to="/search" class="tab-item"><span class="tab-name">
+        搜索
+      </span></router-link-stub>
+  </div>
 </div>
 `;

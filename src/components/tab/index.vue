@@ -9,46 +9,24 @@
         :to="tab.path"
         @click.native="handleTabClick(index)"
       >
-        {{tab.name}}
+        <span class="tab-name">
+          {{tab.name}}
+        </span>
       </router-link>
     </div>
-    <span class="tab-bar" :style="barStyle"></span>
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
+import { Component, Vue, Prop } from 'vue-property-decorator'
 import { TabConfig } from '@/types/index'
 @Component
 export default class MTab extends Vue {
   private activeIndex = 0
   @Prop({ type: Array, default () { return [] } }) list!: TabConfig[]
 
-  // 计算属性
-  private get barStyle () {
-    return {
-      left: `${this.activeIndex * 25 + 12.5}%`
-    }
-  }
-
   // methods方法
   public handleTabClick (index: number): void {
     this.activeIndex = index
-  }
-
-  private parseActiveIndex (): void {
-    const findIndex = this.list.findIndex((tab: TabConfig) => tab.path === this.$route.path)
-    this.activeIndex = findIndex === -1 ? 0 : findIndex
-  }
-
-  // watch
-  @Watch('$route')
-  onRouteChange (): void {
-    this.parseActiveIndex()
-  }
-
-  @Watch('list')
-  onListChange (): void {
-    this.parseActiveIndex()
   }
 }
 </script>
@@ -71,18 +49,14 @@ export default class MTab extends Vue {
       color: $color-text-l;
       &.router-link-active {
         color: $color-theme;
+        .tab-name {
+          border-color: $color-theme;
+        }
       }
-    }
-    .tab-bar {
-      position: absolute;
-      left: 12.5%;
-      bottom: 5px;
-      width: 28px;
-      height: 2px;
-      background-color: $color-theme;
-      border-radius: 5px;
-      transform: translateX(-50%);
-      transition: left 0.25s ease-in-out;
+      .tab-name {
+        padding-bottom: 5px;
+        border-bottom: 2px solid transparent;
+      }
     }
   }
 </style>

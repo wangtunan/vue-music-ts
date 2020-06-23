@@ -25,10 +25,10 @@ export function deleteArray (array: any[], compare: (item: any) => boolean): voi
 }
 
 // 搜索历史
-export function getHistoryList (): string[] {
+export function getSearchHistory (): string[] {
   return storage.get(HISTORY_KEY, [])
 }
-export function saveHistory (val: string): string[] {
+export function saveSearchHistory (val: string): string[] {
   const historyArr: string[] = storage.get(HISTORY_KEY, [])
   insertArray(historyArr, val, (item: any) => {
     return item === val
@@ -36,15 +36,15 @@ export function saveHistory (val: string): string[] {
   storage.set(HISTORY_KEY, historyArr)
   return historyArr
 }
-export function deleteHistory (value: string): string[] {
+export function deleteSearchHistory (val: string): string[] {
   const historyArr: string[] = storage.get(HISTORY_KEY, [])
   deleteArray(historyArr, (item: string) => {
-    return item === value
+    return item === val
   })
   storage.set(HISTORY_KEY, historyArr)
   return historyArr
 }
-export function clearHistory (): [] {
+export function clearSearchHistory (): [] {
   storage.remove(HISTORY_KEY)
   return []
 }

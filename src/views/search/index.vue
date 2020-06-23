@@ -32,7 +32,7 @@
               class="history-item"
               @click="handleAddClick(item)">
               <span class="text">{{item}}</span>
-              <i class="icon-delete" @click.stop="handleDeleteHistory(item)"></i>
+              <i class="icon-delete" @click.stop="handledeleteSearchHistory(item)"></i>
             </li>
           </transition-group>
         </div>
@@ -45,7 +45,7 @@
     </div>
 
     <!-- confirm -->
-    <confirm :visible.sync="showConfirm" message="是否确定清空全部搜索历史？" @confirm="handleClearHistory" />
+    <confirm :visible.sync="showConfirm" message="是否确定清空全部搜索历史？" @confirm="handleclearSearchHistory" />
   </div>
 </template>
 <script lang="ts">
