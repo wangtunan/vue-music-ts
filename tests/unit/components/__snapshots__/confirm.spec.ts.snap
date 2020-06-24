@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`confirm.vue match snapshot 1`] = `
+<transition-stub name="fade">
+  <div class="m-confirm" style="display: none;">
+    <div class="confirm-box">
+      <h2 class="text"></h2>
+      <div class="btn-box">
+        <div class="btn cancel">取消</div>
+        <div class="btn confirm">确定</div>
+      </div>
+    </div>
+  </div>
+</transition-stub>
+`;

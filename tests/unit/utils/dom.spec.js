@@ -1,6 +1,6 @@
-import { hasClass, addClass } from '@/utils/dom'
+import { hasClass, addClass, getDomData, getVendorsPrefix, vendor } from '@/utils/dom'
 
-describe('dom.js', () => {
+describe('dom.ts', () => {
   let dom
   beforeEach(() => {
     dom = document.createElement('div')
@@ -14,5 +14,21 @@ describe('dom.js', () => {
     const className = 'add-class'
     addClass(dom, className)
     expect(hasClass(dom, className)).toBe(true)
+  })
+  it('test dom data', () => {
+    const dom = document.createElement('div')
+    const indexVal = '100'
+    dom.setAttribute('data-index', indexVal)
+    expect(getDomData(dom, 'index')).toBe(indexVal)
+    expect(getDomData(dom, 'index123')).toBeNull()
+  })
+  it('test vendor name', () => {
+    const vendors = ['webkit', 'Moz', 'O', 'ms']
+    expect(vendors.includes(vendor)).toBe(true)
+  })
+  it('test vendor prefix', () => {
+    const transform = getVendorsPrefix('transform')
+    const venderTransform = vendor ? `${vendor}Transform` : 'transform'
+    expect(transform).toBe(venderTransform)
   })
 })

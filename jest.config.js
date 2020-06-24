@@ -8,9 +8,10 @@ module.exports = {
     '**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)'
   ],
   collectCoverageFrom: [
-    'src/components/**/*.{js,vue}',
-    'src/utils/**/*.{js,vue}',
-    '!src/utils/axios.js'
+    'src/components/**/*.vue',
+    'src/utils/**/*.ts',
+    '!src/utils/axios.ts'
   ],
+  collectCoverage: true,
   coverageDirectory: '<rootDir>/tests/unit/coverage'
 }

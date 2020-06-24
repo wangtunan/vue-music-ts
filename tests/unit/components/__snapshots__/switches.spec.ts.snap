@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`switches.vue match snapshot 1`] = `
+<ul class="m-switches">
+  <li class="switch-item">我喜欢的</li>
+  <li class="switch-item active">最近听的</li>
+</ul>
+`;

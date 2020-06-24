@@ -7,7 +7,8 @@ interface Vendor {
   [propName: string]: any;
 }
 const domStyle = document.createElement('div').style
-const vendor = (function () {
+
+export const vendor = (function () {
   const vendorsName: Vendor = {
     webkit: 'webkitTransform',
     Moz: 'MozTransform',
@@ -21,22 +22,14 @@ const vendor = (function () {
       return key
     }
   }
-  return ''
 })()
+
 export function hasClass (el: HTMLElement, className: string): boolean {
-  if (el.classList) {
-    return el.classList.contains(className)
-  } else {
-    return ` ${el.className} `.indexOf(` ${className} `) > -1
-  }
+  return el.classList.contains(className)
 }
 
 export function addClass (el: HTMLElement, className: string): void {
-  if (el.classList) {
-    el.classList.add(className)
-  } else if (!hasClass(el, className)) {
-    el.className += ` ${className}`
-  }
+  el.classList.add(className)
 }
 
 export function getDomData (el: HTMLElement, name: string): string | null {
@@ -45,9 +38,6 @@ export function getDomData (el: HTMLElement, name: string): string | null {
 }
 
 export function getVendorsPrefix (style: string): string {
-  if (!vendor) {
-    return ''
-  }
   if (vendor === 'standard') {
     return style
   }

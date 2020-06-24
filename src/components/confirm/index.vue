@@ -1,6 +1,6 @@
 <template>
   <transition name="fade">
-    <div v-show="visible" class="m-confirm">
+    <div v-show="show" class="m-confirm">
       <div class="confirm-box">
         <h2 class="text">{{message}}</h2>
         <div class="btn-box">
@@ -12,15 +12,15 @@
   </transition>
 </template>
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator'
+import { Component, Vue, Prop, PropSync } from 'vue-property-decorator'
 @Component
 export default class Comfirm extends Vue {
-  @Prop({ type: Boolean, default: false }) visible!: boolean
+  @PropSync('visible', { type: Boolean, default: false }) show!: boolean
   @Prop({ type: String, default: '' }) message!: string
-  public cancelButtonText = '取消'
-  public confirmButtonText = '确定'
-  public showCancelButton = true
-  public showConfirmButton = true
+  @Prop({ type: String, default: '取消' }) cancelButtonText!: string
+  @Prop({ type: String, default: '确定' }) confirmButtonText!: string
+  @Prop({ type: Boolean, default: true }) showCancelButton!: boolean
+  @Prop({ type: Boolean, default: true }) showConfirmButton!: boolean
 
   // methods方法
   handleCancelClick (): void {
@@ -29,14 +29,6 @@ export default class Comfirm extends Vue {
   handleConfirmClick (): void {
     this.show = false
     this.$emit('confirm')
-  }
-
-  // 计算属性
-  private get show () {
-    return this.visible
-  }
-  private set show (val) {
-    this.$emit('update:visible', val)
   }
 }
 </script>
