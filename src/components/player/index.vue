@@ -43,8 +43,8 @@
             <span class="progress-time">5:00</span>
           </div>
           <div class="player-btns">
-            <div class="icon i-left">
-              <i class="icon-sequence"></i>
+            <div class="icon i-left" @click="handleModeChange">
+              <i :class="modeIcon"></i>
             </div>
             <div class="icon i-left">
               <i class="icon-prev"></i>
@@ -55,8 +55,8 @@
             <div class="icon i-right">
               <i class="icon-next"></i>
             </div>
-            <div class="icon i-right">
-              <i class="icon-not-favorite"></i>
+            <div class="icon i-right" @click="handleToggleFavorite">
+              <i :class="faviroteIcon"></i>
             </div>
           </div>
         </div>
@@ -65,7 +65,25 @@
 
     <!-- 迷你播放器 -->
     <transition name="mini">
-      <div v-show="!fullScreen" class="mini-player" @click="handleOpenClick"></div>
+      <div v-show="!fullScreen" class="mini-player" @click="handleOpenClick">
+        <div class="mini-icon">
+          <div class="mini-image-box">
+            <img :src="currentSong.image" width="40" height="40" class="mini-image" alt="">
+          </div>
+        </div>
+        <div class="mini-info">
+          <p class="name">{{currentSong.name}}</p>
+          <p class="singer">{{currentSong.singer}}</p>
+        </div>
+        <div class="mini-control">
+          <progress-circle :percent="0.6">
+            <i class="icon-mini icon-play-mini"></i>
+          </progress-circle>
+        </div>
+        <div class="mini-control">
+          <i class="icon-playlist"></i>
+        </div>
+      </div>
     </transition>
   </div>
 </template>
@@ -73,11 +91,13 @@
 import Song from '@/assets/js/song'
 import Player from '@/assets/js/player'
 import ProgressBar from '@/components/progress-bar/index.vue'
+import ProgressCircle from '@/components/progress-circle/index.vue'
 import { Component, Mixins } from 'vue-property-decorator'
 import { Getter, Mutation } from 'vuex-class'
 @Component({
   components: {
-    ProgressBar
+    ProgressBar,
+    ProgressCircle
   }
 })
 export default class MPlayer extends Mixins(Player) {
@@ -266,6 +286,9 @@ export default class MPlayer extends Mixins(Player) {
             text-align: left;
           }
         }
+        .icon-favorite {
+          color: $color-sub-theme;
+        }
         [class^="icon"] {
           font-size: 30px;
         }
@@ -283,6 +306,59 @@ export default class MPlayer extends Mixins(Player) {
     height: 60px;
     z-index: 150;
     background-color: $color-highlight-background;
+    &.mini-enter-active, &.mini-leave-active {
+      transition: opacity 0.4s;
+    }
+    &.mini-enter, &.mini-leave-to {
+      opacity: 0;
+    }
+    .mini-icon {
+      flex: 0 0 40px;
+      width: 40px;
+      height: 40px;
+      padding: 0 10px 0 20px;
+      .mini-image-box {
+        height: 100%;
+        .mini-image {
+          display: block;
+          border-radius: 50%;
+        }
+      }
+    }
+    .mini-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      line-height: 20px;
+      overflow: hidden;
+      .name {
+        margin-bottom: 2px;
+        font-size: 14px;
+        color: $color-text;
+        @include ellipsis();
+      }
+      .singer {
+        font-size: 12px;
+        color: $color-text-l;
+        @include ellipsis();
+      }
+    }
+    .mini-control {
+      flex: 0 0 30px;
+      width: 30px;
+      padding: 0 10px;
+      .icon-playlist, .icon-play-mini, .icon-pause-mini {
+        font-size: 30px;
+        color: $color-theme-d;
+      }
+      .icon-mini {
+        position: absolute;
+        left: 0;
+        top: 0;
+        font-size: 32px;
+      }
+    }
   }
   @keyframes myrotate {
     from {

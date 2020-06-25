@@ -40,11 +40,13 @@ import Scroll from '@/components/scroll/index.vue'
 import Loading from '@/components/loading/index.vue'
 import SongList from '@/components/song-list/index.vue'
 import Song from '@/assets/js/song'
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
+import PlayList from '@/assets/js/playList'
+import { Component, Prop, Watch, Mixins } from 'vue-property-decorator'
 import { Position } from '@/types/index'
 import { SelectPlay } from '@/types/player'
 import { getVendorsPrefix } from '@/utils/dom'
 import { Action } from 'vuex-class'
+import { pxToVw } from '@/utils/utils'
 const transform = getVendorsPrefix('transform')
 @Component({
   components: {
@@ -53,7 +55,7 @@ const transform = getVendorsPrefix('transform')
     SongList
   }
 })
-export default class MusicList extends Vue {
+export default class MusicList extends Mixins(PlayList) {
   private headerHeigth!: number
   private minTranslateY!: number
   private playBtn!: HTMLElement
@@ -66,7 +68,40 @@ export default class MusicList extends Vue {
   @Prop({ type: Boolean, default: false }) rank!: boolean
   @Prop({ type: Array, default () { return [] } }) songs!: Song[]
   @Action('player/selectPlay') selectPlay!: (params: SelectPlay) => void
+  @Watch('scrollY')
+  onScrollYChange (newY: number) {
+    const translateY = Math.max(this.minTranslateY, newY)
+    const percent = Math.abs(newY / this.musicImage.clientHeight)
+    let zIndex = 0
+    let scale = 1
+    if (newY > 0) {
+      zIndex = 10
+      scale = 1 + percent
+    }
+    // @ts-ignore
+    this.musicLayer.style[transform] = `translate3d(0,${translateY}px,0)`
+    if (newY < this.minTranslateY) {
+      zIndex = 10
+      this.musicImage.style.paddingTop = '0'
+      this.musicImage.style.height = `${this.headerHeigth}px`
+      this.playBtn.style.display = 'none'
+    } else {
+      this.musicImage.style.paddingTop = '70%'
+      this.musicImage.style.height = '0'
+      this.playBtn.style.display = ''
+    }
+    this.musicImage.style.zIndex = `${zIndex}`
+    // @ts-ignore
+    this.musicImage.style[transform] = `scale(${scale})`
+  }
+
   // methods方法
+  public handlePlayList () {
+    const bottom = this.playList.length > 0 ? `${pxToVw(60)}vw` : '0'
+    const musicScroll = this.$refs.MusicScroll as Scroll
+    ;(musicScroll.$el as HTMLElement).style.bottom = bottom
+    musicScroll.refresh()
+  }
   public handleBackClick () {
     this.$router.back()
   }
@@ -106,38 +141,11 @@ export default class MusicList extends Vue {
     }
   }
 
-  // watch监听器
-  @Watch('scrollY')
-  onScrollYChange (newY: number) {
-    const translateY = Math.max(this.minTranslateY, newY)
-    const percent = Math.abs(newY / this.musicImage.clientHeight)
-    let zIndex = 0
-    let scale = 1
-    if (newY > 0) {
-      zIndex = 10
-      scale = 1 + percent
-    }
-    // @ts-ignore
-    this.musicLayer.style[transform] = `translate3d(0,${translateY}px,0)`
-    if (newY < this.minTranslateY) {
-      zIndex = 10
-      this.musicImage.style.paddingTop = '0'
-      this.musicImage.style.height = `${this.headerHeigth}px`
-      this.playBtn.style.display = 'none'
-    } else {
-      this.musicImage.style.paddingTop = '70%'
-      this.musicImage.style.height = '0'
-      this.playBtn.style.display = ''
-    }
-    this.musicImage.style.zIndex = `${zIndex}`
-    // @ts-ignore
-    this.musicImage.style[transform] = `scale(${scale})`
-  }
-
   // 生命周期
   private mounted () {
     this.cacheDoms()
     this.computedHeight()
+    this.handlePlayList()
   }
 }
 </script>

@@ -11,7 +11,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator'
 @Component
-export default class Progress extends Vue {
+export default class ProgressBar extends Vue {
   @Prop({ type: Number, default: 0 }) percent!: number
 }
 </script>

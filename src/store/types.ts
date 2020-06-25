@@ -21,7 +21,9 @@ export interface HistoryState {
 }
 
 export interface PlayerState {
-  playList: Song[];
   currentIndex: number;
   fullScreen: boolean;
+  mode: number;
+  playList: Song[];
+  favoriteList: Song[];
 }

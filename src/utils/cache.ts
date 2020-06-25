@@ -1,7 +1,9 @@
 import storage from 'good-storage'
-
+import Song from '@/assets/js/song'
 const HISTORY_KEY = 'music_history'
 const HISTORY_LEN = 10
+const FAVORITE_KEY = 'music_favorite'
+const FAVORIYE_LEN = 200
 
 export function insertArray (array: any[], value: any, compare: (item: any) => boolean, max: number) {
   const findIndex = array.findIndex(compare)
@@ -47,4 +49,26 @@ export function deleteSearchHistory (val: string): string[] {
 export function clearSearchHistory (): [] {
   storage.remove(HISTORY_KEY)
   return []
+}
+
+// 收藏歌曲
+export function getFavoriteList (): Song[] {
+  const favoriteList: Song[] = storage.get(FAVORITE_KEY, [])
+  return favoriteList
+}
+export function saveFavoriteList (song: Song): Song[] {
+  const favoriteList: Song[] = storage.get(FAVORITE_KEY, [])
+  insertArray(favoriteList, song, (item: Song) => {
+    return item.id === song.id
+  }, FAVORIYE_LEN)
+  storage.set(FAVORITE_KEY, favoriteList)
+  return favoriteList
+}
+export function deleteFavoriteList (song: Song): Song[] {
+  const favoriteList: Song[] = storage.get(FAVORITE_KEY, [])
+  deleteArray(favoriteList, (item: Song) => {
+    return item.id === song.id
+  })
+  storage.set(FAVORITE_KEY, favoriteList)
+  return favoriteList
 }

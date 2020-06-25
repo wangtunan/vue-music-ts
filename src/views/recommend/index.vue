@@ -1,6 +1,6 @@
 <template>
-  <div class="m-recommend">
-    <scroll class="recommend-box" :data="discList">
+  <div ref="Recommend" class="m-recommend">
+    <scroll ref="RecommendScroll" class="recommend-box" :data="discList">
       <div>
         <!-- 轮播 -->
         <div class="slider-box">
@@ -43,15 +43,17 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import Slider from '@/components/slider/index.vue'
+import Scroll from '@/components/scroll/index.vue'
+import Loading from '@/components/loading/index.vue'
+import PlayList from '@/assets/js/playList'
+import { Component, Mixins } from 'vue-property-decorator'
 import { Mutation } from 'vuex-class'
 import { getRecommendList, getDiscList } from '@/api/recommend'
 import { MusicResponse } from '@/types/index'
 import { BannerConfig, DiscConfig } from '@/types/recommend'
 import { ERR_OK } from '@/api/config'
-import Slider from '@/components/slider/index.vue'
-import Scroll from '@/components/scroll/index.vue'
-import Loading from '@/components/loading/index.vue'
+import { pxToVw } from '@/utils/utils'
 @Component({
   components: {
     Slider,
@@ -59,11 +61,19 @@ import Loading from '@/components/loading/index.vue'
     Loading
   }
 })
-export default class Recommend extends Vue {
+export default class Recommend extends Mixins(PlayList) {
   private recommendList: BannerConfig[] = []
   private discList: DiscConfig[] = []
+  @Mutation('disc/SET_DISC') setDisc!: (disc: DiscConfig) => void
 
   // methods方法
+  public handlePlayList () {
+    const bottom = this.playList.length > 0 ? `${pxToVw(60)}vw` : '0'
+    const recommend = this.$refs.Recommend as HTMLElement
+    const recommendScroll = this.$refs.RecommendScroll as Scroll
+    recommend.style.bottom = bottom
+    recommendScroll.refresh()
+  }
   public handleItemClick (item: DiscConfig) {
     this.$router.push(`/recommend/${item.dissid}`)
     this.setDisc(item)
@@ -85,13 +95,14 @@ export default class Recommend extends Vue {
     })
   }
 
-  // mutations
-  @Mutation('disc/SET_DISC') setDisc!: (disc: DiscConfig) => void
-
   // 生命周期
   private mounted () {
     this.getRecommendListData()
     this.getDiscListData()
+    this.handlePlayList()
+  }
+  private activated () {
+    this.handlePlayList()
   }
 }
 </script>
