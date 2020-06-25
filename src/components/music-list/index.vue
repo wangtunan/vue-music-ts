@@ -42,7 +42,9 @@ import SongList from '@/components/song-list/index.vue'
 import Song from '@/assets/js/song'
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
 import { Position } from '@/types/index'
+import { SelectPlay } from '@/types/player'
 import { getVendorsPrefix } from '@/utils/dom'
+import { Action } from 'vuex-class'
 const transform = getVendorsPrefix('transform')
 @Component({
   components: {
@@ -63,25 +65,29 @@ export default class MusicList extends Vue {
   @Prop({ type: String, default: '' }) img!: string
   @Prop({ type: Boolean, default: false }) rank!: boolean
   @Prop({ type: Array, default () { return [] } }) songs!: Song[]
+  @Action('player/selectPlay') selectPlay!: (params: SelectPlay) => void
   // methods方法
-  public handleBackClick (): void {
+  public handleBackClick () {
     this.$router.back()
   }
-  public handlePlayClick (): void {
+  public handlePlayClick () {
     console.log('play random')
   }
-  public handleScroll (pos: Position): void {
+  public handleScroll (pos: Position) {
     this.scrollY = pos.y
   }
-  public handleSelectSong (song: Song): void {
-    console.log(song)
+  public handleSelectSong (song: Song, index: number) {
+    this.selectPlay({
+      list: this.songs,
+      index: index
+    })
   }
-  private cacheDoms (): void {
+  private cacheDoms () {
     this.musicImage = this.$refs.MusicImage as HTMLElement
     this.musicLayer = this.$refs.MusicLayer as HTMLElement
     this.playBtn = this.$refs.PlayBtn as HTMLElement
   }
-  private computedHeight (): void {
+  private computedHeight () {
     const musicHeader = this.$refs.MusicHeader as HTMLElement
     this.top = this.musicImage.clientHeight
     this.headerHeigth = musicHeader.clientHeight
@@ -129,7 +135,7 @@ export default class MusicList extends Vue {
   }
 
   // 生命周期
-  private mounted (): void {
+  private mounted () {
     this.cacheDoms()
     this.computedHeight()
   }

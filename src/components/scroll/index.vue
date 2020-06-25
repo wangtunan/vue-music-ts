@@ -18,22 +18,22 @@ export default class Scroll extends Vue {
   @Prop({ type: Array, default () { return [] } }) data!: any
 
   // methods方法
-  public enable (): void {
+  public enable () {
     this.scroll && this.scroll.enable()
   }
-  public disable (): void {
+  public disable () {
     this.scroll && this.scroll.disable()
   }
-  public refresh (): void {
+  public refresh () {
     this.scroll && this.scroll.refresh()
   }
-  public scrollTo (...args: any): void {
+  public scrollTo (...args: any) {
     this.scroll && this.scroll.scrollTo.apply(this.scroll, args)
   }
-  public scrollToElement (...args: any): void {
+  public scrollToElement (...args: any) {
     this.scroll && this.scroll.scrollToElement.apply(this.scroll, args)
   }
-  private initScroll (): void {
+  private initScroll () {
     const scrollDOM = this.$refs.Scroll as HTMLElement
     if (!scrollDOM) {
       return
@@ -50,7 +50,7 @@ export default class Scroll extends Vue {
     }
   }
 
-  private listenEvent (): void {
+  private listenEvent () {
     if (this.listenScroll) {
       this.scroll.on('scroll', (pos) => {
         this.$emit('scroll', pos)
@@ -60,14 +60,14 @@ export default class Scroll extends Vue {
 
   // watch
   @Watch('data')
-  onDataChange (): void {
+  onDataChange () {
     this.$nextTick(() => {
       this.scroll.refresh()
     })
   }
 
   // 生命周期
-  private mounted (): void {
+  private mounted () {
     this.$nextTick(() => {
       this.initScroll()
     })

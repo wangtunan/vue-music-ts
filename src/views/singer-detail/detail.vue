@@ -22,7 +22,7 @@ export default class SingerDetail extends Vue {
   @Getter('singer') singer!: Singer
 
   // methods方法
-  private getSingerDetail (): void {
+  private getSingerDetail () {
     if (!this.singer.id) {
       this.$router.replace('/singer')
       return
@@ -46,7 +46,7 @@ export default class SingerDetail extends Vue {
   }
 
   // 生命周期
-  private mounted (): void {
+  private mounted () {
     this.getSingerDetail()
   }
 }

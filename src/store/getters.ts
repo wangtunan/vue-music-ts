@@ -1,6 +1,20 @@
-import { DiscState, SingerState, TopState, historyState } from './types'
+import { DiscState, SingerState, TopState, HistoryState, PlayerState } from './types'
+
 export const disc = (state: any) => (state.disc as DiscState).disc
+
 export const singer = (state: any) => (state.singer as SingerState).singer
+
 export const topList = (state: any) => (state.top as TopState).topList
-export const searchHistory = (state: any) => (state.history as historyState).searchHistory
-export const playHistory = (state: any) => (state.history as historyState).playHistory
+
+export const searchHistory = (state: any) => (state.history as HistoryState).searchHistory
+
+export const playHistory = (state: any) => (state.history as HistoryState).playHistory
+
+export const playList = (state: any) => (state.player as PlayerState).playList
+
+export const currentSong = (state: any) => {
+  const player = state.player as PlayerState
+  return player.playList[player.currentIndex] || {}
+}
+
+export const fullScreen = (state: any) => (state.player as PlayerState).fullScreen

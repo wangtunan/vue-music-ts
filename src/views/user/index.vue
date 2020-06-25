@@ -54,7 +54,7 @@ export default class MUser extends Vue {
   private songs: Song[] = []
 
   // methods方法
-  public handleBackClick (): void {
+  public handleBackClick () {
     this.$router.back()
   }
 
@@ -64,7 +64,7 @@ export default class MUser extends Vue {
   }
 
   // 生命周期
-  private created (): void {
+  private created () {
     this.switches = ['我喜欢的', '最近听的']
   }
 }

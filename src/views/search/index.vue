@@ -72,18 +72,18 @@ export default class MSearch extends Mixins(Search, Player) {
   private showConfirm = false
   private hotKeyList: string[] = []
   // methods方法
-  public handleAddClick (keyword: string): void {
+  public handleAddClick (keyword: string) {
     const searchBox = this.$refs.SearchBox as SearchBox
     searchBox.setKeyword(keyword)
     this.handleAddHistory(keyword)
   }
-  public handleSuggestionSelect (): void {
+  public handleSuggestionSelect () {
     this.handleAddHistory(this.keyword)
   }
-  public handleShowConfirm (): void {
+  public handleShowConfirm () {
     this.showConfirm = true
   }
-  private getHotKeysData (): void {
+  private getHotKeysData () {
     getHotKeys().then(res => {
       const { code, data } = res
       if (code === ERR_OK) {
@@ -98,7 +98,7 @@ export default class MSearch extends Mixins(Search, Player) {
   }
 
   // 生命周期
-  private mounted (): void {
+  private mounted () {
     this.getHotKeysData()
   }
 }

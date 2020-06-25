@@ -28,11 +28,11 @@ export default class MSinger extends Vue {
   @Mutation('singer/SET_SINGER') setSinger!: (singer: Singer) => void
 
   // methods方法
-  public handleSelectSinger (singer: Singer): void {
+  public handleSelectSinger (singer: Singer) {
     this.$router.push(`/singer/${singer.id}`)
     this.setSinger(singer)
   }
-  getSingerListData (): void {
+  getSingerListData () {
     getSingerList().then(res => {
       const { code, data } = res
       if (code === ERR_OK) {
@@ -78,7 +78,7 @@ export default class MSinger extends Vue {
   }
 
   // 生命周期
-  private mounted (): void {
+  private mounted () {
     this.getSingerListData()
   }
 }

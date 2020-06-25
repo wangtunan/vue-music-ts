@@ -23,7 +23,7 @@ export default class RankDetail extends Vue {
   @Getter('topList') topList!: RankListConfig
 
   // methods方法
-  private getTopListData (): void {
+  private getTopListData () {
     if (!this.topList.id) {
       this.$router.replace('/rank')
       return
@@ -55,7 +55,7 @@ export default class RankDetail extends Vue {
   }
 
   // 生命周期
-  private mounted (): void {
+  private mounted () {
     this.getTopListData()
   }
 }

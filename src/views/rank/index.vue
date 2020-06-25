@@ -50,11 +50,11 @@ import { Mutation } from 'vuex-class'
 export default class Rank extends Vue {
   private rankList: RankListConfig[] = []
   // methods方法
-  public handleRankClick (topList: RankListConfig): void {
+  public handleRankClick (topList: RankListConfig) {
     this.$router.push(`/rank/${topList.id}`)
     this.setTopList(topList)
   }
-  private getRankListData (): void {
+  private getRankListData () {
     getRankList().then(res => {
       const { code, data } = res
       if (code === ERR_OK) {
@@ -67,7 +67,7 @@ export default class Rank extends Vue {
   @Mutation('top/SET_TOP_LIST') setTopList!: (topList: RankListConfig) => void
 
   // 生命周期
-  private mounted (): void {
+  private mounted () {
     this.getRankListData()
   }
 }

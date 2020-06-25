@@ -5,7 +5,7 @@
         v-for="(item, index) in list"
         :key="index"
         class="song-item"
-        @click="handleItemClick(item)"
+        @click="handleItemClick(item, index)"
       >
         <div v-if="rank" class="song-rank">
           <span :class="getRankClass(index)" v-text="getRankText(index)"></span>
@@ -28,8 +28,8 @@ export default class SongList extends Vue {
   @Prop({ type: Array, default () { return [] } }) list!: Song[]
 
   // methods方法
-  public handleItemClick (item: Song): void {
-    this.$emit('select', item)
+  public handleItemClick (item: Song, index: number) {
+    this.$emit('select', item, index)
   }
   private getRankClass (index: number): string {
     if (index < 3) {

@@ -28,7 +28,7 @@ export function hasClass (el: HTMLElement, className: string): boolean {
   return el.classList.contains(className)
 }
 
-export function addClass (el: HTMLElement, className: string): void {
+export function addClass (el: HTMLElement, className: string) {
   el.classList.add(className)
 }
 

@@ -7,12 +7,14 @@
         <router-view/>
       </keep-alive>
     </transition>
+    <player />
   </div>
 </template>
 
 <script lang="ts">
 import MHeader from '@/components/header/index.vue'
 import MTab from '@/components/tab/index.vue'
+import Player from '@/components/player/index.vue'
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import { tabList } from '@/assets/js/data'
 import { TabConfig } from '@/types/index'
@@ -20,7 +22,8 @@ import { RouteConfig } from 'vue-router'
 @Component({
   components: {
     MHeader,
-    MTab
+    MTab,
+    Player
   }
 })
 export default class App extends Vue {

@@ -1,6 +1,6 @@
 import * as types from '../mutation-type'
 import { Commit } from 'vuex'
-import { historyState } from '../types'
+import { HistoryState } from '../types'
 import { getSearchHistory, saveSearchHistory, deleteSearchHistory, clearSearchHistory } from '@/utils/cache'
 const state = {
   searchHistory: getSearchHistory(),
@@ -8,7 +8,7 @@ const state = {
 }
 
 const mutations = {
-  [types.SET_SEARCH_HISTORY] (state: historyState, searchHistory: string[]) {
+  [types.SET_SEARCH_HISTORY] (state: HistoryState, searchHistory: string[]) {
     state.searchHistory = searchHistory
   }
 }

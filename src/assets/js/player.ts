@@ -1,9 +1,7 @@
 import { Component, Vue } from 'vue-property-decorator'
+import { Getter } from 'vuex-class'
+import Song from '@/assets/js/song'
 @Component
 export default class Player extends Vue {
-  protected mode = 'play'
-  // methods方法
-  public handleChangeModel (): void {
-    // TDD
-  }
+  @Getter('currentSong') currentSong!: Song
 }

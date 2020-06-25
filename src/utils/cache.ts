@@ -3,7 +3,7 @@ import storage from 'good-storage'
 const HISTORY_KEY = 'music_history'
 const HISTORY_LEN = 10
 
-export function insertArray (array: any[], value: any, compare: (item: any) => boolean, max: number): void {
+export function insertArray (array: any[], value: any, compare: (item: any) => boolean, max: number) {
   const findIndex = array.findIndex(compare)
   if (findIndex === 0) {
     return
@@ -17,7 +17,7 @@ export function insertArray (array: any[], value: any, compare: (item: any) => b
   }
 }
 
-export function deleteArray (array: any[], compare: (item: any) => boolean): void {
+export function deleteArray (array: any[], compare: (item: any) => boolean) {
   const findIndex = array.findIndex(compare)
   if (findIndex > -1) {
     array.splice(findIndex, 1)

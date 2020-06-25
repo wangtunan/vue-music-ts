@@ -25,7 +25,7 @@ export default class MTab extends Vue {
   @Prop({ type: Array, default () { return [] } }) list!: TabConfig[]
 
   // methods方法
-  public handleTabClick (index: number): void {
+  public handleTabClick (index: number) {
     this.activeIndex = index
   }
 }

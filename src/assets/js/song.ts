@@ -1,4 +1,6 @@
 import { SongData } from '@/types/search'
+import { getSongUrl } from '@/api/song'
+import { SongUrlMap } from '@/types/song'
 function filterSinger (singer: [] | any): string {
   const result: string[] = []
   if (!singer) {
@@ -54,4 +56,18 @@ export function createSong (songData: SongData): Song {
 
 export function isValid (songData: SongData): boolean {
   return !!(songData.songid && songData.albummid && (!songData.pay || songData.pay.payalbumprice === 0))
+}
+
+export function processSongUrl (songs: Song[]): Promise<Song[]> {
+  return getSongUrl(songs).then((res: SongUrlMap) => {
+    songs = songs.filter(song => {
+      const songUrl = res[song.mid]
+      if (songUrl) {
+        song.url = songUrl.indexOf('http') === -1 ? `http://dl.stream.qqmusic.qq.com/${songUrl}` : songUrl
+        return true
+      }
+      return false
+    })
+    return songs
+  })
 }

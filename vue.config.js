@@ -1,4 +1,5 @@
 const axios = require('axios')
+const bodyParser = require('body-parser')
 module.exports = {
   devServer: {
     before (app) {
@@ -108,6 +109,21 @@ module.exports = {
             code: 0,
             data: ret.cdlist[0].songlist
           })
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
+      // 歌曲播放地址
+      app.post('/api/getPurlUrl', bodyParser.json(), function (req, res) {
+        const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'
+        axios.post(url, req.body, {
+          headers: {
+            referer: 'https://y.qq.com/',
+            origin: 'https://y.qq.com',
+            'Content-type': 'application/x-www-form-urlencoded'
+          }
+        }).then((response) => {
+          res.json(response.data)
         }).catch((e) => {
           console.log(e)
         })

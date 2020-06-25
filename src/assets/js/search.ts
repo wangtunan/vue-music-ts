@@ -10,17 +10,17 @@ export default class Search extends Vue {
   @Action('history/clearSearchHistory') clearSearchHistory!: () => void
 
   // methods方法
-  public handleSearch (keyword: string): void {
+  public handleSearch (keyword: string) {
     this.keyword = keyword.trim()
   }
-  public handleAddHistory (keyword: string): void {
+  public handleAddHistory (keyword: string) {
     this.keyword = keyword.trim()
     this.saveSearchHistory(this.keyword)
   }
-  public handledeleteSearchHistory (keyword: string): void {
+  public handledeleteSearchHistory (keyword: string) {
     this.deleteSearchHistory(keyword.trim())
   }
-  public handleclearSearchHistory (): void {
+  public handleclearSearchHistory () {
     this.clearSearchHistory()
   }
 }

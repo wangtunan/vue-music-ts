@@ -41,11 +41,11 @@ export default class SearchSuggestion extends Vue {
   @Prop({ type: String, default: '' }) keyword!: string
 
   // methods方法
-  handleSongClick (item: Song | Album): void {
+  handleSongClick (item: Song | Album) {
     console.log(item)
     this.$emit('select')
   }
-  getSuggestionList (): void {
+  getSuggestionList () {
     search(this.keyword, this.page, true, pageSize).then(res => {
       const { code, data } = res
       if (code === ERR_OK) {

@@ -64,20 +64,20 @@ export default class Recommend extends Vue {
   private discList: DiscConfig[] = []
 
   // methods方法
-  public handleItemClick (item: DiscConfig): void {
+  public handleItemClick (item: DiscConfig) {
     this.$router.push(`/recommend/${item.dissid}`)
     this.setDisc(item)
   }
-  public getRecommendListData (): void {
-    getRecommendList().then((res: MusicResponse): void => {
+  public getRecommendListData () {
+    getRecommendList().then((res: MusicResponse) => {
       const { code, data } = res
       if (code === ERR_OK) {
         this.recommendList = data.slider
       }
     })
   }
-  public getDiscListData (): void {
-    getDiscList().then((res: MusicResponse): void => {
+  public getDiscListData () {
+    getDiscList().then((res: MusicResponse) => {
       const { code, data } = res
       if (code === ERR_OK) {
         this.discList = data
@@ -89,7 +89,7 @@ export default class Recommend extends Vue {
   @Mutation('disc/SET_DISC') setDisc!: (disc: DiscConfig) => void
 
   // 生命周期
-  private mounted (): void {
+  private mounted () {
     this.getRecommendListData()
     this.getDiscListData()
   }

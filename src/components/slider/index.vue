@@ -29,7 +29,7 @@ export default class Slider extends Vue {
   @Prop({ type: Boolean, default: true }) showDots!: boolean
 
   // methods方法
-  private computedSliderWidth (): void {
+  private computedSliderWidth () {
     const sliderGroup = this.$refs.SliderGroup as HTMLElement
     const sliderChildren = sliderGroup.children
     const bodyWidth = document.body.clientWidth
@@ -45,14 +45,14 @@ export default class Slider extends Vue {
     }
     sliderGroup.style.width = `${width}px`
   }
-  private initDots (): void {
+  private initDots () {
     if (!this.showDots) {
       return
     }
     const sliderGroup = this.$refs.SliderGroup as HTMLElement
     this.dots = new Array(sliderGroup.children.length)
   }
-  private initSlider (): void {
+  private initSlider () {
     if (!this.scroll) {
       this.scroll = new BScroll(this.$refs.Slider as HTMLElement, {
         scrollX: true,
@@ -69,46 +69,46 @@ export default class Slider extends Vue {
       this.scroll.refresh()
     }
   }
-  private listenScrollEvents (): void {
+  private listenScrollEvents () {
     this.scroll.on('scrollEnd', this.scrollEnd)
     this.scroll.on('beforeScrollStart', () => {
       this.autoPlay && clearTimeout(this.timer)
     })
   }
-  private scrollEnd (): void {
+  private scrollEnd () {
     this.activeIndex = this.scroll!.getCurrentPage().pageX
     this.autoPlay && this.play()
   }
-  private play (): void {
+  private play () {
     clearTimeout(this.timer)
     this.timer = setTimeout(() => {
       this.scroll.next()
     }, this.interval)
   }
-  private clear (): void {
+  private clear () {
     this.scroll.disable()
     clearTimeout(this.timer)
     this.timer = undefined
   }
 
   // 生命周期
-  private mounted (): void {
-    this.$nextTick((): void => {
+  private mounted () {
+    this.$nextTick(() => {
       this.computedSliderWidth()
       this.initDots()
       this.initSlider()
       this.autoPlay && this.play()
     })
   }
-  private beforeDestroy (): void {
+  private beforeDestroy () {
     this.clear()
   }
-  private activated (): void {
+  private activated () {
     this.scroll.enable()
     this.scrollEnd()
     this.scroll.goToPage(this.activeIndex, 0, 0)
   }
-  private deactivated (): void {
+  private deactivated () {
     this.clear()
   }
 }

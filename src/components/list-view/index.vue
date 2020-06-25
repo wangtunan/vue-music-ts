@@ -81,23 +81,23 @@ export default class ListView extends Vue {
   @Prop({ type: Array, default () { return [] } }) list!: ListViewConfig[]
 
   // methods方法
-  public handleTouchStart (e: TouchEvent): void {
+  public handleTouchStart (e: TouchEvent) {
     const anchorIndex = getDomData(e.target as HTMLElement, 'index')
     this.touch.y1 = e.touches[0].pageY
     this.touch.anchorIndex = anchorIndex
     this.showAnchorName = true
     this.scrollTo(anchorIndex as string)
   }
-  public handleTouchMove (e: TouchEvent): void {
+  public handleTouchMove (e: TouchEvent) {
     this.touch.y2 = e.touches[0].pageY
     const diffIndex = (this.touch.y2 - this.touch.y1) / this.anchorHeight | 0
     const anchorIndex = parseInt(this.touch.anchorIndex as string) + diffIndex
     this.scrollTo(anchorIndex)
   }
-  public handleScroll (pos: Position): void {
+  public handleScroll (pos: Position) {
     this.scrollY = pos.y
   }
-  public handleSingerClick (singer: Singer): void {
+  public handleSingerClick (singer: Singer) {
     this.$emit('select', singer)
   }
   private scrollTo (index: string | number | null) {
@@ -114,7 +114,7 @@ export default class ListView extends Vue {
     listView.scrollToElement((this.$refs.ListGroup as HTMLElement[])[newIndex], 0)
     this.scrollY = listView.scroll.y
   }
-  private computedHeightList (): void {
+  private computedHeightList () {
     const heightList = [0]
     let height = 0
     const listGroup: HTMLElement[] = this.$refs.ListGroup as HTMLElement[]
@@ -125,11 +125,11 @@ export default class ListView extends Vue {
     }
     this.listHeight = heightList
   }
-  private computedAnchorHeight (): void {
+  private computedAnchorHeight () {
     const anchorList = this.$refs.Anchor as HTMLElement[]
     this.anchorHeight = anchorList[0].clientHeight
   }
-  private computedTitleHeight (): void {
+  private computedTitleHeight () {
     const listGroup = this.$refs.ListGroup as HTMLElement[]
     this.titleHeight = (listGroup[0].firstChild as HTMLElement).clientHeight
   }
@@ -151,7 +151,7 @@ export default class ListView extends Vue {
 
   // watch监听
   @Watch('list')
-  private onListChange (): void {
+  private onListChange () {
     this.$nextTick(() => {
       this.computedHeightList()
       this.computedAnchorHeight()
@@ -159,7 +159,7 @@ export default class ListView extends Vue {
     })
   }
   @Watch('scrollY')
-  private onScrollYChange (newY: number): void {
+  private onScrollYChange (newY: number) {
     if (newY > 0) {
       this.shortcutIndex = 0
       return
@@ -179,7 +179,7 @@ export default class ListView extends Vue {
     }
   }
   @Watch('diffY')
-  private onDiffYChange (newY: number): void {
+  private onDiffYChange (newY: number) {
     const fixedTop = (newY > 0 && newY < this.titleHeight) ? newY - this.titleHeight : 0
     if (this.fixedTop === fixedTop) {
       return
@@ -191,7 +191,7 @@ export default class ListView extends Vue {
   }
 
   // 生命周期
-  private created (): void {
+  private created () {
     this.touch = {
       y1: 0,
       y2: 0
