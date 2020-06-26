@@ -17,30 +17,20 @@ npm run test:unit
 npm run lint
 ```
 
-## 项目预览
-## 推荐页面
-![推荐页面](https://user-gold-cdn.xitu.io/2020/6/26/172f1073be3068cf?w=1125&h=2436&f=png&s=1051799)
-
-## 推荐详情页面
-![推荐详情页面](https://user-gold-cdn.xitu.io/2020/6/26/172f10b49505cea2?w=1125&h=2436&f=png&s=1083521)
-
-## 歌手页面
-![歌手页面](https://user-gold-cdn.xitu.io/2020/6/26/172f108705ca1b40?w=1125&h=2436&f=png&s=461115)
-
-## 排行榜页面
-![排行榜页面](https://user-gold-cdn.xitu.io/2020/6/26/172f10a5d404e2fd?w=1125&h=2436&f=png&s=949190)
-
-## 搜索页面
-![搜索页面](https://user-gold-cdn.xitu.io/2020/6/26/172f10a880f5dde9?w=1125&h=2436&f=png&s=131769)
-
-## 个人中心页面
-![个人中心页面](https://user-gold-cdn.xitu.io/2020/6/26/172f10b9dfaa5511?w=1125&h=2436&f=png&s=210445)
-
-## 播放器页面
-![播放器页面](https://user-gold-cdn.xitu.io/2020/6/26/172f10cb3aa00ff7?w=1125&h=2436&f=png&s=1338515)
-
-
 ## 技术栈/工具
+* `fastclick`：解决移动端点击300ms延迟。
+* `good-storage`: 基于`localStorage`本地缓存封装的库。
+* `jsonp`：发送`jsonp`请求库。
+* `vue-lazyload`：图片懒加载。
+* `vue-property-decorator`：一个依赖于`vue-class-component`的库。
+* `axios`：一个`http`请求库。
+* `Sass`：一个`css`预处理器。
+* `Better-Scroll`：一个处理移动端滚动事件的库。
+* `Jest`：一个前端自动化测试工具。
+* `postcss-px-to-viewport`：移动端自动适配工具。
+* `vuex-class`
+* `TypeScript`
+* `Vue2.0`及其全家桶。
 
 ## 环境搭建
 
@@ -51,6 +41,6 @@ npm run lint
 ## 重难点功能分析
 
 ## 后序计划
-<input type="checkbox" checked/> 骨架屏Skeleton <br/>
-<input type="checkbox" checked/> 换肤 <br/>
-<input type="checkbox" checked/> Vue3.0重构 <br/>
+* 骨架屏Skeleton
+* 换肤
+* Vue3.0重构
