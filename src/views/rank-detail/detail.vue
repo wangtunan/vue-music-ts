@@ -10,7 +10,7 @@ import { Getter } from 'vuex-class'
 import { RankListConfig } from '@/types/rank'
 import { getTopList } from '@/api/rank'
 import { ERR_OK } from '@/api/config'
-import Song, { isValid, createSong } from '@/assets/js/song'
+import Song, { isValid, createSong, processSongUrl } from '@/assets/js/song'
 import { SongData } from '@/types/search'
 @Component({
   components: {
@@ -31,11 +31,13 @@ export default class RankDetail extends Vue {
     getTopList(this.topList.id).then(res => {
       const { code, data } = res
       if (code === ERR_OK) {
-        this.songs = this.normalizeTopList(data)
+        this.normalizeTopList(data).then(res => {
+          this.songs = res
+        })
       }
     })
   }
-  private normalizeTopList (list: any[]): Song[] {
+  private normalizeTopList (list: SongData[]): Promise<Song[]> {
     const result: Song[] = []
     list.forEach(item => {
       const musicData = item.data as SongData
@@ -43,7 +45,7 @@ export default class RankDetail extends Vue {
         result.push(createSong(musicData))
       }
     })
-    return result
+    return processSongUrl(result)
   }
 
   // 计算属性

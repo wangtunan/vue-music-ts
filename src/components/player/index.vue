@@ -36,11 +36,11 @@
             <span class="dot-item" :class="{ active: currentShow === 'lyric' }"></span>
           </div>
           <div class="player-progress">
-            <span class="progress-time">0:01</span>
+            <span class="progress-time time-left">0:01</span>
             <div class="progress-box">
-              <progress-bar :percent="30" />
+              <progress-bar :percent.sync="percent" @changed="handlePercentChanged" />
             </div>
-            <span class="progress-time">5:00</span>
+            <span class="progress-time time-right">5:00</span>
           </div>
           <div class="player-btns">
             <div class="icon i-left" @click="handleModeChange">
@@ -49,8 +49,8 @@
             <div class="icon i-left">
               <i class="icon-prev"></i>
             </div>
-            <div class="icon i-center">
-              <i class="icon-play"></i>
+            <div class="icon i-center" @click="handleTogglePlay">
+              <i :class="playIcon"></i>
             </div>
             <div class="icon i-right">
               <i class="icon-next"></i>
@@ -76,8 +76,8 @@
           <p class="singer">{{currentSong.singer}}</p>
         </div>
         <div class="mini-control">
-          <progress-circle :percent="0.6">
-            <i class="icon-mini icon-play-mini"></i>
+          <progress-circle :percent="percent">
+            <i class="icon-mini" :class="miniPlayIcon" @click.stop="handleTogglePlay"></i>
           </progress-circle>
         </div>
         <div class="mini-control">
@@ -85,6 +85,14 @@
         </div>
       </div>
     </transition>
+
+    <!-- audio -->
+    <audio
+      ref="Audio"
+      @playing="handleAudioReady"
+      @timeupdate="handleTimeUpdate"
+      @pause="handleAudioPaused"
+    />
   </div>
 </template>
 <script lang="ts">
@@ -92,8 +100,8 @@ import Song from '@/assets/js/song'
 import Player from '@/assets/js/player'
 import ProgressBar from '@/components/progress-bar/index.vue'
 import ProgressCircle from '@/components/progress-circle/index.vue'
-import { Component, Mixins } from 'vue-property-decorator'
-import { Getter, Mutation } from 'vuex-class'
+import { Component, Mixins, Watch } from 'vue-property-decorator'
+import { Getter, Mutation, Action } from 'vuex-class'
 @Component({
   components: {
     ProgressBar,
@@ -102,15 +110,69 @@ import { Getter, Mutation } from 'vuex-class'
 })
 export default class MPlayer extends Mixins(Player) {
   private currentShow = 'cd'
-  @Getter('fullScreen') fullScreen!: boolean;
+  private currentTime = 0
+  private audio!: HTMLAudioElement
+  @Getter('fullScreen') fullScreen!: boolean
+  @Getter('playing') playing!: boolean
   @Getter('playList') playList!: Song[]
   @Mutation('player/SET_FULL_SCREEN') setFullScreen!: (fullscreen: boolean) => void
+  @Action('history/setPlayHistory') setPlayHistory!: (song: Song) => void
+  @Watch('currentSong')
+  onSongChange (newSong: Song, oldSong: Song) {
+    if (!newSong.id || !newSong.url || newSong.id === oldSong.id) {
+      return
+    }
+    if (!this.audio) {
+      this.audio = this.audio = this.$refs.Audio as HTMLAudioElement
+    }
+    this.audio.src = newSong.url
+    this.audio.play()
+  }
+  @Watch('playing')
+  onPlayingChange (playing: boolean) {
+    playing ? this.audio.play() : this.audio.pause()
+  }
 
+  // methods
   public handleCollapseClick () {
     this.setFullScreen(false)
   }
   public handleOpenClick () {
     this.setFullScreen(true)
+  }
+  public handlePercentChanged () {
+    this.audio.currentTime = this.currentTime
+  }
+  public handleTogglePlay () {
+    this.setPlayState(!this.playing)
+  }
+  public handleAudioReady () {
+    this.setPlayHistory(this.currentSong)
+  }
+  public handleTimeUpdate (e: Event) {
+    this.currentTime = (e.target as HTMLAudioElement).currentTime
+  }
+  public handleAudioPaused () {
+    this.setPlayState(false)
+  }
+
+  // 计算属性
+  private get percent () {
+    return this.currentTime / this.currentSong.duration
+  }
+  private set percent (percent: number) {
+    this.currentTime = percent * this.currentSong.duration
+  }
+  private get playIcon () {
+    return this.playing ? 'icon-pause' : 'icon-play'
+  }
+  private get miniPlayIcon () {
+    return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
+  }
+
+  // 生命周期
+  private mounted () {
+    this.audio = this.$refs.Audio as HTMLAudioElement
   }
 }
 </script>
@@ -260,6 +322,12 @@ export default class MPlayer extends Mixins(Player) {
           line-height: 30px;
           color: $color-text;
           font-size: 12px;
+          &.time-left {
+            text-align: left;
+          }
+          &.time-right {
+            text-align: right;
+          }
         }
         .progress-box {
           flex: 1;

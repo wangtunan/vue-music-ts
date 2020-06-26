@@ -1,7 +1,8 @@
 <template>
-  <div class="m-rank">
+  <div class="m-rank" ref="Rank">
     <!-- 列表 -->
     <scroll
+      ref="RankScroll"
       :data="rankList"
       class="rank-list">
       <ul>
@@ -36,20 +37,29 @@
 <script lang="ts">
 import Scroll from '@/components/scroll/index.vue'
 import Loading from '@/components/loading/index.vue'
-import { Component, Vue } from 'vue-property-decorator'
+import PlayList from '@/assets/js/playList'
+import { Component, Mixins } from 'vue-property-decorator'
 import { RankListConfig } from '@/types/rank'
 import { getRankList } from '@/api/rank'
 import { ERR_OK } from '@/api/config'
 import { Mutation } from 'vuex-class'
+import { pxToVw } from '@/utils/utils'
 @Component({
   components: {
     Scroll,
     Loading
   }
 })
-export default class Rank extends Vue {
+export default class Rank extends Mixins(PlayList) {
   private rankList: RankListConfig[] = []
   // methods方法
+  public handlePlayList () {
+    const bottom = this.playList.length > 0 ? `${pxToVw(60)}vw` : '0'
+    const rank = this.$refs.Rank as HTMLElement
+    const rankScroll = this.$refs.RankScroll as Scroll
+    rank.style.bottom = bottom
+    rankScroll.refresh()
+  }
   public handleRankClick (topList: RankListConfig) {
     this.$router.push(`/rank/${topList.id}`)
     this.setTopList(topList)
@@ -69,6 +79,10 @@ export default class Rank extends Vue {
   // 生命周期
   private mounted () {
     this.getRankListData()
+    this.handlePlayList()
+  }
+  private activated () {
+    this.handlePlayList()
   }
 }
 </script>
@@ -93,6 +107,9 @@ export default class Rank extends Vue {
       padding-top: 20px;
       height: 100%;
       box-sizing: border-box;
+      &:last-child {
+        padding-bottom: 20px;
+      }
       .img-box {
         flex: 0 0 100px;
         width: 100px;

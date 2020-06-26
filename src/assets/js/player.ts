@@ -8,6 +8,7 @@ export default class Player extends Vue {
   @Getter('currentSong') currentSong!: Song
   @Getter('favoriteList') favoriteList!: Song[]
   @Mutation('player/SET_PLAY_MODE') setPlayMode!: (mode: number) => void
+  @Mutation('player/SET_PLAY_STATE') setPlayState!: (playing: boolean) => void
   @Action('player/saveFavoriteList') saveFavoriteList!: (song: Song) => void
   @Action('player/deleteFavoriteList') deleteFavoriteList!: (song: Song) => void
 

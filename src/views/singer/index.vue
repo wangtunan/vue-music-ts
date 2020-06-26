@@ -1,6 +1,6 @@
 <template>
-  <div class="m-singer">
-    <list-view :list="singerList" @select="handleSelectSinger" />
+  <div class="m-singer" ref="Singer">
+    <list-view :list="singerList" @select="handleSelectSinger" ref="SingerScroll" />
     <loading v-show="!singerList.length"/>
     <router-view></router-view>
   </div>
@@ -9,11 +9,13 @@
 import ListView from '@/components/list-view/index.vue'
 import Loading from '@/components/loading/index.vue'
 import Singer from '@/assets/js/singer'
-import { Component, Vue } from 'vue-property-decorator'
+import PlayList from '@/assets/js/playList'
+import { Component, Mixins } from 'vue-property-decorator'
 import { Mutation } from 'vuex-class'
 import { ListViewConfig, MusicSingerConfig, MapListConfig } from '@/types/singer'
 import { getSingerList } from '@/api/singer'
 import { ERR_OK } from '@/api/config'
+import { pxToVw } from '@/utils/utils'
 const HOT_MAX = 10
 const HOT_NAME = '热门'
 @Component({
@@ -22,12 +24,19 @@ const HOT_NAME = '热门'
     Loading
   }
 })
-export default class MSinger extends Vue {
+export default class MSinger extends Mixins(PlayList) {
   private singerList: ListViewConfig[] = []
   // vuex
   @Mutation('singer/SET_SINGER') setSinger!: (singer: Singer) => void
 
   // methods方法
+  public handlePlayList () {
+    const bottom = this.playList.length > 0 ? `${pxToVw(60)}vw` : '0'
+    const singer = this.$refs.Singer as HTMLElement
+    const singerScroll = this.$refs.SingerScroll as ListView
+    singer.style.bottom = bottom
+    singerScroll.handleRefresh()
+  }
   public handleSelectSinger (singer: Singer) {
     this.$router.push(`/singer/${singer.id}`)
     this.setSinger(singer)
@@ -80,6 +89,10 @@ export default class MSinger extends Vue {
   // 生命周期
   private mounted () {
     this.getSingerListData()
+    this.handlePlayList()
+  }
+  private activated () {
+    this.handlePlayList()
   }
 }
 </script>

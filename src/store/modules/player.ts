@@ -3,13 +3,14 @@ import Song from '@/assets/js/song'
 import { Commit } from 'vuex'
 import { PlayerState } from '../types'
 import { SelectPlay, PlayMode } from '@/types/player'
-import { saveFavoriteList, deleteFavoriteList } from '@/utils/cache'
+import { getFavoriteList, saveFavoriteList, deleteFavoriteList } from '@/utils/cache'
 const state = {
   currentIndex: -1,
   fullScreen: false,
   mode: PlayMode.sequence,
+  playing: false,
   playList: [],
-  favoriteList: []
+  favoriteList: getFavoriteList()
 }
 
 const mutations = {
@@ -27,6 +28,9 @@ const mutations = {
   },
   [types.SET_FAVORITE_LIST] (state: PlayerState, favoriteList: Song[]) {
     state.favoriteList = favoriteList
+  },
+  [types.SET_PLAY_STATE] (state: PlayerState, playing: boolean) {
+    state.playing = playing
   }
 }
 
@@ -35,6 +39,7 @@ const actions = {
     context.commit(types.SET_PLAY_LIST, list)
     context.commit(types.SET_CURRENT_INDEX, index)
     context.commit(types.SET_FULL_SCREEN, true)
+    context.commit(types.SET_PLAY_STATE, true)
   },
   saveFavoriteList (context: { commit: Commit }, song: Song) {
     context.commit(types.SET_FAVORITE_LIST, saveFavoriteList(song))

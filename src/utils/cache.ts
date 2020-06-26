@@ -1,9 +1,11 @@
 import storage from 'good-storage'
 import Song from '@/assets/js/song'
-const HISTORY_KEY = 'music_history'
-const HISTORY_LEN = 10
+const SEARCH_KEY = 'music_search'
+const SEARCH_LEN = 10
 const FAVORITE_KEY = 'music_favorite'
 const FAVORIYE_LEN = 200
+const PLAY_KEY = 'music_play'
+const PLAY_LEN = 500
 
 export function insertArray (array: any[], value: any, compare: (item: any) => boolean, max: number) {
   const findIndex = array.findIndex(compare)
@@ -28,26 +30,26 @@ export function deleteArray (array: any[], compare: (item: any) => boolean) {
 
 // 搜索历史
 export function getSearchHistory (): string[] {
-  return storage.get(HISTORY_KEY, [])
+  return storage.get(SEARCH_KEY, [])
 }
 export function saveSearchHistory (val: string): string[] {
-  const historyArr: string[] = storage.get(HISTORY_KEY, [])
-  insertArray(historyArr, val, (item: any) => {
+  const historyArr: string[] = storage.get(SEARCH_KEY, [])
+  insertArray(historyArr, val, (item: string) => {
     return item === val
-  }, HISTORY_LEN)
-  storage.set(HISTORY_KEY, historyArr)
+  }, SEARCH_LEN)
+  storage.set(SEARCH_KEY, historyArr)
   return historyArr
 }
 export function deleteSearchHistory (val: string): string[] {
-  const historyArr: string[] = storage.get(HISTORY_KEY, [])
+  const historyArr: string[] = storage.get(SEARCH_KEY, [])
   deleteArray(historyArr, (item: string) => {
     return item === val
   })
-  storage.set(HISTORY_KEY, historyArr)
+  storage.set(SEARCH_KEY, historyArr)
   return historyArr
 }
 export function clearSearchHistory (): [] {
-  storage.remove(HISTORY_KEY)
+  storage.remove(SEARCH_KEY)
   return []
 }
 
@@ -71,4 +73,17 @@ export function deleteFavoriteList (song: Song): Song[] {
   })
   storage.set(FAVORITE_KEY, favoriteList)
   return favoriteList
+}
+
+// 播放历史
+export function getPlayHistory (): Song[] {
+  return storage.get(PLAY_KEY, [])
+}
+export function savePlayHistory (song: Song): Song[] {
+  const playHistoryList = storage.get(PLAY_KEY, [])
+  insertArray(playHistoryList, song, (item: Song) => {
+    return item.id === song.id
+  }, PLAY_LEN)
+  storage.set(PLAY_KEY, playHistoryList)
+  return playHistoryList
 }

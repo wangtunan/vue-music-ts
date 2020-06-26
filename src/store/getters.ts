@@ -22,3 +22,5 @@ export const currentSong = (state: any) => {
 export const fullScreen = (state: any) => (state.player as PlayerState).fullScreen
 
 export const mode = (state: any) => (state.player as PlayerState).mode
+
+export const playing = (state: any) => (state.player as PlayerState).playing

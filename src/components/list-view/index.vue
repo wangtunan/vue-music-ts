@@ -100,6 +100,9 @@ export default class ListView extends Vue {
   public handleSingerClick (singer: Singer) {
     this.$emit('select', singer)
   }
+  public handleRefresh () {
+    ;(this.$refs.ListView as Scroll).refresh()
+  }
   private scrollTo (index: string | number | null) {
     if (!index) {
       return

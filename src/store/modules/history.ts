@@ -1,15 +1,19 @@
 import * as types from '../mutation-type'
+import Song from '@/assets/js/song'
 import { Commit } from 'vuex'
 import { HistoryState } from '../types'
-import { getSearchHistory, saveSearchHistory, deleteSearchHistory, clearSearchHistory } from '@/utils/cache'
+import { getSearchHistory, saveSearchHistory, deleteSearchHistory, clearSearchHistory, savePlayHistory, getPlayHistory } from '@/utils/cache'
 const state = {
   searchHistory: getSearchHistory(),
-  playHistory: {}
+  playHistory: getPlayHistory()
 }
 
 const mutations = {
   [types.SET_SEARCH_HISTORY] (state: HistoryState, searchHistory: string[]) {
     state.searchHistory = searchHistory
+  },
+  [types.SET_PLAY_HISTORY] (state: HistoryState, history: Song[]) {
+    state.playHistory = history
   }
 }
 
@@ -22,6 +26,9 @@ const actions = {
   },
   clearSearchHistory (context: { commit: Commit }) {
     context.commit(types.SET_SEARCH_HISTORY, clearSearchHistory())
+  },
+  setPlayHistory (context: { commit: Commit }, song: Song) {
+    context.commit(types.SET_PLAY_HISTORY, savePlayHistory(song))
   }
 }
 

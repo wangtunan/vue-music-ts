@@ -1,6 +1,6 @@
 <template>
   <transition appear name="slide">
-    <div class="m-user">
+    <div class="m-user" ref="User">
       <!-- 头部 -->
       <div class="user-header">
         <div class="user-back" @click="handleBackClick">
@@ -21,7 +21,7 @@
 
       <!-- 列表 -->
       <div v-show="songs.length" class="user-list">
-        <scroll :data="songs" class="user-list-scroll">
+        <scroll ref="UserScroll" :data="songs" class="user-list-scroll">
           <div class="user-list-inner">
             <song-list :list="songs" />
           </div>
@@ -39,7 +39,10 @@ import Switches from '@/components/switches/index.vue'
 import SongList from '@/components/song-list/index.vue'
 import Empty from '@/components/empty/index.vue'
 import Song from '@/assets/js/song'
-import { Component, Vue } from 'vue-property-decorator'
+import PlayList from '@/assets/js/playList'
+import { Component, Mixins } from 'vue-property-decorator'
+import { Getter } from 'vuex-class'
+import { pxToVw } from '@/utils/utils'
 @Component({
   components: {
     Switches,
@@ -48,12 +51,20 @@ import { Component, Vue } from 'vue-property-decorator'
     Empty
   }
 })
-export default class MUser extends Vue {
+export default class MUser extends Mixins(PlayList) {
   private switches!: string[]
-  private active = 1
-  private songs: Song[] = []
+  private active = 0
+  @Getter('favoriteList') favoriteList!: Song[]
+  @Getter('playHistory') playHistory!: Song[]
 
   // methods方法
+  public handlePlayList () {
+    const bottom = this.playList.length > 0 ? `${pxToVw(60)}vw` : '0'
+    const User = this.$refs.User as HTMLElement
+    const userScroll = this.$refs.UserScroll as Scroll
+    User.style.bottom = bottom
+    userScroll.refresh()
+  }
   public handleBackClick () {
     this.$router.back()
   }
@@ -62,10 +73,19 @@ export default class MUser extends Vue {
   private get emptyTitle () {
     return this.active === 0 ? '暂无收藏歌曲' : '你还没有听过歌曲'
   }
+  private get songs () {
+    return this.active === 0 ? this.favoriteList : this.playHistory
+  }
 
   // 生命周期
   private created () {
     this.switches = ['我喜欢的', '最近听的']
+  }
+  private mounted () {
+    this.handlePlayList()
+  }
+  private activated () {
+    this.handlePlayList()
   }
 }
 </script>

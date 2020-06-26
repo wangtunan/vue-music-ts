@@ -17,13 +17,14 @@ export interface TopState {
 
 export interface HistoryState {
   searchHistory: string[];
-  playHistory: any[];
+  playHistory: Song[];
 }
 
 export interface PlayerState {
   currentIndex: number;
   fullScreen: boolean;
   mode: number;
+  playing: boolean;
   playList: Song[];
   favoriteList: Song[];
 }
