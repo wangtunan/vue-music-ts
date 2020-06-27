@@ -25,6 +25,9 @@
                 <img :src="currentSong.image" class="cd-image" alt="">
               </div>
             </div>
+            <div class="lyric-box">
+              <p class="current-lyric">{{currentSong.name}}</p>
+            </div>
           </div>
           <div class="middle-right"></div>
         </div>
@@ -299,19 +302,30 @@ export default class MPlayer extends Mixins(Player) {
           width: 80%;
           height: 100%;
           box-sizing: border-box;
+          .cd-image-box {
+            height: 100%;
+            border-radius: 50%;
+            animation: myrotate 20s linear infinite;
+          }
+          .cd-image {
+            display: block;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            border-radius: 50%;
+            border: 10px solid rgba(255, 255, 255, 0.1);
+          }
         }
-        .cd-image-box {
-          height: 100%;
-          border-radius: 50%;
-          animation: myrotate 20s linear infinite;
-        }
-        .cd-image {
-          display: block;
-          width: 100%;
-          height: 100%;
-          box-sizing: border-box;
-          border-radius: 50%;
-          border: 10px solid rgba(255, 255, 255, 0.1);
+        .lyric-box {
+          margin: 30px auto 0;
+          width: 80%;
+          text-align: center;
+          overflow: hidden;
+          .current-lyric {
+            line-height: 20px;
+            font-size: 14px;
+            color: $color-text-l;
+          }
         }
       }
       .middle-right {
