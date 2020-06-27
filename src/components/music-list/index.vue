@@ -10,7 +10,7 @@
     <div ref="MusicImage" class="music-list-image" :style="bgStyle">
       <div class="image-cover"></div>
       <div v-show="songs.length" class="play-box">
-        <div ref="PlayBtn" class="play-btn" @click="handlePlayClick">
+        <div ref="PlayBtn" class="play-btn" @click="handleRandomClick">
           <i class="icon-play"></i>
           <span class="btn-text">随机播放全部</span>
         </div>
@@ -28,8 +28,7 @@
       :probe-type="3"
       :listen-scroll="true"
       :style="scrollStyle"
-      @scroll="handleScroll"
-    >
+      @scroll="handleScroll">
       <song-list :list="songs" :rank="rank" @select="handleSelectSong" />
       <loading v-show="!songs.length" />
     </scroll>
@@ -68,6 +67,7 @@ export default class MusicList extends Mixins(PlayList) {
   @Prop({ type: Boolean, default: false }) rank!: boolean
   @Prop({ type: Array, default () { return [] } }) songs!: Song[]
   @Action('player/selectPlay') selectPlay!: (params: SelectPlay) => void
+  @Action('player/randomPlay') randomPlay!: (list: Song[]) => void
   @Watch('scrollY')
   onScrollYChange (newY: number) {
     const translateY = Math.max(this.minTranslateY, newY)
@@ -105,8 +105,8 @@ export default class MusicList extends Mixins(PlayList) {
   public handleBackClick () {
     this.$router.back()
   }
-  public handlePlayClick () {
-    console.log('play random')
+  public handleRandomClick () {
+    this.randomPlay(this.songs)
   }
   public handleScroll (pos: Position) {
     this.scrollY = pos.y

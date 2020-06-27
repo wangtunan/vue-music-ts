@@ -1,15 +1,14 @@
 <template>
   <scroll
+    ref="SuggestionScroll"
     :data="resultList"
-    class="suggestion-list"
-  >
+    class="suggestion-list">
     <ul v-show="resultList.length">
       <li
         v-for="(item, index) in resultList"
         :key="index"
         class="suggestion-item"
-        @click="handleSongClick(item)"
-      >
+        @click="handleSongClick(item)">
         <div class="icon">
           <i :class="getIconClass(item)"></i>
         </div>
@@ -22,11 +21,13 @@
 <script lang="ts">
 import Scroll from '@/components/scroll/index.vue'
 import Empty from '@/components/empty/index.vue'
+import Singer from '@/assets/js/singer'
 import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
 import { search } from '@/api/search'
 import { ERR_OK } from '@/api/config'
 import { SearchResult, Album } from '@/types/search'
-import Song, { isValid, createSong } from '@/assets/js/song'
+import Song, { isValid, createSong, processSongUrl } from '@/assets/js/song'
+import { Mutation } from 'vuex-class'
 const pageSize = 20
 const singerType = 'singer'
 @Component({
@@ -39,33 +40,53 @@ export default class SearchSuggestion extends Vue {
   private page = 1
   private resultList: (Album | Song)[] = []
   @Prop({ type: String, default: '' }) keyword!: string
+  @Mutation('singer/SET_SINGER') setSinger!: (singer: Singer) => void
+  @Watch('keyword')
+  onKeywordChange (newVal: string) {
+    if (!newVal) {
+      return
+    }
+    this.getSuggestionList()
+  }
 
   // methods方法
   handleSongClick (item: Song | Album) {
-    console.log(item)
-    this.$emit('select')
+    if (item.type === singerType) {
+      const album = item as Album
+      const singer = new Singer(album.singermid, album.singername)
+      this.setSinger(singer)
+      this.$router.push(`/search/${singer.id}`)
+    } else {
+      // TDD
+    }
+    this.$emit('select', item)
   }
   getSuggestionList () {
     search(this.keyword, this.page, true, pageSize).then(res => {
       const { code, data } = res
       if (code === ERR_OK) {
-        this.resultList = this.normalizeSongData(data)
-        console.log(this.normalizeSongData(data))
+        this.normalizeSongData(data).then(res => {
+          this.resultList = res
+        })
       }
     })
   }
-  normalizeSongData (searchResult: SearchResult): (Album | Song)[] {
-    const result = []
+  normalizeSongData (searchResult: SearchResult): Promise<(Album | Song)[]> {
+    let result: (Album | Song)[] = []
     // 如果有歌手，拼接歌手数据
     if (searchResult.zhida && searchResult.zhida.singerid && this.page === 1) {
       result.push({ ...searchResult.zhida, ...{ type: singerType } })
     }
+    const songResult: Song[] = []
     searchResult.song.list.forEach(song => {
       if (isValid(song)) {
-        result.push(createSong(song))
+        songResult.push(createSong(song))
       }
     })
-    return result
+    return processSongUrl(songResult).then(res => {
+      result = result.concat(res)
+      return result
+    })
   }
   getIconClass (item: Song | Album): string {
     if (item.type === singerType) {
@@ -81,14 +102,8 @@ export default class SearchSuggestion extends Vue {
       return `${item.name}-${item.singer}`
     }
   }
-
-  // watch监听器
-  @Watch('keyword')
-  onKeywordChange (newVal: string) {
-    if (!newVal) {
-      return
-    }
-    this.getSuggestionList()
+  refresh () {
+    ;(this.$refs.SuggestionScroll as Scroll).refresh()
   }
 }
 </script>
@@ -103,7 +118,7 @@ export default class SearchSuggestion extends Vue {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 20px;
+      padding-bottom: 20px;
       .icon {
         flex: 0 0 30px;
         width: 30px;

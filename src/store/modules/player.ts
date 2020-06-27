@@ -4,6 +4,7 @@ import { Commit } from 'vuex'
 import { PlayerState } from '../types'
 import { SelectPlay, PlayMode } from '@/types/player'
 import { getFavoriteList, saveFavoriteList, deleteFavoriteList } from '@/utils/cache'
+import { shuffle } from '@/utils/utils'
 const state = {
   currentIndex: -1,
   fullScreen: false,
@@ -38,6 +39,14 @@ const actions = {
   selectPlay (context: { commit: Commit }, { list, index }: SelectPlay) {
     context.commit(types.SET_PLAY_LIST, list)
     context.commit(types.SET_CURRENT_INDEX, index)
+    context.commit(types.SET_FULL_SCREEN, true)
+    context.commit(types.SET_PLAY_STATE, true)
+  },
+  randomPlay (context: { commit: Commit }, list: Song[]) {
+    const randomPlayList = shuffle(list)
+    context.commit(types.SET_PLAY_MODE, PlayMode.random)
+    context.commit(types.SET_PLAY_LIST, randomPlayList)
+    context.commit(types.SET_CURRENT_INDEX, 0)
     context.commit(types.SET_FULL_SCREEN, true)
     context.commit(types.SET_PLAY_STATE, true)
   },

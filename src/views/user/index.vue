@@ -13,7 +13,7 @@
 
       <!-- 播放按钮 -->
       <div v-show="songs.length" class="play-box">
-        <div class="play-btn">
+        <div class="play-btn" @click="handleRandomClick">
           <i class="icon-play"></i>
           <span class="btn-text">随机播放全部</span>
         </div>
@@ -41,7 +41,7 @@ import Empty from '@/components/empty/index.vue'
 import Song from '@/assets/js/song'
 import PlayList from '@/assets/js/playList'
 import { Component, Mixins } from 'vue-property-decorator'
-import { Getter } from 'vuex-class'
+import { Getter, Action } from 'vuex-class'
 import { pxToVw } from '@/utils/utils'
 @Component({
   components: {
@@ -56,6 +56,7 @@ export default class MUser extends Mixins(PlayList) {
   private active = 0
   @Getter('favoriteList') favoriteList!: Song[]
   @Getter('playHistory') playHistory!: Song[]
+  @Action('player/randomPlay') randomPlay!: (list: Song[]) => void
 
   // methods方法
   public handlePlayList () {
@@ -67,6 +68,9 @@ export default class MUser extends Mixins(PlayList) {
   }
   public handleBackClick () {
     this.$router.back()
+  }
+  public handleRandomClick () {
+    this.randomPlay(this.songs)
   }
 
   // 计算属性

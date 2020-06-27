@@ -9,12 +9,13 @@ export interface SongPay {
 }
 
 export interface Album {
+  type: string | number;
   albumid: number;
   albummid: string;
   albumname: string;
   singername: string;
-  type: string | number;
-  singerid?: number;
+  singerid: number;
+  singermid: string;
   [propName: string]: any;
 }
 

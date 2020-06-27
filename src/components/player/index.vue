@@ -36,23 +36,23 @@
             <span class="dot-item" :class="{ active: currentShow === 'lyric' }"></span>
           </div>
           <div class="player-progress">
-            <span class="progress-time time-left">0:01</span>
+            <span class="progress-time time-left">{{formatPlayerSecond(currentTime)}}</span>
             <div class="progress-box">
               <progress-bar :percent.sync="percent" @changed="handlePercentChanged" />
             </div>
-            <span class="progress-time time-right">5:00</span>
+            <span class="progress-time time-right">{{formatPlayerSecond(currentSong.duration)}}</span>
           </div>
           <div class="player-btns">
             <div class="icon i-left" @click="handleModeChange">
               <i :class="modeIcon"></i>
             </div>
-            <div class="icon i-left">
+            <div class="icon i-left" @click="handlePrevClick">
               <i class="icon-prev"></i>
             </div>
             <div class="icon i-center" @click="handleTogglePlay">
               <i :class="playIcon"></i>
             </div>
-            <div class="icon i-right">
+            <div class="icon i-right" @click="handleNextClick">
               <i class="icon-next"></i>
             </div>
             <div class="icon i-right" @click="handleToggleFavorite">
@@ -92,6 +92,7 @@
       @playing="handleAudioReady"
       @timeupdate="handleTimeUpdate"
       @pause="handleAudioPaused"
+      @ended="handleAudioEnd"
     />
   </div>
 </template>
@@ -102,6 +103,7 @@ import ProgressBar from '@/components/progress-bar/index.vue'
 import ProgressCircle from '@/components/progress-circle/index.vue'
 import { Component, Mixins, Watch } from 'vue-property-decorator'
 import { Getter, Mutation, Action } from 'vuex-class'
+import { formatSecond } from '@/utils/utils'
 @Component({
   components: {
     ProgressBar,
@@ -115,7 +117,9 @@ export default class MPlayer extends Mixins(Player) {
   @Getter('fullScreen') fullScreen!: boolean
   @Getter('playing') playing!: boolean
   @Getter('playList') playList!: Song[]
+  @Getter('currentIndex') currentIndex!: number
   @Mutation('player/SET_FULL_SCREEN') setFullScreen!: (fullscreen: boolean) => void
+  @Mutation('player/SET_CURRENT_INDEX') setCurrentIndex!: (index: number) => void
   @Action('history/setPlayHistory') setPlayHistory!: (song: Song) => void
   @Watch('currentSong')
   onSongChange (newSong: Song, oldSong: Song) {
@@ -143,6 +147,26 @@ export default class MPlayer extends Mixins(Player) {
   public handlePercentChanged () {
     this.audio.currentTime = this.currentTime
   }
+  public handlePrevClick () {
+    let index = this.currentIndex - 1
+    if (index < 0) {
+      index = this.playList.length - 1
+    }
+    this.setCurrentIndex(index)
+    if (!this.playing) {
+      this.setPlayState(true)
+    }
+  }
+  public handleNextClick () {
+    let index = this.currentIndex + 1
+    if (index >= this.playList.length) {
+      index = 0
+    }
+    this.setCurrentIndex(index)
+    if (!this.playing) {
+      this.setPlayState(true)
+    }
+  }
   public handleTogglePlay () {
     this.setPlayState(!this.playing)
   }
@@ -154,6 +178,13 @@ export default class MPlayer extends Mixins(Player) {
   }
   public handleAudioPaused () {
     this.setPlayState(false)
+  }
+  public handleAudioEnd () {
+    this.currentTime = 0
+    this.handleNextClick()
+  }
+  private formatPlayerSecond (second: number) {
+    return formatSecond(second)
   }
 
   // 计算属性
@@ -317,8 +348,8 @@ export default class MPlayer extends Mixins(Player) {
         align-items: center;
         justify-content: center;
         .progress-time {
-          flex: 0 0 30px;
-          width: 30px;
+          flex: 0 0 40px;
+          width: 40px;
           line-height: 30px;
           color: $color-text;
           font-size: 12px;

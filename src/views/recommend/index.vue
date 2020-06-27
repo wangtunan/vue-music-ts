@@ -36,7 +36,6 @@
           </ul>
         </div>
       </div>
-      <!-- loading -->
       <loading v-show="!discList.length" />
     </scroll>
     <router-view />

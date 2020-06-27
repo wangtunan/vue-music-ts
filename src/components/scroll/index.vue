@@ -38,16 +38,12 @@ export default class Scroll extends Vue {
     if (!scrollDOM) {
       return
     }
-    if (!this.scroll) {
-      this.scroll = new BScroll(scrollDOM, {
-        click: this.click,
-        probeType: this.probeType,
-        eventPassthrough: this.direction === DirectionEnum.horizontal ? DirectionEnum.vertical : DirectionEnum.horizontal
-      })
-      this.listenEvent()
-    } else {
-      this.scroll.refresh()
-    }
+    this.scroll = new BScroll(scrollDOM, {
+      click: this.click,
+      probeType: this.probeType,
+      eventPassthrough: this.direction === DirectionEnum.horizontal ? DirectionEnum.vertical : DirectionEnum.horizontal
+    })
+    this.listenEvent()
   }
 
   private listenEvent () {

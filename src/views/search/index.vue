@@ -1,12 +1,12 @@
 <template>
-  <div class="m-search">
+  <div class="m-search" ref="Search">
     <!-- 搜索 -->
     <div class="search-box">
       <search-box ref="SearchBox" @search="handleSearch"/>
     </div>
 
     <!-- 热搜&搜索历史 -->
-    <scroll v-show="!keyword" :data="combineData" class="scroll-box">
+    <scroll v-show="!keyword" :data="combineData" class="scroll-box" ref="SearchScroll">
       <div>
         <div v-if="hotKeyList.length" class="hot-box">
           <h3 class="hot-title">热门搜索</h3>
@@ -40,12 +40,15 @@
     </scroll>
 
     <!-- 搜索结果 -->
-    <div v-show="keyword" class="suggestion-box">
-      <suggestion :keyword="keyword" @select="handleSuggestionSelect" />
+    <div v-show="keyword" class="suggestion-box" ref="SearchSuggestionBox">
+      <suggestion :keyword="keyword" @select="handleSuggestionSelect" ref="SearchSuggestion" />
     </div>
 
     <!-- confirm -->
     <confirm :visible.sync="showConfirm" message="是否确定清空全部搜索历史？" @confirm="handleclearSearchHistory" />
+
+    <!-- router-view -->
+    <router-view />
   </div>
 </template>
 <script lang="ts">
@@ -54,11 +57,12 @@ import Scroll from '@/components/scroll/index.vue'
 import Suggestion from '@/components/suggestion/index.vue'
 import Confirm from '@/components/confirm/index.vue'
 import Search from '@/assets/js/search'
-import Player from '@/assets/js/player'
+import PlayList from '@/assets/js/playList'
 import { Component, Mixins } from 'vue-property-decorator'
 import { HotKey } from '@/types/search'
 import { getHotKeys } from '@/api/search'
 import { ERR_OK } from '@/api/config'
+import { pxToVw } from '@/utils/utils'
 const MAX_HOT = 10
 @Component({
   components: {
@@ -68,10 +72,22 @@ const MAX_HOT = 10
     Confirm
   }
 })
-export default class MSearch extends Mixins(Search, Player) {
+export default class MSearch extends Mixins(Search, PlayList) {
   private showConfirm = false
   private hotKeyList: string[] = []
+
   // methods方法
+  public handlePlayList () {
+    const bottom = this.playList.length > 0 ? `${pxToVw(60)}vw` : '0'
+    const Search = this.$refs.Search as HTMLElement
+    const searchSuggestionBox = this.$refs.SearchSuggestionBox as HTMLElement
+    const searchScroll = this.$refs.SearchScroll as Scroll
+    const searchSuggestion = this.$refs.SearchSuggestion as Suggestion
+    Search.style.bottom = bottom
+    searchSuggestionBox.style.bottom = bottom
+    searchScroll.refresh()
+    searchSuggestion.refresh()
+  }
   public handleAddClick (keyword: string) {
     const searchBox = this.$refs.SearchBox as SearchBox
     searchBox.setKeyword(keyword)
@@ -100,6 +116,10 @@ export default class MSearch extends Mixins(Search, Player) {
   // 生命周期
   private mounted () {
     this.getHotKeysData()
+    this.handlePlayList()
+  }
+  private activated () {
+    this.handlePlayList()
   }
 }
 </script>

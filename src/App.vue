@@ -2,11 +2,18 @@
   <div id="app" @touchmove.prevent>
     <m-header />
     <m-tab :list="tabArr"/>
-    <transition :name="transitionName">
+    <template v-if="transitionName">
+      <transition :name="transitionName">
+        <keep-alive>
+          <router-view/>
+        </keep-alive>
+      </transition>
+    </template>
+    <template v-else>
       <keep-alive>
         <router-view/>
       </keep-alive>
-    </transition>
+    </template>
     <player />
   </div>
 </template>
