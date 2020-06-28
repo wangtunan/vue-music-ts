@@ -18,18 +18,34 @@
         </div>
 
         <!-- 中部 -->
-        <div class="player-middle">
-          <div class="middle-left">
+        <div
+          class="player-middle"
+          @touchstart.prevent="handleTouchStart"
+          @touchmove.prevent="handleTouchMove"
+          @touchend="handleTouchEnd">
+          <div class="middle-left" ref="PlayerLeft">
             <div class="cd-box">
               <div class="cd-image-box">
                 <img :src="currentSong.image" class="cd-image" alt="">
               </div>
             </div>
             <div class="lyric-box">
-              <p class="current-lyric">{{currentSong.name}}</p>
+              <p class="current-lyric">{{playingLyric}}</p>
             </div>
           </div>
-          <div class="middle-right"></div>
+          <scroll class="middle-right" ref="PlayerLyric" :data="currentLyric && currentLyric.lines">
+            <div class="lyric-box">
+              <div v-if="currentLyric">
+                <p
+                  ref="LyricLine"
+                  v-for="(item, index) in currentLyric.lines"
+                  :key="index"
+                  class="lyric-text"
+                  :class="{'active': currentLineNum == index}"
+                >{{item.txt}}</p>
+              </div>
+            </div>
+          </scroll>
         </div>
 
         <!-- 底部 -->
@@ -102,13 +118,28 @@
 <script lang="ts">
 import Song from '@/assets/js/song'
 import Player from '@/assets/js/player'
+import Scroll from '@/components/scroll/index.vue'
 import ProgressBar from '@/components/progress-bar/index.vue'
 import ProgressCircle from '@/components/progress-circle/index.vue'
+import Lyric from 'lyric-parser'
 import { Component, Mixins, Watch } from 'vue-property-decorator'
 import { Getter, Mutation, Action } from 'vuex-class'
 import { formatSecond } from '@/utils/utils'
+import { LyricParams } from '@/types/player'
+import { getVendorsPrefix } from '@/utils/dom'
+const transform = getVendorsPrefix('transform')
+const transitionDuration = getVendorsPrefix('transitionDuration')
+interface PlayerTouch {
+  initiated: boolean;
+  moved: boolean;
+  direction: string;
+  startX: number;
+  startY: number;
+  percent: number;
+}
 @Component({
   components: {
+    Scroll,
     ProgressBar,
     ProgressCircle
   }
@@ -116,7 +147,14 @@ import { formatSecond } from '@/utils/utils'
 export default class MPlayer extends Mixins(Player) {
   private currentShow = 'cd'
   private currentTime = 0
+  private currentLyric: Lyric | null = null
+  private currentLineNum = 0
+  private playingLyric = ''
   private audio!: HTMLAudioElement
+  private lyricLines!: HTMLElement[]
+  private playerLeft!: HTMLElement
+  private playerLyric!: Scroll
+  private touch!: PlayerTouch
   @Getter('fullScreen') fullScreen!: boolean
   @Getter('playing') playing!: boolean
   @Getter('playList') playList!: Song[]
@@ -124,20 +162,29 @@ export default class MPlayer extends Mixins(Player) {
   @Mutation('player/SET_FULL_SCREEN') setFullScreen!: (fullscreen: boolean) => void
   @Mutation('player/SET_CURRENT_INDEX') setCurrentIndex!: (index: number) => void
   @Action('history/setPlayHistory') setPlayHistory!: (song: Song) => void
+  @Watch('playing')
+  onPlayingChange (playing: boolean) {
+    playing ? this.audio.play() : this.audio.pause()
+  }
   @Watch('currentSong')
   onSongChange (newSong: Song, oldSong: Song) {
     if (!newSong.id || !newSong.url || newSong.id === oldSong.id) {
       return
+    }
+    // 重置歌词
+    if (this.currentLyric) {
+      this.currentLyric.stop()
+      this.currentLyric = null
+      this.currentLineNum = 0
+      this.currentTime = 0
+      this.playingLyric = ''
     }
     if (!this.audio) {
       this.audio = this.audio = this.$refs.Audio as HTMLAudioElement
     }
     this.audio.src = newSong.url
     this.audio.play()
-  }
-  @Watch('playing')
-  onPlayingChange (playing: boolean) {
-    playing ? this.audio.play() : this.audio.pause()
+    this.getLyric()
   }
 
   // methods
@@ -149,6 +196,9 @@ export default class MPlayer extends Mixins(Player) {
   }
   public handlePercentChanged () {
     this.audio.currentTime = this.currentTime
+    if (!this.playing) {
+      this.handleTogglePlay()
+    }
   }
   public handlePrevClick () {
     let index = this.currentIndex - 1
@@ -172,22 +222,132 @@ export default class MPlayer extends Mixins(Player) {
   }
   public handleTogglePlay () {
     this.setPlayState(!this.playing)
+    if (this.currentLyric) {
+      this.currentLyric.togglePlay()
+    }
   }
   public handleAudioReady () {
     this.setPlayHistory(this.currentSong)
+    this.currentLyric && this.currentLyric.seek(this.currentTime * 1000)
   }
   public handleTimeUpdate (e: Event) {
     this.currentTime = (e.target as HTMLAudioElement).currentTime
   }
   public handleAudioPaused () {
     this.setPlayState(false)
+    this.currentLyric && this.currentLyric.stop()
   }
   public handleAudioEnd () {
     this.currentTime = 0
     this.handleNextClick()
   }
+  public handleTouchStart (e: TouchEvent) {
+    const touch = e.touches[0]
+    this.touch.initiated = true
+    this.touch.moved = false
+    this.touch.direction = ''
+    this.touch.startX = touch.pageX
+    this.touch.startY = touch.pageY
+  }
+  public handleTouchMove (e: TouchEvent) {
+    if (!this.touch.initiated) {
+      return
+    }
+    if (!this.lyricLines) {
+      this.lyricLines = this.$refs.LyricLine as HTMLElement[]
+    }
+    if (!this.playerLyric) {
+      this.playerLyric = this.$refs.PlayerLyric as Scroll
+    }
+    const touch = e.touches[0]
+    const diffX = touch.pageX - this.touch.startX
+    const diffY = touch.pageY - this.touch.startY
+    const absDiffX = Math.abs(diffX)
+    const absDiffY = Math.abs(diffY)
+    // 判断是纵向滚动还是横向滚动
+    if (!this.touch.direction) {
+      if (absDiffX > absDiffY) {
+        this.touch.direction = 'h'
+      } else if (absDiffY >= absDiffX) {
+        this.touch.direction = 'v'
+      }
+    }
+    if (this.touch.direction === 'v') {
+      return
+    }
+    if (!this.touch.moved) {
+      this.touch.moved = true
+    }
+    const width = this.currentShow === 'cd' ? 0 : -window.innerWidth
+    const offsetWidth = Math.min(0, Math.max(-window.innerWidth, width + diffX))
+    const playerLyricDom = this.playerLyric.$el as HTMLElement
+    this.touch.percent = Math.abs(offsetWidth / window.innerWidth)
+    playerLyricDom.style[transform as any] = `translate3d(${offsetWidth}px, 0, 0)`
+    playerLyricDom.style[transitionDuration as any] = '0'
+    this.playerLeft.style.opacity = `${1 - this.touch.percent}`
+    this.playerLeft.style[transitionDuration as any] = '0'
+  }
+  public handleTouchEnd () {
+    if (!this.touch.moved) {
+      return
+    }
+    let offsetWidth = 0
+    let opacity = 0
+    const duration = 300
+    if (this.currentShow === 'cd') {
+      if (this.touch.percent > 0.1) {
+        offsetWidth = -window.innerWidth
+        opacity = 0
+      } else {
+        offsetWidth = 0
+        opacity = 1
+      }
+    } else {
+      if (this.touch.percent < 0.9) {
+        offsetWidth = 0
+        opacity = 1
+      } else {
+        offsetWidth = -window.innerWidth
+        opacity = 0
+      }
+    }
+    const playerLyricDom = this.playerLyric.$el as HTMLElement
+    playerLyricDom.style[transform as any] = `translate3d(${offsetWidth}px, 0, 0)`
+    playerLyricDom.style[transitionDuration as any] = `${duration}ms`
+    this.playerLeft.style.opacity = `${opacity}`
+    this.playerLeft.style[transitionDuration as any] = `${duration}ms`
+    this.touch.initiated = false
+  }
   private formatPlayerSecond (second: number) {
     return formatSecond(second)
+  }
+  private getLyric () {
+    this.currentSong.getLyric().then((lyric: string) => {
+      this.currentLyric = new Lyric(lyric, this.normalizeLyric)
+      if (this.playing) {
+        this.currentLyric.seek(this.currentTime * 1000)
+      }
+    }).catch(() => {
+      this.currentLyric = null
+      this.currentLineNum = 0
+      this.playingLyric = ''
+    })
+  }
+  private normalizeLyric ({ lineNum, txt }: LyricParams) {
+    this.currentLineNum = lineNum
+    this.playingLyric = txt
+    if (!this.playerLyric) {
+      this.playerLyric = this.$refs.PlayerLyric as Scroll
+    }
+    if (!this.lyricLines) {
+      this.lyricLines = this.$refs.LyricLine as HTMLElement[]
+    }
+    if (lineNum > 5) {
+      const lineEl = this.lyricLines[(lineNum - 5) as any]
+      this.playerLyric.scrollToElement(lineEl, 1000)
+    } else {
+      this.playerLyric.scrollTo(0, 0, 1000)
+    }
   }
 
   // 计算属性
@@ -196,6 +356,7 @@ export default class MPlayer extends Mixins(Player) {
   }
   private set percent (percent: number) {
     this.currentTime = percent * this.currentSong.duration
+    this.currentLyric && this.currentLyric.seek(this.currentTime * 1000)
   }
   private get playIcon () {
     return this.playing ? 'icon-pause' : 'icon-play'
@@ -205,8 +366,19 @@ export default class MPlayer extends Mixins(Player) {
   }
 
   // 生命周期
+  private created () {
+    this.touch = {
+      initiated: false,
+      moved: false,
+      direction: '',
+      startX: 0,
+      startY: 0,
+      percent: 0
+    }
+  }
   private mounted () {
     this.audio = this.$refs.Audio as HTMLAudioElement
+    this.playerLeft = this.$refs.PlayerLeft as HTMLElement
   }
 }
 </script>
@@ -330,6 +502,21 @@ export default class MPlayer extends Mixins(Player) {
       }
       .middle-right {
         height: 100%;
+        overflow: hidden;
+        .lyric-box {
+          margin: 0 auto;
+          width: 80%;
+          overflow: hidden;
+          text-align: center;
+          .lyric-text {
+            line-height: 32px;
+            color: $color-text-l;
+            font-size: 14px;
+            &.active {
+              color: $color-text;
+            }
+          }
+        }
       }
     }
     .player-bottom {

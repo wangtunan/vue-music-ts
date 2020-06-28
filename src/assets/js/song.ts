@@ -1,6 +1,8 @@
 import { SongData } from '@/types/search'
-import { getSongUrl } from '@/api/song'
+import { getSongUrl, getLyric } from '@/api/song'
 import { SongUrlMap } from '@/types/song'
+import { ERR_OK } from '@/api/config'
+import { Base64 } from 'js-base64'
 function filterSinger (singer: [] | any): string {
   const result: string[] = []
   if (!singer) {
@@ -14,7 +16,20 @@ function filterSinger (singer: [] | any): string {
   return result.join('/')
 }
 
-export default class Song {
+interface ISong {
+  id: string;
+  mid: string;
+  singer: string;
+  name: string;
+  album: string;
+  duration: number;
+  image: string;
+  filename: string;
+  url: string;
+  type: string;
+  lyric: string;
+}
+export default class Song implements ISong {
   public id: string;
   public mid: string;
   public singer: string;
@@ -25,7 +40,8 @@ export default class Song {
   public filename: string;
   public url: string;
   public type: string;
-  constructor ({ id, mid, singer, name, album, duration, image, filename, url, type }: Song) {
+  public lyric: string;
+  constructor ({ id, mid, singer, name, album, duration, image, filename, url, type, lyric }: ISong) {
     this.id = id
     this.mid = mid
     this.singer = singer
@@ -36,6 +52,24 @@ export default class Song {
     this.filename = filename
     this.url = url
     this.type = type
+    this.lyric = lyric
+  }
+
+  public getLyric (): Promise<string> {
+    if (this.lyric) {
+      return Promise.resolve(this.lyric)
+    }
+    return new Promise((resolve, reject) => {
+      getLyric(this.mid).then(res => {
+        const { code, data } = res
+        if (code === ERR_OK) {
+          this.lyric = Base64.decode(data)
+          resolve(this.lyric)
+        } else {
+          reject(new Error('no lyric'))
+        }
+      })
+    })
   }
 }
 
@@ -50,7 +84,8 @@ export function createSong (songData: SongData): Song {
     image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${songData.albummid}.jpg?max_age=2592000`,
     filename: `C400${songData.songmid}.m4a`,
     url: songData.url,
-    type: 'song'
+    type: 'song',
+    lyric: ''
   })
 }
 

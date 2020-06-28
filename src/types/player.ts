@@ -10,3 +10,8 @@ export enum PlayMode {
   loop = 1,
   random = 2
 }
+
+export interface LyricParams {
+  lineNum: number;
+  txt: string;
+}

@@ -3,6 +3,7 @@ import Song from '@/assets/js/song'
 import { commonParams, ERR_OK } from './config'
 import { SongUrlMap } from '@/types/song'
 import { getUid } from '@/utils/utils'
+import { MusicResponse } from '@/types'
 let tryCount = 3
 function createSongMids (songs: Song[]): object {
   const mids = songs.map(song => song.mid)
@@ -73,4 +74,18 @@ export function getSongUrl (songs: Song[]): Promise<SongUrlMap> {
 
     requestUrl()
   })
+}
+
+export function getLyric (mid: string): Promise<MusicResponse> {
+  const url = '/api/lyric'
+  const params = Object.assign({}, commonParams, {
+    songmid: mid,
+    platform: 'yqq',
+    hostUin: 0,
+    needNewCode: 0,
+    categoryId: 10000000,
+    pcachetime: +new Date(),
+    format: 'json'
+  })
+  return axios.get(url, { params })
 }
