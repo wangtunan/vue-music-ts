@@ -18,13 +18,12 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator'
-import { TabConfig } from '@/types/index'
+import { Tab } from '@/types/index'
 @Component
 export default class MTab extends Vue {
   private activeIndex = 0
-  @Prop({ type: Array, default () { return [] } }) list!: TabConfig[]
+  @Prop({ type: Array, default () { return [] } }) list!: Tab[]
 
-  // methods方法
   public handleTabClick (index: number) {
     this.activeIndex = index
   }

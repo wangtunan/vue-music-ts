@@ -17,7 +17,7 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response: AxiosResponse): Promise<AxiosResponse> => {
     const { status, data } = response
-    if (+status === 200) {
+    if (status === 200) {
       return data
     } else {
       return Promise.reject(new Error('服务器异常!'))

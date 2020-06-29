@@ -1,6 +1,6 @@
-import { TabConfig } from '@/types/index'
+import { Tab } from '@/types/index'
 
-export const tabList: TabConfig[] = [
+export const tabList: Tab[] = [
   { name: '推荐', path: '/recommend' },
   { name: '歌手', path: '/singer' },
   { name: '排行', path: '/rank' },

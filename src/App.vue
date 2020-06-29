@@ -24,7 +24,7 @@ import MTab from '@/components/tab/index.vue'
 import Player from '@/components/player/index.vue'
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import { tabList } from '@/assets/js/data'
-import { TabConfig } from '@/types/index'
+import { Tab } from '@/types/index'
 import { RouteConfig } from 'vue-router'
 @Component({
   components: {
@@ -34,7 +34,7 @@ import { RouteConfig } from 'vue-router'
   }
 })
 export default class App extends Vue {
-  private tabArr: TabConfig[] = tabList
+  private tabArr: Tab[] = tabList
   private transitionName = ''
   @Watch('$route')
   onRouteChange (to: RouteConfig, from: RouteConfig) {

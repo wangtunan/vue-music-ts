@@ -1,4 +1,4 @@
-export interface TabConfig {
+export interface Tab {
   name: string;
   path: string;
 }
