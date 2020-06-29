@@ -11,6 +11,7 @@ const state = {
   mode: PlayMode.sequence,
   playing: false,
   playList: [],
+  sequenceList: [],
   favoriteList: getFavoriteList()
 }
 
@@ -32,12 +33,16 @@ const mutations = {
   },
   [types.SET_PLAY_STATE] (state: PlayerState, playing: boolean) {
     state.playing = playing
+  },
+  [types.SET_SEQUENCE_LIST] (state: PlayerState, list: Song[]) {
+    state.sequenceList = list
   }
 }
 
 const actions = {
   selectPlay (context: { commit: Commit }, { list, index }: SelectPlay) {
     context.commit(types.SET_PLAY_LIST, list)
+    context.commit(types.SET_SEQUENCE_LIST, list)
     context.commit(types.SET_CURRENT_INDEX, index)
     context.commit(types.SET_FULL_SCREEN, true)
     context.commit(types.SET_PLAY_STATE, true)
@@ -46,6 +51,7 @@ const actions = {
     const randomPlayList = shuffle(list)
     context.commit(types.SET_PLAY_MODE, PlayMode.random)
     context.commit(types.SET_PLAY_LIST, randomPlayList)
+    context.commit(types.SET_SEQUENCE_LIST, list)
     context.commit(types.SET_CURRENT_INDEX, 0)
     context.commit(types.SET_FULL_SCREEN, true)
     context.commit(types.SET_PLAY_STATE, true)
@@ -55,6 +61,32 @@ const actions = {
   },
   deleteFavoriteList (context: { commit: Commit }, song: Song) {
     context.commit(types.SET_FAVORITE_LIST, deleteFavoriteList(song))
+  },
+  deleteSong (context: { commit: Commit, state: PlayerState }, song: Song) {
+    const playList: Song[] = state.playList.slice()
+    const sequenceList: Song[] = state.sequenceList.slice()
+    let currentIndex = state.currentIndex
+    const pIndex = playList.findIndex(item => item.id === song.id)
+    const sIndex = sequenceList.findIndex(item => item.id === song.id)
+    playList.splice(pIndex, 1)
+    sequenceList.splice(sIndex, 1)
+    if (currentIndex > pIndex || currentIndex === playList.length) {
+      currentIndex--
+    }
+    context.commit(types.SET_CURRENT_INDEX, currentIndex)
+    context.commit(types.SET_PLAY_LIST, playList)
+    context.commit(types.SET_SEQUENCE_LIST, sequenceList)
+    if (!playList.length) {
+      context.commit(types.SET_PLAY_STATE, false)
+    } else {
+      context.commit(types.SET_PLAY_STATE, true)
+    }
+  },
+  deleteSongList (context: { commit: Commit }) {
+    context.commit(types.SET_CURRENT_INDEX, -1)
+    context.commit(types.SET_PLAY_LIST, [])
+    context.commit(types.SET_SEQUENCE_LIST, [])
+    context.commit(types.SET_PLAY_STATE, false)
   }
 }
 

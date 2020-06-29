@@ -7,8 +7,11 @@ export default class Player extends Vue {
   @Getter('mode') mode!: number
   @Getter('currentSong') currentSong!: Song
   @Getter('favoriteList') favoriteList!: Song[]
+  @Getter('sequenceList') sequenceList!: Song[]
+  @Getter('playList') playList!: Song[]
   @Mutation('player/SET_PLAY_MODE') setPlayMode!: (mode: number) => void
   @Mutation('player/SET_PLAY_STATE') setPlayState!: (playing: boolean) => void
+  @Mutation('player/SET_CURRENT_INDEX') setCurrentIndex!: (index: number) => void
   @Action('player/saveFavoriteList') saveFavoriteList!: (song: Song) => void
   @Action('player/deleteFavoriteList') deleteFavoriteList!: (song: Song) => void
 
@@ -17,11 +20,11 @@ export default class Player extends Vue {
     const mode = (this.mode + 1) % 3
     this.setPlayMode(mode)
   }
-  public handleToggleFavorite () {
-    if (this.isFavorite(this.currentSong)) {
-      this.deleteFavoriteList(this.currentSong)
+  public handleToggleFavorite (song: Song) {
+    if (this.isFavorite(song)) {
+      this.deleteFavoriteList(song)
     } else {
-      this.saveFavoriteList(this.currentSong)
+      this.saveFavoriteList(song)
     }
   }
   private isFavorite (song: Song): boolean {

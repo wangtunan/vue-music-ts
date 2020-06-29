@@ -12,6 +12,8 @@ export const playHistory = (state: any) => (state.history as HistoryState).playH
 
 export const playList = (state: any) => (state.player as PlayerState).playList
 
+export const sequenceList = (state: any) => (state.player as PlayerState).sequenceList
+
 export const favoriteList = (state: any) => (state.player as PlayerState).favoriteList
 
 export const currentIndex = (state: any) => (state.player as PlayerState).currentIndex

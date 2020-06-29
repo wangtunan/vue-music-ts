@@ -26,5 +26,6 @@ export interface PlayerState {
   mode: number;
   playing: boolean;
   playList: Song[];
+  sequenceList: Song[];
   favoriteList: Song[];
 }

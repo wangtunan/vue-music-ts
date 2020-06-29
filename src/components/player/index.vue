@@ -74,7 +74,7 @@
             <div class="icon i-right" @click="handleNextClick">
               <i class="icon-next"></i>
             </div>
-            <div class="icon i-right" @click="handleToggleFavorite">
+            <div class="icon i-right" @click="handleToggleFavorite(currentSong)">
               <i :class="faviroteIcon"></i>
             </div>
           </div>
@@ -99,7 +99,7 @@
             <i class="icon-mini" :class="miniPlayIcon" @click.stop="handleTogglePlay"></i>
           </progress-circle>
         </div>
-        <div class="mini-control">
+        <div class="mini-control" @click.stop="showPlayList=true">
           <i class="icon-playlist"></i>
         </div>
       </div>
@@ -113,11 +113,15 @@
       @pause="handleAudioPaused"
       @ended="handleAudioEnd"
     />
+
+    <!-- 播放列表 -->
+    <play-list :visible.sync="showPlayList" />
   </div>
 </template>
 <script lang="ts">
 import Song from '@/assets/js/song'
 import Player from '@/assets/js/player'
+import PlayList from '@/components/playlist/index.vue'
 import Scroll from '@/components/scroll/index.vue'
 import ProgressBar from '@/components/progress-bar/index.vue'
 import ProgressCircle from '@/components/progress-circle/index.vue'
@@ -140,11 +144,13 @@ interface PlayerTouch {
 @Component({
   components: {
     Scroll,
+    PlayList,
     ProgressBar,
     ProgressCircle
   }
 })
 export default class MPlayer extends Mixins(Player) {
+  private showPlayList = false
   private currentShow = 'cd'
   private currentTime = 0
   private currentLyric: Lyric | null = null
@@ -298,6 +304,7 @@ export default class MPlayer extends Mixins(Player) {
       if (this.touch.percent > 0.1) {
         offsetWidth = -window.innerWidth
         opacity = 0
+        this.currentShow = 'lyric'
       } else {
         offsetWidth = 0
         opacity = 1
@@ -306,6 +313,7 @@ export default class MPlayer extends Mixins(Player) {
       if (this.touch.percent < 0.9) {
         offsetWidth = 0
         opacity = 1
+        this.currentShow = 'cd'
       } else {
         offsetWidth = -window.innerWidth
         opacity = 0

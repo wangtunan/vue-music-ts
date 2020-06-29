@@ -1,6 +1,6 @@
 <template>
   <transition name="fade">
-    <div v-show="show" class="m-confirm">
+    <div v-show="show" class="m-confirm" @click.stop>
       <div class="confirm-box">
         <h2 class="text">{{message}}</h2>
         <div class="btn-box">
