@@ -50,18 +50,16 @@ export default class SearchSuggestion extends Vue {
   }
 
   // methods方法
-  handleSongClick (item: Song | Album) {
+  public handleSongClick (item: Song | Album) {
     if (item.type === singerType) {
       const album = item as Album
       const singer = new Singer(album.singermid, album.singername)
       this.setSinger(singer)
       this.$router.push(`/search/${singer.id}`)
-    } else {
-      // TDD
     }
     this.$emit('select', item)
   }
-  getSuggestionList () {
+  private getSuggestionList () {
     search(this.keyword, this.page, true, pageSize).then(res => {
       const { code, data } = res
       if (code === ERR_OK) {
@@ -71,7 +69,7 @@ export default class SearchSuggestion extends Vue {
       }
     })
   }
-  normalizeSongData (searchResult: SearchResult): Promise<(Album | Song)[]> {
+  private normalizeSongData (searchResult: SearchResult): Promise<(Album | Song)[]> {
     let result: (Album | Song)[] = []
     // 如果有歌手，拼接歌手数据
     if (searchResult.zhida && searchResult.zhida.singerid && this.page === 1) {
@@ -88,21 +86,21 @@ export default class SearchSuggestion extends Vue {
       return result
     })
   }
-  getIconClass (item: Song | Album): string {
+  private getIconClass (item: Song | Album): string {
     if (item.type === singerType) {
       return 'icon-mine'
     } else {
       return 'icon-music'
     }
   }
-  getDisplayName (item: Song | Album): string {
+  private getDisplayName (item: Song | Album): string {
     if (item.type === singerType) {
       return (item as Album).singername
     } else {
       return `${item.name}-${item.singer}`
     }
   }
-  refresh () {
+  public refresh () {
     ;(this.$refs.SuggestionScroll as Scroll).refresh()
   }
 }

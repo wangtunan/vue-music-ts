@@ -7,7 +7,7 @@
       :class="{
         active: activeIndex === index
       }"
-      @click="activeIndex = index"
+      @click="handleSwitchItemClick(index)"
     >{{item}}</li>
   </ul>
 </template>
@@ -16,7 +16,11 @@ import { Component, Vue, Prop, PropSync } from 'vue-property-decorator'
 @Component
 export default class Switches extends Vue {
   @Prop({ type: Array, default () { return [] } }) switches!: string[]
-  @PropSync('active', { type: Number }) activeIndex!: number
+  @PropSync('active', { type: Number, default: 0 }) activeIndex!: number
+
+  public handleSwitchItemClick (index: number) {
+    this.activeIndex = index
+  }
 }
 </script>
 <style lang="scss" scoped>

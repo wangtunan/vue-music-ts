@@ -22,7 +22,6 @@ export default class Comfirm extends Vue {
   @Prop({ type: Boolean, default: true }) showCancelButton!: boolean
   @Prop({ type: Boolean, default: true }) showConfirmButton!: boolean
 
-  // methods方法
   handleCancelClick () {
     this.show = false
   }

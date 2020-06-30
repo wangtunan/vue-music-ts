@@ -18,4 +18,31 @@ describe('confirm.vue', () => {
     expect(wrapper.props('showCancelButton')).toBe(true)
     expect(wrapper.props('showConfirmButton')).toBe(true)
   })
+  it('customer props', () => {
+    const message = '是否清空播放列表？'
+    wrapper = shallowMount(Confirm, {
+      propsData: {
+        message: message,
+        confirmButtonText: '清空',
+        showCancelButton: false
+      }
+    })
+    expect(wrapper.find('.text').text()).toBe(message)
+    expect(wrapper.find('.confirm').text()).toBe('清空')
+    expect(wrapper.find('.cancel').exists()).toBe(false)
+  })
+  it('cancel click', async () => {
+    const cancelBtn = wrapper.find('.cancel')
+    cancelBtn.trigger('click')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.props('visible')).toBe(false)
+  })
+  it('confirm click', async () => {
+    const confirmButton = wrapper.find('.confirm')
+    confirmButton.trigger('click')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.props('visible')).toBe(false)
+    wrapper.vm.$emit('confirm')
+    expect(wrapper.emitted().confirm).toBeTruthy()
+  })
 })

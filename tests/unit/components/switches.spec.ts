@@ -23,4 +23,22 @@ describe('switches.vue', () => {
     const switchItems = wrapper.findAll('.switch-item')
     expect(switchItems.at(1).classes('active')).toBe(true)
   })
+  it('no pass props.switches', () => {
+    wrapper = shallowMount(Switches)
+    expect(wrapper.props('switches').length).toBe(0)
+  })
+  it('change active after item click', async () => {
+    wrapper = shallowMount(Switches, {
+      propsData: {
+        switches: ['我喜欢的', '最近听的']
+      }
+    })
+    const switchItems = wrapper.findAll('.switch-item')
+    switchItems.at(1).trigger('click')
+    wrapper.setProps({
+      active: 1
+    })
+    await wrapper.vm.$nextTick()
+    expect(wrapper.props('active')).toBe(1)
+  })
 })

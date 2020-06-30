@@ -148,7 +148,7 @@ export default router
 ```sh
 $ npm run serve
 ```
-启动完毕后，你将会看到`recommend`页面的内容，至此我们使用脚手架搭建项目就完毕了，下一步我们将按照一些工具
+启动完毕后，你将会看到`recommend`页面的内容，至此我们使用脚手架搭建项目就完毕了，下一步我们将安装一些工具。
 
 **注意：** 项目中需要使用到的图片、字体、以及样式等相关的东西需要自己去引入。
 
@@ -259,7 +259,7 @@ $ npm install @types/axios -D
   "message": ""
 }
 ```
-根据我们约定的响应结构，我们首选需要在`src/api`目录下新建`config.js`文件：
+根据我们约定的响应结构，我们首先需要在`src/api`目录下新建`config.js`文件：
 ```js
 // 0代表请求成功
 export const ERR_OK = 0
@@ -309,7 +309,7 @@ export default service
 最后，我们需要在`src/api`目录下去撰写我们的请求接口，这里以`song.ts`代码为例：
 ```ts
 import axios from '@/utils/axios'
-import { MusicResponse } from '@/types'
+import { MusicResponse } from '@/types/index'
 export function getLyric (mid: string): Promise<MusicResponse> {
   const url = '/api/lyric'
   const params = Object.assign({}, commonParams, {
@@ -385,7 +385,7 @@ module.exports = {
   coverageDirectory: '<rootDir>/tests/unit/coverage'
 }
 ```
-紧接着删除`example.spec.ts`文件名，并新建`tab.spec.ts`，我们以`Vue-Music`音乐App中的`tab`组件为例，其完整代码如下：
+紧接着删除`example.spec.ts`文件，并新建`tab.spec.ts`，我们`tab`组件为例，其完整代码如下：
 ```vue
 <template>
   <div class="m-tab">
@@ -419,7 +419,7 @@ export default class MTab extends Vue {
 }
 </script>
 ```
-根据`@/components/tab/index.vue`的代码，我们在`tab.spec.ts`撰写如下代码：
+根据`@/components/tab/index.vue`的代码，我们在`tab.spec.ts`撰写如下测试代码：
 ```ts
 import { shallowMount, Wrapper } from '@vue/test-utils'
 import { tabList } from '@/assets/js/data'
@@ -438,10 +438,19 @@ describe('tab.vue', () => {
   it('match snapshot', () => {
     expect(wrapper).toMatchSnapshot()
   })
-  it('props.list must passed', () => {
+  it('passed props.list', () => {
     expect(wrapper.props('list').length).toBe(tabList.length)
   })
-  it('render success tabList data', () => {
+  it('default activeIndex', () => {
+    expect(wrapper.vm.$data.activeIndex).toBe(0)
+  })
+  it('no passed props.list', () => {
+    wrapper = shallowMount(Tab, {
+      stubs: ['router-link']
+    })
+    expect(wrapper.props('list').length).toBe(0)
+  })
+  it('render success props.list', () => {
     const tabItems = wrapper.findAll('.tab-item')
     expect(tabItems.length).toBe(tabList.length)
   })
@@ -458,8 +467,17 @@ describe('tab.vue', () => {
 * `stubs`：意思是存根，如果我们的组件中存在`router-link`或者`router-view`，则需要在挂载组件的时候手动撰写对应的存根，否则会报错。
 * `toMatchSnapshot`：组件快照，使用快照后既意味着将当前组件的UI快照保存起来，如果下一次`tab`组件改动了，那么两次的快照会不匹配，从而导致`match snapshot`测试用例不通过。如果你是误改动，可以依据此提示信息进行还原，如果确认是最新的改动可以更新快照，更新后测试用例通过。
 
+**注意**：如果我们的`Prop`传递的字段是对象或者数组，而我们又提供了其`default`，根据`Vue`规定`default`必须为一个函数：
+```js
+// list default
+default () {
+  return []
+}
+```
+而在`Jest`中，这属于一个`Function`，如果我们没有测试到这个函数：既本例中不传递`list`参数，它会影响最后的`% Funcs`覆盖率，因此`it('no passed props.list')`测试用例不能少。`
 
-`VSCode`插件，在使用`VSCode`编辑器撰写`Jest`测试用例的时候，我们可以按照`Jest`插件。按照完毕后，它可以在我们不运行`npm run test:unit`的情况就提示我们测试用例是否通过。
+
+`VSCode`插件，在使用`VSCode`编辑器撰写`Jest`测试用例的时候，我们可以按照`Jest`插件。安装完毕后，它可以在我们不运行`npm run test:unit`的情况就提示测试用例是否通过。
 ![Jest插件](https://user-gold-cdn.xitu.io/2020/6/29/172feefae987bdcc?w=1192&h=642&f=png&s=105692)
 
 最后，我们使用如下命令去运行测试用例：
@@ -485,15 +503,192 @@ $ npm run test:unit
 ## Vue组件的TS写法
 **注意**：此部分只涉及项目中已经使用过的知识，更多内容请阅读官方文档。
 ### 生命周期
+生命周期的写法非常简单，唯一一点值得注意的地方就是需要在生命周期函数前面添加`private`修饰符：
+```ts
+import { Component, Vue } from 'vue-property-decorator'
+@Component
+export default class HelloWorld extends Vue {
+  private created () {
+    // TDD
+  }
+  private mounted () {
+    // TDD
+  }
+  private activated () {
+    // TDD
+  }
+}
+```
 ### 响应式变量和普遍变量
+在不使用`TS`写`Vue`组件之前，我们可以把不需要响应式的变量直接挂在到`this`上，而不是全部都写在`data`上：
+```ts
+export default {
+  data () {
+    return {
+      // name 和 age为响应式变量，其值更新后会触发视图更新
+      name: 'AAA',
+      age: 21
+    }
+  },
+  created () {
+    // addres为普通变量，其值改变不会触发视图更新
+    this.address = '广东省'
+  },
+  mounted () {
+    console.log(this.address) // 广东省
+  }
+}
+```
+
+在使用`TS`写`Vue`组件时，如果我们为其提供一个默认值那么他会被定义为响应式变量，相反不提供默认值则为非响应式变量：
+```ts
+import { Component, Vue } from 'vue-property-decorator'
+@Component
+export default class HelloWorld extends Vue {
+  private name = 'AAA'
+  private age = 21
+  private address!: string
+
+  private created () {
+    this.address = '广东省'
+  }
+  private mounted () {
+    console.log(this.address) // 广东省
+  }
+}
+```
+如果你使用`devtools`观察`HelloWorld.vue`组件的话，它的`data`里面只有`name`和`age`两个变量，这是十分符合我们的预期的。
 ### Prop和PropSync
+在使用`TS`写`Vue`组件时，我们使用`Prop`和`PropSync`来分别处理不带`.sync`和带`.sync`的参数：
+```ts
+import { Component, Prop, PropSync, Vue } from 'vue-property-decorator'
+@Component
+export default class Recommend extends Vue {
+  @Prop({ type: String, default: '' }) name!: string
+  @Prop({ type: Number, default: 0 }) age!: number
+  @PropSync('active', { type: Number, default: 0 }) activeIndex!: number
+}
+```
+以上代码用相当于：
+```js
+export default {
+  props: {
+    name: {
+      type: String,
+      default: ''
+    },
+    age: {
+      type: Number,
+      default: 0
+    },
+    active: {
+      type: Number,
+      default: 0
+    }
+  },
+  computed: {
+    activeIndex: {
+      get () {
+        return this.active
+      },
+      set (val) {
+        this.$emit('update:active', val)
+      }
+    }
+  }
+}
+```
 ### 组件注册
+`@Component`可以接受参数，我们可以在其中传入`Components`，我们以`App.vue`为例：
+```ts
+import MHeader from '@/components/header/index.vue'
+import MTab from '@/components/tab/index.vue'
+import Player from '@/components/player/index.vue'
+import { Component, Vue } from 'vue-property-decorator'
+@Component({
+  components: {
+    MHeader,
+    MTab,
+    Player
+  }
+})
+export default class App extends Vue {
+}
+```
 ### 计算属性
-### 获取Getters
+如果你对`class`有一点了解的话，那么你会非常容易理解计算属性的写法，这里以`@/components/player/index.vue`组件代码为例：
+```ts
+import { Component, Vue } from 'vue-property-decorator'
+@Component
+export default class MPlayer extends Vue {
+  private get percent () {
+    return this.currentTime / this.currentSong.duration
+  }
+  private set percent (percent: number) {
+    this.currentTime = percent * this.currentSong.duration
+    this.currentLyric && this.currentLyric.seek(this.currentTime * 1000)
+  }
+
+  private get playIcon () {
+    return this.playing ? 'icon-pause' : 'icon-play'
+  }
+  private get miniPlayIcon () {
+    return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
+  }
+}
+```
+### 获取Getters和属性监听
+可以使用`@Watch`来监听某一个变量，这里依然以`@/components/player/index.vue`组件代码为例：
+```ts
+import { Component, Vue, Watch } from 'vue-property-decorator'
+import { Getter} from 'vuex-class'
+@Component
+export default class MPlayer extends Vue {
+  @Getter('playing') playing!: boolean
+  @Watch('playing')
+  onPlayingChange (playing: boolean) {
+    playing ? this.audio.play() : this.audio.pause()
+  }
+}
+```
 ### 获取Mutations和Actions
+获取`Mutation`和`Action`与获取`Getters`形式类似，以`@/components/player/index.vue`组件代码为例：
+```ts
+import { Component, Vue, Watch } from 'vue-property-decorator'
+import { Mutation, Action} from 'vuex-class'
+@Component
+export default class MPlayer extends Vue {
+  @Mutation('player/SET_FULL_SCREEN') setFullScreen!: (fullscreen: boolean) => void
+  @Mutation('player/SET_CURRENT_INDEX') setCurrentIndex!: (index: number) => void
+  @Action('history/setPlayHistory') setPlayHistory!: (song: Song) => void
+}
+```
 ### 组件Mixin
-### $refs类型以及事件类型
-### 动态属性类型
+组件`mixin`有2种方式，第一种可以在`@Component`里面传递`mixins`参数，第二种可以使用`Mixins`，然后让组件去`extends`，以`@views/search/index.vue`代码为例：
+```ts
+import Search from '@/assets/js/search'
+import PlayList from '@/assets/js/playList'
+import { Component, Mixins, Vue } from 'vue-property-decorator'
+@Component({
+  mixins: [Search, PlayList]
+})
+export default class MSearch extends Vue {
+}
+// 省略其它代码
+```
+**注意**：这种`mixin`方式，可以正常运行，但是`TypeScript`可能会提示找不到`mixins`模块里面的某个方法或者属性，我们更推荐使用第二种方式。
+
+```ts
+import Search from '@/assets/js/search'
+import PlayList from '@/assets/js/playList'
+import { Component, Mixins } from 'vue-property-decorator'
+@Component
+export default class MSearch extends Mixins(Search, PlayList) {
+  // 省略其它代码
+}
+```
+
+### Ref类型
 
 
 ## Jest和Vue-Test-Utils准备知识

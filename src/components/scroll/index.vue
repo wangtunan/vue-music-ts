@@ -16,6 +16,12 @@ export default class Scroll extends Vue {
   @Prop({ type: Boolean, default: false }) listenScroll!: boolean
   @Prop({ type: String, default: DirectionEnum.vertical }) direction!: Direction
   @Prop({ type: Array, default () { return [] } }) data!: any
+  @Watch('data')
+  onDataChange () {
+    this.$nextTick(() => {
+      this.refresh()
+    })
+  }
 
   // methods方法
   public enable () {
@@ -35,9 +41,6 @@ export default class Scroll extends Vue {
   }
   private initScroll () {
     const scrollDOM = this.$refs.Scroll as HTMLElement
-    if (!scrollDOM) {
-      return
-    }
     this.scroll = new BScroll(scrollDOM, {
       click: this.click,
       probeType: this.probeType,
@@ -52,14 +55,6 @@ export default class Scroll extends Vue {
         this.$emit('scroll', pos)
       })
     }
-  }
-
-  // watch
-  @Watch('data')
-  onDataChange () {
-    this.$nextTick(() => {
-      this.scroll.refresh()
-    })
   }
 
   // 生命周期
