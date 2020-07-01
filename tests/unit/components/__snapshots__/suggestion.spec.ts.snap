@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`suggestion.vue match snaphots 1`] = `
+<div class="suggestion-list">
+  <ul style="display: none;"></ul>
+  <div class="m-empty suggestion-empty"><img src="" alt="" class="image">
+    <p class="title">抱歉，暂无数据</p>
+  </div>
+</div>
+`;

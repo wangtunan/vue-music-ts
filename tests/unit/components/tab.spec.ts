@@ -15,10 +15,19 @@ describe('tab.vue', () => {
   it('match snapshot', () => {
     expect(wrapper).toMatchSnapshot()
   })
-  it('props.list must passed', () => {
+  it('passed props.list', () => {
     expect(wrapper.props('list').length).toBe(tabList.length)
   })
-  it('render success tabList data', () => {
+  it('default activeIndex', () => {
+    expect(wrapper.vm.$data.activeIndex).toBe(0)
+  })
+  it('no passed props.list', () => {
+    wrapper = shallowMount(Tab, {
+      stubs: ['router-link']
+    })
+    expect(wrapper.props('list').length).toBe(0)
+  })
+  it('render success props.list', () => {
     const tabItems = wrapper.findAll('.tab-item')
     expect(tabItems.length).toBe(tabList.length)
   })

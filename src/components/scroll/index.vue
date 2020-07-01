@@ -20,7 +20,7 @@ export default class Scroll extends Vue {
   @Watch('data')
   onDataChange () {
     this.$nextTick(() => {
-      this.scroll.refresh()
+      this.refresh()
     })
   }
 

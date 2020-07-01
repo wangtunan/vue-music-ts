@@ -56,8 +56,6 @@ export default class SearchSuggestion extends Vue {
       const singer = new Singer(album.singermid, album.singername)
       this.setSinger(singer)
       this.$router.push(`/search/${singer.id}`)
-    } else {
-      // TDD
     }
     this.$emit('select', item)
   }
