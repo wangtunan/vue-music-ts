@@ -1,6 +1,6 @@
 <template>
-  <div class="m-singer" ref="Singer">
-    <list-view :list="singerList" @select="handleSelectSinger" ref="SingerScroll" />
+  <div class="m-singer" ref="singer">
+    <list-view :list="singerList" @select="handleSelectSinger" ref="singerScroll" />
     <loading v-show="!singerList.length"/>
     <router-view></router-view>
   </div>
@@ -10,7 +10,7 @@ import ListView from '@/components/list-view/index.vue'
 import Loading from '@/components/loading/index.vue'
 import Singer from '@/assets/js/singer'
 import PlayList from '@/assets/js/playList'
-import { Component, Mixins } from 'vue-property-decorator'
+import { Component, Mixins, Ref } from 'vue-property-decorator'
 import { Mutation } from 'vuex-class'
 import { ListViewConfig, MusicSingerConfig, MapListConfig } from '@/types/singer'
 import { getSingerList } from '@/api/singer'
@@ -26,22 +26,20 @@ const HOT_NAME = '热门'
 })
 export default class MSinger extends Mixins(PlayList) {
   private singerList: ListViewConfig[] = []
-  // vuex
+  @Ref('singer') readonly singerRef!: HTMLElement
+  @Ref('singerScroll') readonly singerScrollRef!: ListView
   @Mutation('singer/SET_SINGER') setSinger!: (singer: Singer) => void
 
-  // methods方法
   public handlePlayList () {
     const bottom = this.playList.length > 0 ? `${pxToVw(60)}vw` : '0'
-    const singer = this.$refs.Singer as HTMLElement
-    const singerScroll = this.$refs.SingerScroll as ListView
-    singer.style.bottom = bottom
-    singerScroll.handleRefresh()
+    this.singerRef.style.bottom = bottom
+    this.singerScrollRef.handleRefresh()
   }
   public handleSelectSinger (singer: Singer) {
     this.$router.push(`/singer/${singer.id}`)
     this.setSinger(singer)
   }
-  getSingerListData () {
+  private getSingerListData () {
     getSingerList().then(res => {
       const { code, data } = res
       if (code === ERR_OK) {
@@ -49,7 +47,7 @@ export default class MSinger extends Mixins(PlayList) {
       }
     })
   }
-  normalizeSingerData (data: MusicSingerConfig[]): ListViewConfig[] {
+  private normalizeSingerData (data: MusicSingerConfig[]): ListViewConfig[] {
     const hot: ListViewConfig = {
       title: HOT_NAME,
       items: []

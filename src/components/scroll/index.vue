@@ -1,23 +1,29 @@
 <template>
-  <div ref="Scroll">
+  <div ref="scroll">
     <slot />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
+import { Component, Prop, Vue, Watch, Ref } from 'vue-property-decorator'
 import { Direction, DirectionEnum } from '@/types/index'
 import BScroll from 'better-scroll'
 @Component
 export default class Scroll extends Vue {
   public scroll!: BScroll
+  @Ref('scroll') readonly scrollRef!: HTMLElement
   @Prop({ type: Number, default: 1 }) probeType!: number
   @Prop({ type: Boolean, default: false }) click!: boolean
   @Prop({ type: Boolean, default: false }) listenScroll!: boolean
   @Prop({ type: String, default: DirectionEnum.vertical }) direction!: Direction
   @Prop({ type: Array, default () { return [] } }) data!: any
+  @Watch('data')
+  onDataChange () {
+    this.$nextTick(() => {
+      this.scroll.refresh()
+    })
+  }
 
-  // methods方法
   public enable () {
     this.scroll && this.scroll.enable()
   }
@@ -34,18 +40,13 @@ export default class Scroll extends Vue {
     this.scroll && this.scroll.scrollToElement.apply(this.scroll, args)
   }
   private initScroll () {
-    const scrollDOM = this.$refs.Scroll as HTMLElement
-    if (!scrollDOM) {
-      return
-    }
-    this.scroll = new BScroll(scrollDOM, {
+    this.scroll = new BScroll(this.scrollRef, {
       click: this.click,
       probeType: this.probeType,
       eventPassthrough: this.direction === DirectionEnum.horizontal ? DirectionEnum.vertical : DirectionEnum.horizontal
     })
     this.listenEvent()
   }
-
   private listenEvent () {
     if (this.listenScroll) {
       this.scroll.on('scroll', (pos) => {
@@ -54,15 +55,6 @@ export default class Scroll extends Vue {
     }
   }
 
-  // watch
-  @Watch('data')
-  onDataChange () {
-    this.$nextTick(() => {
-      this.scroll.refresh()
-    })
-  }
-
-  // 生命周期
   private mounted () {
     this.$nextTick(() => {
       this.initScroll()

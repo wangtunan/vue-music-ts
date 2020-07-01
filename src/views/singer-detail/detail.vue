@@ -21,7 +21,6 @@ export default class SingerDetail extends Vue {
   private songs: Song[] = []
   @Getter('singer') singer!: Singer
 
-  // methods方法
   private getSingerDetail () {
     if (!this.singer.id) {
       this.$router.replace('/singer')
@@ -47,7 +46,6 @@ export default class SingerDetail extends Vue {
     return processSongUrl(result)
   }
 
-  // 生命周期
   private mounted () {
     this.getSingerDetail()
   }

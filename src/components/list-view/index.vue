@@ -1,6 +1,6 @@
 <template>
   <scroll
-    ref="ListView"
+    ref="listView"
     class="m-listview"
     :data="list"
     :probe-type="3"
@@ -9,7 +9,7 @@
     <!-- 歌手列表 -->
     <ul>
       <li
-        ref="ListGroup"
+        ref="listGroup"
         v-for="(group, index) in list"
         :key="index"
         class="listview-item">
@@ -35,7 +35,7 @@
       @touchmove.stop="handleTouchMove"
       @touchend.stop="showAnchorName = false">
       <li
-        ref="Anchor"
+        ref="anchor"
         v-for="(item, index) in shortcutList"
         :key="index"
         class="shortcut-item"
@@ -50,7 +50,7 @@
     <div v-show="showAnchorName" class="anchor-name">{{currentAnchorName}}</div>
 
     <!-- 锚点固定项 -->
-    <div v-if="fixedTitle" ref="FixedTitle" class="anchor-fixed">
+    <div v-if="fixedTitle" ref="fixedTitle" class="anchor-fixed">
       <p>{{fixedTitle}}</p>
     </div>
   </scroll>
@@ -61,7 +61,7 @@ import Singer from '@/assets/js/singer'
 import { ListViewConfig, TouchConfig } from '@/types/singer'
 import { Position } from '@/types/index'
 import { getDomData, getVendorsPrefix } from '@/utils/dom'
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
+import { Component, Vue, Prop, Watch, Ref } from 'vue-property-decorator'
 const transform = getVendorsPrefix('transform')
 @Component({
   components: {
@@ -78,81 +78,11 @@ export default class ListView extends Vue {
   private scrollY = -1
   private diffY = 0
   private showAnchorName = false
+  @Ref('listView') readonly listViewRef!: Scroll
+  @Ref('listGroup') readonly listGroupRef!: HTMLElement[]
+  @Ref('anchor') readonly anchorRef!: HTMLElement[]
+  @Ref('fixedTitle') readonly fixedTitleRef!: HTMLElement
   @Prop({ type: Array, default () { return [] } }) list!: ListViewConfig[]
-
-  // methods方法
-  public handleTouchStart (e: TouchEvent) {
-    const anchorIndex = getDomData(e.target as HTMLElement, 'index')
-    this.touch.y1 = e.touches[0].pageY
-    this.touch.anchorIndex = anchorIndex
-    this.showAnchorName = true
-    this.scrollTo(anchorIndex as string)
-  }
-  public handleTouchMove (e: TouchEvent) {
-    this.touch.y2 = e.touches[0].pageY
-    const diffIndex = (this.touch.y2 - this.touch.y1) / this.anchorHeight | 0
-    const anchorIndex = parseInt(this.touch.anchorIndex as string) + diffIndex
-    this.scrollTo(anchorIndex)
-  }
-  public handleScroll (pos: Position) {
-    this.scrollY = pos.y
-  }
-  public handleSingerClick (singer: Singer) {
-    this.$emit('select', singer)
-  }
-  public handleRefresh () {
-    ;(this.$refs.ListView as Scroll).refresh()
-  }
-  private scrollTo (index: string | number | null) {
-    if (!index) {
-      return
-    }
-    const listView = this.$refs.ListView as Scroll
-    let newIndex = +index
-    if (newIndex < 0) {
-      newIndex = 0
-    } else if (newIndex > this.listHeight.length - 2) {
-      newIndex = this.listHeight.length - 2
-    }
-    listView.scrollToElement((this.$refs.ListGroup as HTMLElement[])[newIndex], 0)
-    this.scrollY = listView.scroll.y
-  }
-  private computedHeightList () {
-    const heightList = [0]
-    let height = 0
-    const listGroup: HTMLElement[] = this.$refs.ListGroup as HTMLElement[]
-    for (let index = 0; index < listGroup.length; index++) {
-      const groupItem: HTMLElement = listGroup[index]
-      height += groupItem.clientHeight
-      heightList.push(height)
-    }
-    this.listHeight = heightList
-  }
-  private computedAnchorHeight () {
-    const anchorList = this.$refs.Anchor as HTMLElement[]
-    this.anchorHeight = anchorList[0].clientHeight
-  }
-  private computedTitleHeight () {
-    const listGroup = this.$refs.ListGroup as HTMLElement[]
-    this.titleHeight = (listGroup[0].firstChild as HTMLElement).clientHeight
-  }
-
-  // 计算属性
-  private get shortcutList () {
-    return this.list.map(item => item.title.substring(0, 1))
-  }
-  private get currentAnchorName () {
-    return this.shortcutList[this.shortcutIndex]
-  }
-  private get fixedTitle () {
-    if (this.scrollY > 0) {
-      return ''
-    }
-    const currentItem = this.list[this.shortcutIndex]
-    return currentItem ? currentItem.title : ''
-  }
-
-  // watch监听
   @Watch('list')
   private onListChange () {
     this.$nextTick(() => {
@@ -187,13 +117,76 @@ export default class ListView extends Vue {
     if (this.fixedTop === fixedTop) {
       return
     }
-    const fixedTitle = this.$refs.FixedTitle as HTMLElement
     this.fixedTop = fixedTop
-    // @ts-ignore
-    fixedTitle.style[transform] = `translate3d(0, ${this.fixedTop}px, 0)`
+    this.fixedTitleRef.style[transform as any] = `translate3d(0, ${this.fixedTop}px, 0)`
   }
 
-  // 生命周期
+  public handleTouchStart (e: TouchEvent) {
+    const anchorIndex = getDomData(e.target as HTMLElement, 'index')
+    this.touch.y1 = e.touches[0].pageY
+    this.touch.anchorIndex = anchorIndex
+    this.showAnchorName = true
+    this.scrollTo(anchorIndex as string)
+  }
+  public handleTouchMove (e: TouchEvent) {
+    this.touch.y2 = e.touches[0].pageY
+    const diffIndex = (this.touch.y2 - this.touch.y1) / this.anchorHeight | 0
+    const anchorIndex = parseInt(this.touch.anchorIndex as string) + diffIndex
+    this.scrollTo(anchorIndex)
+  }
+  public handleScroll (pos: Position) {
+    this.scrollY = pos.y
+  }
+  public handleSingerClick (singer: Singer) {
+    this.$emit('select', singer)
+  }
+  public handleRefresh () {
+    this.listViewRef.refresh()
+  }
+  private scrollTo (index: string | number | null) {
+    if (!index) {
+      return
+    }
+    let newIndex = +index
+    if (newIndex < 0) {
+      newIndex = 0
+    } else if (newIndex > this.listHeight.length - 2) {
+      newIndex = this.listHeight.length - 2
+    }
+    this.listViewRef.scrollToElement(this.listGroupRef[newIndex], 0)
+    this.scrollY = this.listViewRef.scroll.y
+  }
+  private computedHeightList () {
+    const heightList = [0]
+    let height = 0
+    for (let index = 0; index < this.listGroupRef.length; index++) {
+      const groupItem: HTMLElement = this.listGroupRef[index]
+      height += groupItem.clientHeight
+      heightList.push(height)
+    }
+    this.listHeight = heightList
+  }
+  private computedAnchorHeight () {
+    this.anchorHeight = this.anchorRef[0].clientHeight
+  }
+  private computedTitleHeight () {
+    this.titleHeight = (this.listGroupRef[0].firstChild as HTMLElement).clientHeight
+  }
+
+  private get shortcutList () {
+    return this.list.map(item => item.title.substring(0, 1))
+  }
+  private get currentAnchorName () {
+    return this.shortcutList[this.shortcutIndex]
+  }
+  private get fixedTitle () {
+    if (this.scrollY > 0) {
+      return ''
+    }
+    const currentItem = this.list[this.shortcutIndex]
+    return currentItem ? currentItem.title : ''
+  }
+
   private created () {
     this.touch = {
       y1: 0,

@@ -23,7 +23,7 @@
           @touchstart.prevent="handleTouchStart"
           @touchmove.prevent="handleTouchMove"
           @touchend="handleTouchEnd">
-          <div class="middle-left" ref="PlayerLeft">
+          <div class="middle-left" ref="playerLeft">
             <div class="cd-box">
               <div class="cd-image-box">
                 <img :src="currentSong.image" class="cd-image" alt="">
@@ -33,11 +33,11 @@
               <p class="current-lyric">{{playingLyric}}</p>
             </div>
           </div>
-          <scroll class="middle-right" ref="PlayerLyric" :data="currentLyric && currentLyric.lines">
+          <scroll class="middle-right" ref="playerLyric" :data="currentLyric && currentLyric.lines">
             <div class="lyric-box">
               <div v-if="currentLyric">
                 <p
-                  ref="LyricLine"
+                  ref="lyricLine"
                   v-for="(item, index) in currentLyric.lines"
                   :key="index"
                   class="lyric-text"
@@ -107,7 +107,7 @@
 
     <!-- audio -->
     <audio
-      ref="Audio"
+      ref="audio"
       @playing="handleAudioReady"
       @timeupdate="handleTimeUpdate"
       @pause="handleAudioPaused"
@@ -126,7 +126,7 @@ import Scroll from '@/components/scroll/index.vue'
 import ProgressBar from '@/components/progress-bar/index.vue'
 import ProgressCircle from '@/components/progress-circle/index.vue'
 import Lyric from 'lyric-parser'
-import { Component, Mixins, Watch } from 'vue-property-decorator'
+import { Component, Mixins, Watch, Ref } from 'vue-property-decorator'
 import { Getter, Mutation, Action } from 'vuex-class'
 import { formatSecond } from '@/utils/utils'
 import { LyricParams } from '@/types/player'
@@ -156,11 +156,11 @@ export default class MPlayer extends Mixins(Player) {
   private currentLyric: Lyric | null = null
   private currentLineNum = 0
   private playingLyric = ''
-  private audio!: HTMLAudioElement
-  private lyricLines!: HTMLElement[]
-  private playerLeft!: HTMLElement
-  private playerLyric!: Scroll
   private touch!: PlayerTouch
+  @Ref('playerLeft') readonly playerLeftRef!: HTMLElement
+  @Ref('playerLyric') readonly playerLyricRef!: Scroll
+  @Ref('lyricLine') readonly lyricLinesRef!: HTMLElement[]
+  @Ref('audio') readonly audioRef!: HTMLAudioElement
   @Getter('fullScreen') fullScreen!: boolean
   @Getter('playing') playing!: boolean
   @Getter('playList') playList!: Song[]
@@ -170,7 +170,7 @@ export default class MPlayer extends Mixins(Player) {
   @Action('history/setPlayHistory') setPlayHistory!: (song: Song) => void
   @Watch('playing')
   onPlayingChange (playing: boolean) {
-    playing ? this.audio.play() : this.audio.pause()
+    playing ? this.audioRef.play() : this.audioRef.pause()
   }
   @Watch('currentSong')
   onSongChange (newSong: Song, oldSong: Song) {
@@ -185,15 +185,11 @@ export default class MPlayer extends Mixins(Player) {
       this.currentTime = 0
       this.playingLyric = ''
     }
-    if (!this.audio) {
-      this.audio = this.audio = this.$refs.Audio as HTMLAudioElement
-    }
-    this.audio.src = newSong.url
-    this.audio.play()
+    this.audioRef.src = newSong.url
+    this.audioRef.play()
     this.getLyric()
   }
 
-  // methods
   public handleCollapseClick () {
     this.setFullScreen(false)
   }
@@ -201,7 +197,7 @@ export default class MPlayer extends Mixins(Player) {
     this.setFullScreen(true)
   }
   public handlePercentChanged () {
-    this.audio.currentTime = this.currentTime
+    this.audioRef.currentTime = this.currentTime
     if (!this.playing) {
       this.handleTogglePlay()
     }
@@ -259,12 +255,6 @@ export default class MPlayer extends Mixins(Player) {
     if (!this.touch.initiated) {
       return
     }
-    if (!this.lyricLines) {
-      this.lyricLines = this.$refs.LyricLine as HTMLElement[]
-    }
-    if (!this.playerLyric) {
-      this.playerLyric = this.$refs.PlayerLyric as Scroll
-    }
     const touch = e.touches[0]
     const diffX = touch.pageX - this.touch.startX
     const diffY = touch.pageY - this.touch.startY
@@ -286,12 +276,12 @@ export default class MPlayer extends Mixins(Player) {
     }
     const width = this.currentShow === 'cd' ? 0 : -window.innerWidth
     const offsetWidth = Math.min(0, Math.max(-window.innerWidth, width + diffX))
-    const playerLyricDom = this.playerLyric.$el as HTMLElement
+    const playerLyricDom = this.playerLyricRef.$el as HTMLElement
     this.touch.percent = Math.abs(offsetWidth / window.innerWidth)
     playerLyricDom.style[transform as any] = `translate3d(${offsetWidth}px, 0, 0)`
     playerLyricDom.style[transitionDuration as any] = '0'
-    this.playerLeft.style.opacity = `${1 - this.touch.percent}`
-    this.playerLeft.style[transitionDuration as any] = '0'
+    this.playerLeftRef.style.opacity = `${1 - this.touch.percent}`
+    this.playerLeftRef.style[transitionDuration as any] = '0'
   }
   public handleTouchEnd () {
     if (!this.touch.moved) {
@@ -319,11 +309,11 @@ export default class MPlayer extends Mixins(Player) {
         opacity = 0
       }
     }
-    const playerLyricDom = this.playerLyric.$el as HTMLElement
+    const playerLyricDom = this.playerLyricRef.$el as HTMLElement
     playerLyricDom.style[transform as any] = `translate3d(${offsetWidth}px, 0, 0)`
     playerLyricDom.style[transitionDuration as any] = `${duration}ms`
-    this.playerLeft.style.opacity = `${opacity}`
-    this.playerLeft.style[transitionDuration as any] = `${duration}ms`
+    this.playerLeftRef.style.opacity = `${opacity}`
+    this.playerLeftRef.style[transitionDuration as any] = `${duration}ms`
     this.touch.initiated = false
   }
   private formatPlayerSecond (second: number) {
@@ -344,21 +334,14 @@ export default class MPlayer extends Mixins(Player) {
   private normalizeLyric ({ lineNum, txt }: LyricParams) {
     this.currentLineNum = lineNum
     this.playingLyric = txt
-    if (!this.playerLyric) {
-      this.playerLyric = this.$refs.PlayerLyric as Scroll
-    }
-    if (!this.lyricLines) {
-      this.lyricLines = this.$refs.LyricLine as HTMLElement[]
-    }
     if (lineNum > 5) {
-      const lineEl = this.lyricLines[(lineNum - 5) as any]
-      this.playerLyric.scrollToElement(lineEl, 1000)
+      const lineEl = this.lyricLinesRef[(lineNum - 5) as any]
+      this.playerLyricRef.scrollToElement(lineEl, 1000)
     } else {
-      this.playerLyric.scrollTo(0, 0, 1000)
+      this.playerLyricRef.scrollTo(0, 0, 1000)
     }
   }
 
-  // 计算属性
   private get percent () {
     return this.currentTime / this.currentSong.duration
   }
@@ -373,7 +356,6 @@ export default class MPlayer extends Mixins(Player) {
     return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
   }
 
-  // 生命周期
   private created () {
     this.touch = {
       initiated: false,
@@ -383,10 +365,6 @@ export default class MPlayer extends Mixins(Player) {
       startY: 0,
       percent: 0
     }
-  }
-  private mounted () {
-    this.audio = this.$refs.Audio as HTMLAudioElement
-    this.playerLeft = this.$refs.PlayerLeft as HTMLElement
   }
 }
 </script>

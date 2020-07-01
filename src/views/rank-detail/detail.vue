@@ -19,10 +19,8 @@ import { SongData } from '@/types/search'
 })
 export default class RankDetail extends Vue {
   private songs: Song[] = []
-  // vuex
   @Getter('topList') topList!: RankListConfig
 
-  // methods方法
   private getTopListData () {
     if (!this.topList.id) {
       this.$router.replace('/rank')
@@ -48,7 +46,6 @@ export default class RankDetail extends Vue {
     return processSongUrl(result)
   }
 
-  // 计算属性
   private get bgImage () {
     if (this.songs.length === 0) {
       return ''
@@ -56,7 +53,6 @@ export default class RankDetail extends Vue {
     return this.songs[0].image
   }
 
-  // 生命周期
   private mounted () {
     this.getTopListData()
   }

@@ -1,12 +1,12 @@
 <template>
-  <div class="m-search" ref="Search">
+  <div class="m-search" ref="search">
     <!-- 搜索 -->
     <div class="search-box">
-      <search-box ref="SearchBox" @search="handleSearch"/>
+      <search-box ref="searchBox" @search="handleSearch"/>
     </div>
 
     <!-- 热搜&搜索历史 -->
-    <scroll v-show="!keyword" :data="combineData" class="scroll-box" ref="SearchScroll">
+    <scroll v-show="!keyword" :data="combineData" class="scroll-box" ref="searchScroll">
       <div>
         <div v-if="hotKeyList.length" class="hot-box">
           <h3 class="hot-title">热门搜索</h3>
@@ -40,8 +40,8 @@
     </scroll>
 
     <!-- 搜索结果 -->
-    <div v-show="keyword" class="suggestion-box" ref="SearchSuggestionBox">
-      <suggestion :keyword="keyword" @select="handleSuggestionSelect" ref="SearchSuggestion" />
+    <div v-show="keyword" class="suggestion-box" ref="searchSuggestionBox">
+      <suggestion :keyword="keyword" @select="handleSuggestionSelect" ref="searchSuggestion" />
     </div>
 
     <!-- confirm -->
@@ -58,7 +58,7 @@ import Suggestion from '@/components/suggestion/index.vue'
 import Confirm from '@/components/confirm/index.vue'
 import Search from '@/assets/js/search'
 import PlayList from '@/assets/js/playList'
-import { Component, Mixins } from 'vue-property-decorator'
+import { Component, Mixins, Ref } from 'vue-property-decorator'
 import { HotKey } from '@/types/search'
 import { getHotKeys } from '@/api/search'
 import { ERR_OK } from '@/api/config'
@@ -75,22 +75,21 @@ const MAX_HOT = 10
 export default class MSearch extends Mixins(Search, PlayList) {
   private showConfirm = false
   private hotKeyList: string[] = []
+  @Ref('search') readonly searchRef!: HTMLElement
+  @Ref('searchBox') readonly searchBoxRef!: SearchBox
+  @Ref('searchScroll') readonly searchScrollRef!: Scroll
+  @Ref('searchSuggestion') readonly searchSuggestionRef!: Suggestion
+  @Ref('searchSuggestionBox') readonly searchSuggestionBoxRef!: HTMLElement
 
-  // methods方法
   public handlePlayList () {
     const bottom = this.playList.length > 0 ? `${pxToVw(60)}vw` : '0'
-    const Search = this.$refs.Search as HTMLElement
-    const searchSuggestionBox = this.$refs.SearchSuggestionBox as HTMLElement
-    const searchScroll = this.$refs.SearchScroll as Scroll
-    const searchSuggestion = this.$refs.SearchSuggestion as Suggestion
-    Search.style.bottom = bottom
-    searchSuggestionBox.style.bottom = bottom
-    searchScroll.refresh()
-    searchSuggestion.refresh()
+    this.searchRef.style.bottom = bottom
+    this.searchSuggestionBoxRef.style.bottom = bottom
+    this.searchScrollRef.refresh()
+    this.searchSuggestionRef.refresh()
   }
   public handleAddClick (keyword: string) {
-    const searchBox = this.$refs.SearchBox as SearchBox
-    searchBox.setKeyword(keyword)
+    this.searchBoxRef.setKeyword(keyword)
     this.handleAddHistory(keyword)
   }
   public handleSuggestionSelect () {
@@ -108,12 +107,10 @@ export default class MSearch extends Mixins(Search, PlayList) {
     })
   }
 
-  // 计算书型
   private get combineData () {
     return this.hotKeyList.concat(this.searchHistory)
   }
 
-  // 生命周期
   private mounted () {
     this.getHotKeysData()
     this.handlePlayList()

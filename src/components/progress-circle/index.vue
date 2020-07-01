@@ -1,8 +1,24 @@
 <template>
   <div class="m-progress-circle">
     <svg :style="svgStyle" viewBox="0 0 100 100" version="1.1">
-      <circle class="progress-background" r="50" cx="50" cy="50" fill="transparent" stroke-linecap="round" />
-      <circle class="progress-bar" r="50" cx="50" cy="50" fill="transparent" :stroke-dasharray="dashArray" :stroke-dashoffset="dashOffset" stroke-linecap="round" />
+      <circle
+        class="progress-background"
+        r="50"
+        cx="50"
+        cy="50"
+        fill="transparent"
+        stroke-linecap="round"
+      />
+      <circle
+        class="progress-bar"
+        r="50"
+        cx="50"
+        cy="50"
+        fill="transparent"
+        :stroke-dasharray="dashArray"
+        :stroke-dashoffset="dashOffset"
+        stroke-linecap="round"
+      />
     </svg>
     <slot />
   </div>

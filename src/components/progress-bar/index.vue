@@ -1,5 +1,5 @@
 <template>
-  <div class="m-progress-bar" ref="ProgressBar" @click="handleProgressClick">
+  <div class="m-progress-bar" ref="progressBar" @click="handleProgressClick">
     <div class="progress-bar-inner">
       <div class="progress-line" ref="ProgressLine"></div>
       <div
@@ -7,15 +7,14 @@
         ref="ProgressBtn"
         @touchstart.prevent="handleTouchStart"
         @touchmove.prevent="handleTouchMove"
-        @touchend="handleTouchEnd"
-      >
+        @touchend="handleTouchEnd">
         <div class="progress-btn"></div>
       </div>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue, PropSync, Watch } from 'vue-property-decorator'
+import { Component, Vue, PropSync, Watch, Ref } from 'vue-property-decorator'
 import { getVendorsPrefix } from '@/utils/dom'
 const transform = getVendorsPrefix('transform')
 interface ProgressTouch {
@@ -26,18 +25,17 @@ interface ProgressTouch {
 @Component
 export default class ProgressBar extends Vue {
   private touch!: ProgressTouch
-  private progressBar!: HTMLElement
-  private progressLine!: HTMLElement
-  private progressBtn!: HTMLElement
+  @Ref('progressBar') readonly progressBarRef!: HTMLElement
+  @Ref('progressLine') readonly progressLineRef!: HTMLElement
+  @Ref('progressBtn') readonly progressBtnRef!: HTMLElement
   @PropSync('percent', { type: Number }) localPercent!: number
   @Watch('localPercent')
   onPercentChange (newPercent: number) {
     this.computedProgressOffset(newPercent)
   }
 
-  // methods
   public handleProgressClick (e: MouseEvent) {
-    const rect = this.progressBar.getBoundingClientRect()
+    const rect = this.progressBarRef.getBoundingClientRect()
     const offset = e.pageX - rect.left
     this.setProgressOffset(offset)
     this.computedPrcent()
@@ -46,7 +44,7 @@ export default class ProgressBar extends Vue {
   public handleTouchStart (e: TouchEvent) {
     this.touch.initial = true
     this.touch.startX = e.touches[0].pageX
-    this.touch.left = this.progressLine.clientWidth
+    this.touch.left = this.progressLineRef.clientWidth
   }
   public handleTouchMove (e: TouchEvent) {
     if (!this.touch.initial) {
@@ -69,29 +67,24 @@ export default class ProgressBar extends Vue {
     }
   }
   private setProgressOffset (offset: number) {
-    this.progressLine.style.width = `${offset}px`
-    this.progressBtn.style[transform as any] = `translate3d(${offset}px, 0, 0)`
+    this.progressLineRef.style.width = `${offset}px`
+    this.progressBtnRef.style[transform as any] = `translate3d(${offset}px, 0, 0)`
   }
   private computedPrcent () {
-    const lineWidth = this.progressLine.clientWidth
+    const lineWidth = this.progressLineRef.clientWidth
     this.localPercent = lineWidth / this.barWidth
   }
 
-  // 计算属性
   private get barWidth () {
-    return this.progressBar.clientWidth - this.progressBtn.clientWidth / 2
+    return this.progressBarRef.clientWidth - this.progressBtnRef.clientWidth / 2
   }
 
-  // 生命周期
   private mounted () {
     this.touch = {
       initial: false,
       startX: 0,
       left: 0
     }
-    this.progressBar = this.$refs.ProgressBar as HTMLElement
-    this.progressLine = this.$refs.ProgressLine as HTMLElement
-    this.progressBtn = this.$refs.ProgressBtn as HTMLElement
   }
 }
 </script>

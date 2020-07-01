@@ -1,6 +1,6 @@
 <template>
   <transition appear name="slide">
-    <div class="m-user" ref="User">
+    <div class="m-user" ref="user">
       <!-- 头部 -->
       <div class="user-header">
         <div class="user-back" @click="handleBackClick">
@@ -21,7 +21,7 @@
 
       <!-- 列表 -->
       <div v-show="songs.length" class="user-list">
-        <scroll ref="UserScroll" :data="songs" class="user-list-scroll">
+        <scroll ref="userScroll" :data="songs" class="user-list-scroll">
           <div class="user-list-inner">
             <song-list :list="songs" />
           </div>
@@ -40,7 +40,7 @@ import SongList from '@/components/song-list/index.vue'
 import Empty from '@/components/empty/index.vue'
 import Song from '@/assets/js/song'
 import PlayList from '@/assets/js/playList'
-import { Component, Mixins } from 'vue-property-decorator'
+import { Component, Mixins, Ref } from 'vue-property-decorator'
 import { Getter, Action } from 'vuex-class'
 import { pxToVw } from '@/utils/utils'
 @Component({
@@ -54,17 +54,16 @@ import { pxToVw } from '@/utils/utils'
 export default class MUser extends Mixins(PlayList) {
   private switches!: string[]
   private active = 0
+  @Ref('user') readonly userRef!: HTMLElement
+  @Ref('userScroll') readonly userScrollRef!: Scroll
   @Getter('favoriteList') favoriteList!: Song[]
   @Getter('playHistory') playHistory!: Song[]
   @Action('player/randomPlay') randomPlay!: (list: Song[]) => void
 
-  // methods方法
   public handlePlayList () {
     const bottom = this.playList.length > 0 ? `${pxToVw(60)}vw` : '0'
-    const User = this.$refs.User as HTMLElement
-    const userScroll = this.$refs.UserScroll as Scroll
-    User.style.bottom = bottom
-    userScroll.refresh()
+    this.userRef.style.bottom = bottom
+    this.userScrollRef.refresh()
   }
   public handleBackClick () {
     this.$router.back()
@@ -73,7 +72,6 @@ export default class MUser extends Mixins(PlayList) {
     this.randomPlay(this.songs)
   }
 
-  // 计算属性
   private get emptyTitle () {
     return this.active === 0 ? '暂无收藏歌曲' : '你还没有听过歌曲'
   }
@@ -81,7 +79,6 @@ export default class MUser extends Mixins(PlayList) {
     return this.active === 0 ? this.favoriteList : this.playHistory
   }
 
-  // 生命周期
   private created () {
     this.switches = ['我喜欢的', '最近听的']
   }

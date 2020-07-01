@@ -1,16 +1,16 @@
 <template>
   <div class="m-music-list">
     <!-- 头部 -->
-    <div ref="MusicHeader" class="music-list-header">
+    <div ref="musicHeader" class="music-list-header">
       <span class="icon-back" @click="handleBackClick"></span>
       <h1 class="title">{{title}}</h1>
     </div>
 
     <!-- 图片&按钮 -->
-    <div ref="MusicImage" class="music-list-image" :style="bgStyle">
+    <div ref="musicImage" class="music-list-image" :style="bgStyle">
       <div class="image-cover"></div>
       <div v-show="songs.length" class="play-box">
-        <div ref="PlayBtn" class="play-btn" @click="handleRandomClick">
+        <div ref="playBtn" class="play-btn" @click="handleRandomClick">
           <i class="icon-play"></i>
           <span class="btn-text">随机播放全部</span>
         </div>
@@ -18,11 +18,11 @@
     </div>
 
     <!-- layer -->
-    <div ref="MusicLayer" class="music-list-layer"></div>
+    <div ref="musicLayer" class="music-list-layer"></div>
 
     <!-- 列表 -->
     <scroll
-      ref="MusicScroll"
+      ref="musicScroll"
       class="music-list-scroll"
       :data="songs"
       :probe-type="3"
@@ -40,7 +40,7 @@ import Loading from '@/components/loading/index.vue'
 import SongList from '@/components/song-list/index.vue'
 import Song from '@/assets/js/song'
 import PlayList from '@/assets/js/playList'
-import { Component, Prop, Watch, Mixins } from 'vue-property-decorator'
+import { Component, Prop, Watch, Mixins, Ref } from 'vue-property-decorator'
 import { Position } from '@/types/index'
 import { SelectPlay } from '@/types/player'
 import { getVendorsPrefix } from '@/utils/dom'
@@ -57,11 +57,14 @@ const transform = getVendorsPrefix('transform')
 export default class MusicList extends Mixins(PlayList) {
   private headerHeigth!: number
   private minTranslateY!: number
-  private playBtn!: HTMLElement
-  private musicImage!: HTMLElement
   private musicLayer!: HTMLElement
   private scrollY = 0
   private top = 0
+  @Ref('musicHeader') readonly musicHeaderRef!: HTMLElement
+  @Ref('musicImage') readonly musicImageRef!: HTMLElement
+  @Ref('playBtn') readonly playBtnRef!: HTMLElement
+  @Ref('musicLayer') readonly musicLayerRef!: HTMLElement
+  @Ref('musicScroll') readonly musicScrollRef!: Scroll
   @Prop({ type: String, default: '' }) title!: string
   @Prop({ type: String, default: '' }) img!: string
   @Prop({ type: Boolean, default: false }) rank!: boolean
@@ -71,36 +74,32 @@ export default class MusicList extends Mixins(PlayList) {
   @Watch('scrollY')
   onScrollYChange (newY: number) {
     const translateY = Math.max(this.minTranslateY, newY)
-    const percent = Math.abs(newY / this.musicImage.clientHeight)
+    const percent = Math.abs(newY / this.musicImageRef.clientHeight)
     let zIndex = 0
     let scale = 1
     if (newY > 0) {
       zIndex = 10
       scale = 1 + percent
     }
-    // @ts-ignore
-    this.musicLayer.style[transform] = `translate3d(0,${translateY}px,0)`
+    this.musicLayerRef.style[transform as any] = `translate3d(0,${translateY}px,0)`
     if (newY < this.minTranslateY) {
       zIndex = 10
-      this.musicImage.style.paddingTop = '0'
-      this.musicImage.style.height = `${this.headerHeigth}px`
-      this.playBtn.style.display = 'none'
+      this.musicImageRef.style.paddingTop = '0'
+      this.musicImageRef.style.height = `${this.headerHeigth}px`
+      this.playBtnRef.style.display = 'none'
     } else {
-      this.musicImage.style.paddingTop = '70%'
-      this.musicImage.style.height = '0'
-      this.playBtn.style.display = ''
+      this.musicImageRef.style.paddingTop = '70%'
+      this.musicImageRef.style.height = '0'
+      this.playBtnRef.style.display = ''
     }
-    this.musicImage.style.zIndex = `${zIndex}`
-    // @ts-ignore
-    this.musicImage.style[transform] = `scale(${scale})`
+    this.musicImageRef.style.zIndex = `${zIndex}`
+    this.musicImageRef.style[transform as any] = `scale(${scale})`
   }
 
-  // methods方法
   public handlePlayList () {
     const bottom = this.playList.length > 0 ? `${pxToVw(60)}vw` : '0'
-    const musicScroll = this.$refs.MusicScroll as Scroll
-    ;(musicScroll.$el as HTMLElement).style.bottom = bottom
-    musicScroll.refresh()
+    ;(this.musicScrollRef.$el as HTMLElement).style.bottom = bottom
+    this.musicScrollRef.refresh()
   }
   public handleBackClick () {
     this.$router.back()
@@ -117,19 +116,12 @@ export default class MusicList extends Mixins(PlayList) {
       index: index
     })
   }
-  private cacheDoms () {
-    this.musicImage = this.$refs.MusicImage as HTMLElement
-    this.musicLayer = this.$refs.MusicLayer as HTMLElement
-    this.playBtn = this.$refs.PlayBtn as HTMLElement
-  }
   private computedHeight () {
-    const musicHeader = this.$refs.MusicHeader as HTMLElement
-    this.top = this.musicImage.clientHeight
-    this.headerHeigth = musicHeader.clientHeight
-    this.minTranslateY = -this.musicImage.clientHeight + this.headerHeigth
+    this.top = this.musicImageRef.clientHeight
+    this.headerHeigth = this.musicHeaderRef.clientHeight
+    this.minTranslateY = -this.musicImageRef.clientHeight + this.headerHeigth
   }
 
-  // 计算属性
   private get bgStyle (): object {
     return {
       'background-image': `url(${this.img})`
@@ -141,9 +133,7 @@ export default class MusicList extends Mixins(PlayList) {
     }
   }
 
-  // 生命周期
   private mounted () {
-    this.cacheDoms()
     this.computedHeight()
     this.handlePlayList()
   }

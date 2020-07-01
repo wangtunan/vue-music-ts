@@ -1,6 +1,6 @@
 <template>
-  <div class="m-slider" ref="Slider">
-    <div class="slider-group" ref="SliderGroup">
+  <div class="m-slider" ref="slider">
+    <div class="slider-group" ref="sliderGroup">
       <slot />
     </div>
     <div v-if="showDots" class="slider-dots">
@@ -14,7 +14,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Prop, Vue, Ref } from 'vue-property-decorator'
 import { addClass } from '@/utils/dom'
 import BScroll from 'better-scroll'
 @Component
@@ -23,15 +23,15 @@ export default class Slider extends Vue {
   private activeIndex = 0
   private scroll!: BScroll
   private timer!: number | undefined
+  @Ref('slider') readonly sliderRef!: HTMLElement
+  @Ref('sliderGroup') readonly sliderGroupRef!: HTMLElement
   @Prop({ type: Boolean, default: true }) loop!: boolean
   @Prop({ type: Boolean, default: true }) autoPlay!: boolean
   @Prop({ type: Number, default: 4000 }) interval!: number
   @Prop({ type: Boolean, default: true }) showDots!: boolean
 
-  // methods方法
   private computedSliderWidth () {
-    const sliderGroup = this.$refs.SliderGroup as HTMLElement
-    const sliderChildren = sliderGroup.children
+    const sliderChildren = this.sliderGroupRef.children
     const bodyWidth = document.body.clientWidth
     let width = 0
     for (let index = 0; index < sliderChildren.length; index++) {
@@ -43,31 +43,26 @@ export default class Slider extends Vue {
     if (this.loop) {
       width += bodyWidth * 2
     }
-    sliderGroup.style.width = `${width}px`
+    this.sliderGroupRef.style.width = `${width}px`
   }
   private initDots () {
     if (!this.showDots) {
       return
     }
-    const sliderGroup = this.$refs.SliderGroup as HTMLElement
-    this.dots = new Array(sliderGroup.children.length)
+    this.dots = new Array(this.sliderGroupRef.children.length)
   }
   private initSlider () {
-    if (!this.scroll) {
-      this.scroll = new BScroll(this.$refs.Slider as HTMLElement, {
-        scrollX: true,
-        scrollY: false,
-        momentum: false,
-        snap: {
-          loop: this.loop,
-          threshold: 0.3,
-          speed: 400
-        }
-      })
-      this.listenScrollEvents()
-    } else {
-      this.scroll.refresh()
-    }
+    this.scroll = new BScroll(this.sliderRef as HTMLElement, {
+      scrollX: true,
+      scrollY: false,
+      momentum: false,
+      snap: {
+        loop: this.loop,
+        threshold: 0.3,
+        speed: 400
+      }
+    })
+    this.listenScrollEvents()
   }
   private listenScrollEvents () {
     this.scroll.on('scrollEnd', this.scrollEnd)
@@ -91,7 +86,6 @@ export default class Slider extends Vue {
     this.timer = undefined
   }
 
-  // 生命周期
   private mounted () {
     this.$nextTick(() => {
       this.computedSliderWidth()

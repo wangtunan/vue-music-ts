@@ -1,6 +1,6 @@
 <template>
-  <div ref="Recommend" class="m-recommend">
-    <scroll ref="RecommendScroll" class="recommend-box" :data="discList">
+  <div ref="recommend" class="m-recommend">
+    <scroll ref="recommendScroll" class="recommend-box" :data="discList">
       <div>
         <!-- 轮播 -->
         <div class="slider-box">
@@ -46,7 +46,7 @@ import Slider from '@/components/slider/index.vue'
 import Scroll from '@/components/scroll/index.vue'
 import Loading from '@/components/loading/index.vue'
 import PlayList from '@/assets/js/playList'
-import { Component, Mixins } from 'vue-property-decorator'
+import { Component, Mixins, Ref } from 'vue-property-decorator'
 import { Mutation } from 'vuex-class'
 import { getRecommendList, getDiscList } from '@/api/recommend'
 import { MusicResponse } from '@/types/index'
@@ -63,15 +63,14 @@ import { pxToVw } from '@/utils/utils'
 export default class Recommend extends Mixins(PlayList) {
   private recommendList: BannerConfig[] = []
   private discList: DiscConfig[] = []
+  @Ref('recommend') readonly recommendRef!: HTMLElement
+  @Ref('recommendScroll') readonly recommendScrollRef!: Scroll
   @Mutation('disc/SET_DISC') setDisc!: (disc: DiscConfig) => void
 
-  // methods方法
   public handlePlayList () {
     const bottom = this.playList.length > 0 ? `${pxToVw(60)}vw` : '0'
-    const recommend = this.$refs.Recommend as HTMLElement
-    const recommendScroll = this.$refs.RecommendScroll as Scroll
-    recommend.style.bottom = bottom
-    recommendScroll.refresh()
+    this.recommendRef.style.bottom = bottom
+    this.recommendScrollRef.refresh()
   }
   public handleItemClick (item: DiscConfig) {
     this.$router.push(`/recommend/${item.dissid}`)
@@ -94,7 +93,6 @@ export default class Recommend extends Mixins(PlayList) {
     })
   }
 
-  // 生命周期
   private mounted () {
     this.getRecommendListData()
     this.getDiscListData()

@@ -21,7 +21,6 @@ export default class RecommendDetail extends Vue {
   private songList: Song[] = []
   @Getter('disc') disc!: DiscConfig
 
-  // methods方法
   public getSongListData () {
     if (!this.disc.dissid) {
       this.$router.replace('/recommend')
@@ -46,7 +45,6 @@ export default class RecommendDetail extends Vue {
     return processSongUrl(result)
   }
 
-  // 生命周期
   private created () {
     this.getSongListData()
   }

@@ -1,6 +1,6 @@
 <template>
   <scroll
-    ref="SuggestionScroll"
+    ref="suggestionScroll"
     :data="resultList"
     class="suggestion-list">
     <ul v-show="resultList.length">
@@ -22,7 +22,7 @@
 import Scroll from '@/components/scroll/index.vue'
 import Empty from '@/components/empty/index.vue'
 import Singer from '@/assets/js/singer'
-import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
+import { Component, Vue, Watch, Prop, Ref } from 'vue-property-decorator'
 import { search } from '@/api/search'
 import { ERR_OK } from '@/api/config'
 import { SearchResult, Album } from '@/types/search'
@@ -39,6 +39,7 @@ const singerType = 'singer'
 export default class SearchSuggestion extends Vue {
   private page = 1
   private resultList: (Album | Song)[] = []
+  @Ref('suggestionScroll') readonly suggestionScrollRef!: Scroll
   @Prop({ type: String, default: '' }) keyword!: string
   @Mutation('singer/SET_SINGER') setSinger!: (singer: Singer) => void
   @Watch('keyword')
@@ -49,8 +50,7 @@ export default class SearchSuggestion extends Vue {
     this.getSuggestionList()
   }
 
-  // methods方法
-  handleSongClick (item: Song | Album) {
+  public handleSongClick (item: Song | Album) {
     if (item.type === singerType) {
       const album = item as Album
       const singer = new Singer(album.singermid, album.singername)
@@ -61,7 +61,10 @@ export default class SearchSuggestion extends Vue {
     }
     this.$emit('select', item)
   }
-  getSuggestionList () {
+  public refresh () {
+    this.suggestionScrollRef.refresh()
+  }
+  private getSuggestionList () {
     search(this.keyword, this.page, true, pageSize).then(res => {
       const { code, data } = res
       if (code === ERR_OK) {
@@ -71,7 +74,7 @@ export default class SearchSuggestion extends Vue {
       }
     })
   }
-  normalizeSongData (searchResult: SearchResult): Promise<(Album | Song)[]> {
+  private normalizeSongData (searchResult: SearchResult): Promise<(Album | Song)[]> {
     let result: (Album | Song)[] = []
     // 如果有歌手，拼接歌手数据
     if (searchResult.zhida && searchResult.zhida.singerid && this.page === 1) {
@@ -88,22 +91,19 @@ export default class SearchSuggestion extends Vue {
       return result
     })
   }
-  getIconClass (item: Song | Album): string {
+  private getIconClass (item: Song | Album): string {
     if (item.type === singerType) {
       return 'icon-mine'
     } else {
       return 'icon-music'
     }
   }
-  getDisplayName (item: Song | Album): string {
+  private getDisplayName (item: Song | Album): string {
     if (item.type === singerType) {
       return (item as Album).singername
     } else {
       return `${item.name}-${item.singer}`
     }
-  }
-  refresh () {
-    ;(this.$refs.SuggestionScroll as Scroll).refresh()
   }
 }
 </script>

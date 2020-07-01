@@ -1,8 +1,8 @@
 <template>
-  <div class="m-rank" ref="Rank">
+  <div class="m-rank" ref="rank">
     <!-- 列表 -->
     <scroll
-      ref="RankScroll"
+      ref="rankScroll"
       :data="rankList"
       class="rank-list">
       <ul>
@@ -38,7 +38,7 @@
 import Scroll from '@/components/scroll/index.vue'
 import Loading from '@/components/loading/index.vue'
 import PlayList from '@/assets/js/playList'
-import { Component, Mixins } from 'vue-property-decorator'
+import { Component, Mixins, Ref } from 'vue-property-decorator'
 import { RankListConfig } from '@/types/rank'
 import { getRankList } from '@/api/rank'
 import { ERR_OK } from '@/api/config'
@@ -52,13 +52,14 @@ import { pxToVw } from '@/utils/utils'
 })
 export default class Rank extends Mixins(PlayList) {
   private rankList: RankListConfig[] = []
-  // methods方法
+  @Ref('rank') readonly rankRef!: HTMLElement
+  @Ref('rankScroll') readonly rankScrollRef!: Scroll
+  @Mutation('top/SET_TOP_LIST') setTopList!: (topList: RankListConfig) => void
+
   public handlePlayList () {
     const bottom = this.playList.length > 0 ? `${pxToVw(60)}vw` : '0'
-    const rank = this.$refs.Rank as HTMLElement
-    const rankScroll = this.$refs.RankScroll as Scroll
-    rank.style.bottom = bottom
-    rankScroll.refresh()
+    this.rankRef.style.bottom = bottom
+    this.rankScrollRef.refresh()
   }
   public handleRankClick (topList: RankListConfig) {
     this.$router.push(`/rank/${topList.id}`)
@@ -73,10 +74,6 @@ export default class Rank extends Mixins(PlayList) {
     })
   }
 
-  // vuex
-  @Mutation('top/SET_TOP_LIST') setTopList!: (topList: RankListConfig) => void
-
-  // 生命周期
   private mounted () {
     this.getRankListData()
     this.handlePlayList()

@@ -21,8 +21,7 @@
               v-for="(item, index) in sequenceList"
               :key="item.id"
               class="play-item"
-              @click="handlePlayItemClick(item, index)"
-            >
+              @click="handlePlayItemClick(item, index)">
               <i class="current" :class="getCurrentIcon(item)"></i>
               <span class="text">{{item.name}}</span>
               <i class="like" :class="getFavoriteIcon(item)" @click="handleToggleFavorite(item)"></i>
@@ -54,10 +53,6 @@ export default class PlayList extends Mixins(Player) {
   @PropSync('visible', { type: Boolean, default: false }) show!: boolean
   @Action('player/deleteSong') deleteSong!: (song: Song) => void
   @Action('player/deleteSongList') deleteSongList!: () => void
-  private get modeText () {
-    return this.mode === PlayMode.sequence ? '顺序播放' : this.mode === PlayMode.random ? '随机播放' : '单曲循环'
-  }
-
   public handleDeleteSong (song: Song) {
     this.deleteSong(song)
     if (!this.playList.length) {
@@ -78,6 +73,9 @@ export default class PlayList extends Mixins(Player) {
 
   private getCurrentIcon (song: Song): string {
     return song.id === this.currentSong.id ? 'icon-play' : ''
+  }
+  private get modeText () {
+    return this.mode === PlayMode.sequence ? '顺序播放' : this.mode === PlayMode.random ? '随机播放' : '单曲循环'
   }
 }
 </script>

@@ -13,7 +13,6 @@ export default class SearchBox extends Vue {
   private keyword = ''
   @Prop({ type: String, default: '搜索歌曲、歌手' }) placeholder!: string
 
-  // methods方法
   public handleClearClick () {
     this.keyword = ''
   }
@@ -21,7 +20,6 @@ export default class SearchBox extends Vue {
     this.keyword = keyword.trim()
   }
 
-  // 生命周期
   private created () {
     this.$watch('keyword', debounce(() => {
       this.$emit('search', this.keyword)

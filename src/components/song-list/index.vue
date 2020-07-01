@@ -27,7 +27,6 @@ export default class SongList extends Vue {
   @Prop({ type: Boolean, default: false }) rank!: boolean
   @Prop({ type: Array, default () { return [] } }) list!: Song[]
 
-  // methods方法
   public handleItemClick (item: Song, index: number) {
     this.$emit('select', item, index)
   }
