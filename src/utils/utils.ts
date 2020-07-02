@@ -1,12 +1,12 @@
-const viewportWidth = 375
-const unitPrecision = 8
-
-export function getUid (): string {
+export function getUid (len: number = 10): string {
+  if (len === 0 || !len) {
+    return ''
+  }
   const t = new Date().getMilliseconds()
-  return `${Math.round(2147483647 * Math.random()) * t % 1e10}`
+  return `${Math.round(2147483647 * Math.random()) * t % Math.pow(10, len)}`
 }
 
-export function pxToVw (px: number): number | string {
+export function pxToVw (px: number, viewportWidth = 375, unitPrecision = 8): number {
   return parseFloat((100 / viewportWidth * px).toFixed(unitPrecision))
 }
 
@@ -39,41 +39,12 @@ export function fillNumber (value: number, fill = 0, len = 2): string {
   return val
 }
 
-export function throrrte (fn: () => any, interval = 500): () => void {
-  let timer: number | undefined
-  let firstTime = true
-  const _fn = fn
-  return function (...agrs) {
-    // @ts-ignore
-    const self = this
-    if (firstTime) {
-      _fn.apply(self, agrs)
-      firstTime = false
-      return
+export function combineParams (data: any): string {
+  let url = ''
+  for (const key in data) {
+    if (data[key] !== undefined) {
+      url += `&${key}=${encodeURIComponent(data[key])}`
     }
-    if (timer) {
-      return
-    }
-    timer = setTimeout(() => {
-      clearTimeout(timer)
-      timer = undefined
-      _fn.apply(self, agrs)
-    }, interval)
   }
-}
-
-export function debounce (fn: () => any, delay = 300): () => void {
-  let timer: number | undefined
-  return function (...args) {
-    // @ts-ignore
-    const self = this
-    if (timer) {
-      return
-    }
-    timer = setTimeout(() => {
-      clearTimeout(timer)
-      timer = undefined
-      fn.apply(self, args)
-    }, delay)
-  }
+  return url ? url.substring(1) : ''
 }

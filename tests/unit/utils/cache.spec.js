@@ -1,7 +1,26 @@
-import { insertArray, deleteArray, getSearchHistory, saveSearchHistory, clearSearchHistory, deleteSearchHistory } from '@/utils/cache'
+import {
+  insertArray,
+  deleteArray,
+  getSearchHistory,
+  saveSearchHistory,
+  clearSearchHistory,
+  deleteSearchHistory,
+  saveFavoriteList,
+  getFavoriteList,
+  deleteFavoriteList,
+  clearFavoriteList,
+  getPlayHistory,
+  savePlayHistory,
+  clearPlayHistoy
+} from '@/utils/cache'
 
 describe('cache.ts', () => {
   const max = 5
+  beforeEach(() => {
+    clearSearchHistory()
+    clearFavoriteList()
+    clearPlayHistoy()
+  })
   it('test insertArray function', () => {
     const array = []
     insertArray(array, 'AAA', (item) => item === 'AAA', max)
@@ -25,28 +44,40 @@ describe('cache.ts', () => {
     expect(array.length).toBe(0)
   })
   it('test getSearchHistory function', () => {
-    clearSearchHistory()
     expect(getSearchHistory()).toEqual([])
   })
   it('test saveSearchHistory function', () => {
-    clearSearchHistory()
     expect(saveSearchHistory('AAA')).toEqual(['AAA'])
     expect(saveSearchHistory('BBB')).toEqual(['BBB', 'AAA'])
     expect(getSearchHistory()).toEqual(['BBB', 'AAA'])
   })
   it('test deleteSearchHistory function', () => {
-    clearSearchHistory()
     saveSearchHistory('AAA')
     saveSearchHistory('BBB')
     saveSearchHistory('CCC')
     expect(getSearchHistory()).toEqual(['CCC', 'BBB', 'AAA'])
     expect(deleteSearchHistory('AAA')).toEqual(['CCC', 'BBB'])
   })
-  it('test clearSearchHistory function', () => {
-    saveSearchHistory('AAA')
-    saveSearchHistory('BBB')
-    saveSearchHistory('CCC')
-    expect(getSearchHistory()).toEqual(['CCC', 'BBB', 'AAA'])
-    expect(clearSearchHistory().length).toBe(0)
+  it('test saveFavoriteList function', () => {
+    const songA = { id: 'AAA', name: 'songA' }
+    const songB = { id: 'BBB', name: 'songB' }
+    expect(getFavoriteList()).toEqual([])
+    expect(saveFavoriteList(songA)).toEqual([songA])
+    expect(saveFavoriteList(songB)).toEqual([songB, songA])
+  })
+  it('test deleteFavoriteList function', () => {
+    const songA = { id: 'AAA', name: 'songA' }
+    const songB = { id: 'BBB', name: 'songB' }
+    expect(getFavoriteList()).toEqual([])
+    expect(saveFavoriteList(songA)).toEqual([songA])
+    expect(saveFavoriteList(songB)).toEqual([songB, songA])
+    expect(deleteFavoriteList(songA)).toEqual([songB])
+  })
+  it('test savePlayHistory function', () => {
+    const songA = { id: 'AAA', name: 'songA' }
+    const songB = { id: 'BBB', name: 'songB' }
+    expect(getPlayHistory()).toEqual([])
+    expect(savePlayHistory(songB)).toEqual([songB])
+    expect(savePlayHistory(songA)).toEqual([songA, songB])
   })
 })

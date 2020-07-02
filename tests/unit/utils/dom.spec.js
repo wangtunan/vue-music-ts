@@ -23,12 +23,16 @@ describe('dom.ts', () => {
     expect(getDomData(dom, 'index123')).toBeNull()
   })
   it('test vendor name', () => {
-    const vendors = ['webkit', 'Moz', 'O', 'ms']
+    const vendors = ['webkit', 'Moz', 'O', 'ms', 'standard']
     expect(vendors.includes(vendor)).toBe(true)
   })
-  it('test vendor prefix', () => {
+  it('test vender prefix', () => {
     const transform = getVendorsPrefix('transform')
-    const venderTransform = vendor ? `${vendor}Transform` : 'transform'
-    expect(transform).toBe(venderTransform)
+    const transformMap = ['webkitTransform', 'MozTransform', 'OTransform', 'msTransform', 'transform']
+    expect(transformMap.includes(transform)).toBe(true)
+  })
+  it('test standard prefix', () => {
+    const transform = getVendorsPrefix('transform', 'standard')
+    expect(transform).toBe('transform')
   })
 })

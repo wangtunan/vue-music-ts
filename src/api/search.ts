@@ -1,4 +1,4 @@
-import jsonp from '@/utils/jsonp'
+import jsonp from '@/assets/js/jsonp'
 import { commonParams, jsonpOptions } from './config'
 import { MusicResponse } from '@/types/index'
 import axios from '@/utils/axios'

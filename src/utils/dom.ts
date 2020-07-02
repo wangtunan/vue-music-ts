@@ -22,6 +22,7 @@ export const vendor = (function () {
       return key
     }
   }
+  return 'standard'
 })()
 
 export function hasClass (el: HTMLElement, className: string): boolean {
@@ -37,9 +38,9 @@ export function getDomData (el: HTMLElement, name: string): string | null {
   return el.getAttribute(prefix + name)
 }
 
-export function getVendorsPrefix (style: string): string {
-  if (vendor === 'standard') {
+export function getVendorsPrefix (style: string, venderName = vendor): string {
+  if (venderName === 'standard') {
     return style
   }
-  return `${vendor}${style.charAt(0).toUpperCase()}${style.substring(1)}`
+  return `${venderName}${style.charAt(0).toUpperCase()}${style.substring(1)}`
 }

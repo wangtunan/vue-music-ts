@@ -6,7 +6,7 @@
   </div>
 </template>
 <script lang="ts">
-import { debounce } from '@/utils/utils'
+import { debounce } from '@/assets/js/throttle-debounce'
 import { Component, Vue, Prop } from 'vue-property-decorator'
 @Component
 export default class SearchBox extends Vue {

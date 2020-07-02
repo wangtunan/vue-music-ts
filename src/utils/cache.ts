@@ -74,6 +74,10 @@ export function deleteFavoriteList (song: Song): Song[] {
   storage.set(FAVORITE_KEY, favoriteList)
   return favoriteList
 }
+export function clearFavoriteList (): [] {
+  storage.remove(FAVORITE_KEY)
+  return []
+}
 
 // 播放历史
 export function getPlayHistory (): Song[] {
@@ -86,4 +90,8 @@ export function savePlayHistory (song: Song): Song[] {
   }, PLAY_LEN)
   storage.set(PLAY_KEY, playHistoryList)
   return playHistoryList
+}
+export function clearPlayHistoy (): [] {
+  storage.remove(PLAY_KEY)
+  return []
 }
