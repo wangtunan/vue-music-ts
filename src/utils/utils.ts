@@ -1,4 +1,4 @@
-export function getUid (len: number = 10): string {
+export function getUid (len = 10): string {
   if (len === 0 || !len) {
     return ''
   }
