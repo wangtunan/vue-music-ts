@@ -7,17 +7,25 @@ export function getUid (len = 10): string {
 }
 
 export function pxToVw (px: number, viewportWidth = 375, unitPrecision = 8): number {
+  if (px === 0) {
+    return 0
+  }
   return parseFloat((100 / viewportWidth * px).toFixed(unitPrecision))
 }
 
 export function getRandomNumber (min: number, max: number): number {
+  max = Math.max(min, max)
+  min = Math.min(min, max)
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
 export function shuffle (array: any[]): any[] {
+  if (array.length === 0 || array.length === 1) {
+    return array
+  }
   const arr = array.slice()
   for (let index = 0; index < arr.length; index++) {
-    const randomIndex = getRandomNumber(0, arr.length)
+    const randomIndex = getRandomNumber(0, index)
     const temp = arr[index]
     arr[index] = arr[randomIndex]
     arr[randomIndex] = temp
@@ -28,10 +36,10 @@ export function shuffle (array: any[]): any[] {
 export function formatSecond (second: number): string {
   const m = second / 60 | 0
   const s = second % 60 | 0
-  return `${fillNumber(m)}:${fillNumber(s)}`
+  return `${fillString(m)}:${fillString(s)}`
 }
 
-export function fillNumber (value: number, fill = 0, len = 2): string {
+export function fillString (value: number | string, fill = 0, len = 2): string {
   let val = value.toString()
   while (val.length < len) {
     val = `${fill}${val}`
