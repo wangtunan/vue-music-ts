@@ -1,5 +1,5 @@
 import { shallowMount, Wrapper } from '@vue/test-utils'
-import Empty from '@/components/empty/index.vue'
+import Empty from '@/base/empty/index.vue'
 
 describe('empty.vue', () => {
   let wrapper: Wrapper<Vue>

@@ -35,8 +35,8 @@
   </transition>
 </template>
 <script lang="ts">
-import Scroll from '@/components/scroll/index.vue'
-import Confirm from '@/components/confirm/index.vue'
+import Scroll from '@/base/scroll/index.vue'
+import Confirm from '@/base/confirm/index.vue'
 import Player from '@/assets/js/player'
 import Song from '@/assets/js/song'
 import { PlayMode } from '@/types/player'

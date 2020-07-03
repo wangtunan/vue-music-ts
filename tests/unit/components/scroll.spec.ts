@@ -1,5 +1,5 @@
 import { shallowMount, Wrapper, config } from '@vue/test-utils'
-import Scroll from '@/components/scroll/index.vue'
+import Scroll from '@/base/scroll/index.vue'
 config.showDeprecationWarnings = false
 
 describe('scroll.vue', () => {

@@ -34,10 +34,10 @@
   </transition>
 </template>
 <script lang="ts">
-import Scroll from '@/components/scroll/index.vue'
-import Switches from '@/components/switches/index.vue'
+import Scroll from '@/base/scroll/index.vue'
+import Switches from '@/base/switches/index.vue'
 import SongList from '@/components/song-list/index.vue'
-import Empty from '@/components/empty/index.vue'
+import Empty from '@/base/empty/index.vue'
 import Song from '@/assets/js/song'
 import PlayList from '@/assets/js/playList'
 import { Component, Mixins, Ref } from 'vue-property-decorator'

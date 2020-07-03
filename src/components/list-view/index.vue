@@ -56,7 +56,7 @@
   </scroll>
 </template>
 <script lang="ts">
-import Scroll from '@/components/scroll/index.vue'
+import Scroll from '@/base/scroll/index.vue'
 import Singer from '@/assets/js/singer'
 import { ListViewConfig, TouchConfig } from '@/types/singer'
 import { Position } from '@/types/index'

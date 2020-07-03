@@ -7,7 +7,7 @@
 </template>
 <script lang="ts">
 import ListView from '@/components/list-view/index.vue'
-import Loading from '@/components/loading/index.vue'
+import Loading from '@/base/loading/index.vue'
 import Singer from '@/assets/js/singer'
 import PlayList from '@/assets/js/playList'
 import { Component, Mixins, Ref } from 'vue-property-decorator'

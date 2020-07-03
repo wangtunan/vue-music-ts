@@ -1,5 +1,5 @@
 import { shallowMount, Wrapper } from '@vue/test-utils'
-import Loading from '@/components/loading/index.vue'
+import Loading from '@/base/loading/index.vue'
 
 describe('loading.vue', () => {
   let wrapper: Wrapper<Vue>

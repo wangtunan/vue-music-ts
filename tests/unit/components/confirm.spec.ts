@@ -1,5 +1,5 @@
 import { shallowMount, Wrapper } from '@vue/test-utils'
-import Confirm from '@/components/confirm/index.vue'
+import Confirm from '@/base/confirm/index.vue'
 
 describe('confirm.vue', () => {
   let wrapper: Wrapper<Vue>

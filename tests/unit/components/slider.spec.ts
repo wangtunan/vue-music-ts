@@ -1,5 +1,5 @@
 import { shallowMount, Wrapper, createLocalVue } from '@vue/test-utils'
-import Slider from '@/components/slider/index.vue'
+import Slider from '@/base/slider/index.vue'
 
 describe('slider.vue', () => {
   let wrapper: Wrapper<Vue>

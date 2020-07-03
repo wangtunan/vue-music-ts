@@ -42,9 +42,9 @@
   </div>
 </template>
 <script lang="ts">
-import Slider from '@/components/slider/index.vue'
-import Scroll from '@/components/scroll/index.vue'
-import Loading from '@/components/loading/index.vue'
+import Slider from '@/base/slider/index.vue'
+import Scroll from '@/base/scroll/index.vue'
+import Loading from '@/base/loading/index.vue'
 import PlayList from '@/assets/js/playList'
 import { Component, Mixins, Ref } from 'vue-property-decorator'
 import { Mutation } from 'vuex-class'

@@ -19,8 +19,8 @@
   </scroll>
 </template>
 <script lang="ts">
-import Scroll from '@/components/scroll/index.vue'
-import Empty from '@/components/empty/index.vue'
+import Scroll from '@/base/scroll/index.vue'
+import Empty from '@/base/empty/index.vue'
 import Singer from '@/assets/js/singer'
 import { Component, Vue, Watch, Prop, Ref } from 'vue-property-decorator'
 import { search } from '@/api/search'

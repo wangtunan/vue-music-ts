@@ -35,8 +35,8 @@
   </div>
 </template>
 <script lang="ts">
-import Scroll from '@/components/scroll/index.vue'
-import Loading from '@/components/loading/index.vue'
+import Scroll from '@/base/scroll/index.vue'
+import Loading from '@/base/loading/index.vue'
 import SongList from '@/components/song-list/index.vue'
 import Song from '@/assets/js/song'
 import PlayList from '@/assets/js/playList'

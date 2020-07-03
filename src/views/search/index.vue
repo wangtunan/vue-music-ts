@@ -53,9 +53,9 @@
 </template>
 <script lang="ts">
 import SearchBox from '@/components/search-box/index.vue'
-import Scroll from '@/components/scroll/index.vue'
+import Scroll from '@/base/scroll/index.vue'
 import Suggestion from '@/components/suggestion/index.vue'
-import Confirm from '@/components/confirm/index.vue'
+import Confirm from '@/base/confirm/index.vue'
 import Search from '@/assets/js/search'
 import PlayList from '@/assets/js/playList'
 import { Component, Mixins, Ref } from 'vue-property-decorator'

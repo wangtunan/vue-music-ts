@@ -1,5 +1,5 @@
 import { shallowMount, Wrapper } from '@vue/test-utils'
-import Switches from '@/components/switches/index.vue'
+import Switches from '@/base/switches/index.vue'
 
 describe('switches.vue', () => {
   let wrapper: Wrapper<Vue>
