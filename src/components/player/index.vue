@@ -44,6 +44,9 @@
                   :class="{'active': currentLineNum == index}"
                 >{{item.txt}}</p>
               </div>
+              <div v-if="isPureMusic" class="pure-music">
+                <p>{{pureMusicLyric}}</p>
+              </div>
             </div>
           </scroll>
         </div>
@@ -150,13 +153,15 @@ interface PlayerTouch {
   }
 })
 export default class MPlayer extends Mixins(Player) {
+  private touch!: PlayerTouch
   private showPlayList = false
   private currentShow = 'cd'
   private currentTime = 0
   private currentLyric: Lyric | null = null
   private currentLineNum = 0
   private playingLyric = ''
-  private touch!: PlayerTouch
+  private isPureMusic = false
+  private pureMusicLyric = ''
   @Ref('playerLeft') readonly playerLeftRef!: HTMLElement
   @Ref('playerLyric') readonly playerLyricRef!: Scroll
   @Ref('lyricLine') readonly lyricLinesRef!: HTMLElement[]
@@ -322,7 +327,11 @@ export default class MPlayer extends Mixins(Player) {
   private getLyric () {
     this.currentSong.getLyric().then((lyric: string) => {
       this.currentLyric = new Lyric(lyric, this.normalizeLyric)
-      if (this.playing) {
+      this.isPureMusic = !this.currentLyric.lines.length
+      if (this.isPureMusic) {
+        this.pureMusicLyric = this.currentLyric.lrc.replace(/\[(\d{2}):(\d{2}):(\d{2})]/g, '').trim()
+        this.playingLyric = this.pureMusicLyric
+      } else if (this.playing) {
         this.currentLyric.seek(this.currentTime * 1000)
       }
     }).catch(() => {
@@ -420,7 +429,7 @@ export default class MPlayer extends Mixins(Player) {
         }
       }
       .player-title {
-        width: 80%;
+        width: 70%;
         margin: 0 auto;
         text-align: center;
         line-height: 40px;
@@ -501,6 +510,12 @@ export default class MPlayer extends Mixins(Player) {
             &.active {
               color: $color-text;
             }
+          }
+          .pure-music {
+            padding-top: 50%;
+            line-height: 32px;
+            font-size: 14px;
+            color: $color-text-l;
           }
         }
       }

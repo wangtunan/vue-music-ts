@@ -40,6 +40,9 @@ export default class Scroll extends Vue {
     this.scroll && this.scroll.scrollToElement.apply(this.scroll, args)
   }
   private initScroll () {
+    if (!this.scrollRef) {
+      return
+    }
     this.scroll = new BScroll(this.scrollRef, {
       click: this.click,
       probeType: this.probeType,

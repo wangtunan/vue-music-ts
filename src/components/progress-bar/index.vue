@@ -1,10 +1,10 @@
 <template>
   <div class="m-progress-bar" ref="progressBar" @click="handleProgressClick">
     <div class="progress-bar-inner">
-      <div class="progress-line" ref="ProgressLine"></div>
+      <div class="progress-line" ref="progressLine"></div>
       <div
         class="progress-btn-box"
-        ref="ProgressBtn"
+        ref="progressBtn"
         @touchstart.prevent="handleTouchStart"
         @touchmove.prevent="handleTouchMove"
         @touchend="handleTouchEnd">

@@ -19,7 +19,7 @@ const mutations = {
   [types.SET_PLAY_LIST] (state: PlayerState, list: Song[]) {
     state.playList = list
   },
-  [types.SET_CURRENT_INDEX] (state: PlayerState, index: number | number) {
+  [types.SET_CURRENT_INDEX] (state: PlayerState, index: number) {
     state.currentIndex = index
   },
   [types.SET_FULL_SCREEN] (state: PlayerState, fullScreen: boolean) {
@@ -62,6 +62,33 @@ const actions = {
   deleteFavoriteList (context: { commit: Commit }, song: Song) {
     context.commit(types.SET_FAVORITE_LIST, deleteFavoriteList(song))
   },
+  insertSong (context: { commit: Commit, state: PlayerState }, song: Song) {
+    const playList: Song[] = state.playList.slice()
+    const sequenceList: Song[] = state.sequenceList.slice()
+    let currentIndex = state.currentIndex
+    const pIndex = playList.findIndex(item => item.id === song.id)
+    const sIndex = sequenceList.findIndex(item => item.id === song.id)
+    if (pIndex === -1) {
+      playList.unshift(song)
+    } else {
+      playList.splice(pIndex, 1)
+      playList.unshift(song)
+    }
+    currentIndex = 0
+
+    if (sIndex === -1) {
+      sequenceList.unshift(song)
+    } else {
+      sequenceList.splice(sIndex, 1)
+      sequenceList.unshift(song)
+    }
+
+    context.commit(types.SET_PLAY_LIST, playList)
+    context.commit(types.SET_SEQUENCE_LIST, sequenceList)
+    context.commit(types.SET_CURRENT_INDEX, currentIndex)
+    context.commit(types.SET_PLAY_STATE, true)
+    context.commit(types.SET_FULL_SCREEN, true)
+  },
   deleteSong (context: { commit: Commit, state: PlayerState }, song: Song) {
     const playList: Song[] = state.playList.slice()
     const sequenceList: Song[] = state.sequenceList.slice()
@@ -73,9 +100,9 @@ const actions = {
     if (currentIndex > pIndex || currentIndex === playList.length) {
       currentIndex--
     }
-    context.commit(types.SET_CURRENT_INDEX, currentIndex)
     context.commit(types.SET_PLAY_LIST, playList)
     context.commit(types.SET_SEQUENCE_LIST, sequenceList)
+    context.commit(types.SET_CURRENT_INDEX, currentIndex)
     if (!playList.length) {
       context.commit(types.SET_PLAY_STATE, false)
     } else {

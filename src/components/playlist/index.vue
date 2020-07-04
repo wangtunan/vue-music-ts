@@ -7,7 +7,7 @@
             <i class="title-icon" :class="modeIcon" @click="handleModeChange"></i>
             <span class="icon-text">{{modeText}}</span>
             <div class="title-right">
-              <div class="add-box">
+              <div class="add-box" @click="showAddSong = true">
                 <i class="icon-add"></i>
                 <span class="add-text">添加歌曲到列表</span>
               </div>
@@ -24,19 +24,21 @@
               @click="handlePlayItemClick(item, index)">
               <i class="current" :class="getCurrentIcon(item)"></i>
               <span class="text">{{item.name}}</span>
-              <i class="like" :class="getFavoriteIcon(item)" @click="handleToggleFavorite(item)"></i>
-              <i class="delete icon-delete" @click="handleDeleteSong(item)"></i>
+              <i class="like" :class="getFavoriteIcon(item)" @click.stop="handleToggleFavorite(item)"></i>
+              <i class="delete icon-delete" @click.stop="handleDeleteSong(item)"></i>
             </li>
           </transition-group>
         </scroll>
       </div>
       <confirm :visible.sync="showConfirm" message="是否清空播放列表？" @confirm="handleDeleteSongList"/>
+      <add-song :visible.sync="showAddSong" />
     </div>
   </transition>
 </template>
 <script lang="ts">
 import Scroll from '@/base/scroll/index.vue'
 import Confirm from '@/base/confirm/index.vue'
+import AddSong from '@/components/add-song/index.vue'
 import Player from '@/assets/js/player'
 import Song from '@/assets/js/song'
 import { PlayMode } from '@/types/player'
@@ -45,11 +47,13 @@ import { Action } from 'vuex-class'
 @Component({
   components: {
     Scroll,
-    Confirm
+    Confirm,
+    AddSong
   }
 })
 export default class PlayList extends Mixins(Player) {
   private showConfirm = false
+  private showAddSong = false
   @PropSync('visible', { type: Boolean, default: false }) show!: boolean
   @Action('player/deleteSong') deleteSong!: (song: Song) => void
   @Action('player/deleteSongList') deleteSongList!: () => void
@@ -146,7 +150,8 @@ export default class PlayList extends Mixins(Player) {
       }
     }
     .playlist-list {
-      height: 370px;
+      max-height: 370px;
+      min-height: 150px;
       overflow: hidden;
       .play-item {
         display: flex;

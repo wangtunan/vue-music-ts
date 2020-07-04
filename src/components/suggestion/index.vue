@@ -27,7 +27,7 @@ import { search } from '@/api/search'
 import { ERR_OK } from '@/api/config'
 import { SearchResult, Album } from '@/types/search'
 import Song, { isValid, createSong, processSongUrl } from '@/assets/js/song'
-import { Mutation } from 'vuex-class'
+import { Mutation, Action } from 'vuex-class'
 const pageSize = 20
 const singerType = 'singer'
 @Component({
@@ -41,7 +41,9 @@ export default class SearchSuggestion extends Vue {
   private resultList: (Album | Song)[] = []
   @Ref('suggestionScroll') readonly suggestionScrollRef!: Scroll
   @Prop({ type: String, default: '' }) keyword!: string
+  @Prop({ type: Boolean, default: true }) showSinger!: boolean
   @Mutation('singer/SET_SINGER') setSinger!: (singer: Singer) => void
+  @Action('player/insertSong') insertSong!: (song: Song) => void
   @Watch('keyword')
   onKeywordChange (newVal: string) {
     if (!newVal) {
@@ -56,6 +58,8 @@ export default class SearchSuggestion extends Vue {
       const singer = new Singer(album.singermid, album.singername)
       this.setSinger(singer)
       this.$router.push(`/search/${singer.id}`)
+    } else {
+      this.insertSong(item as Song)
     }
     this.$emit('select', item)
   }
@@ -63,7 +67,7 @@ export default class SearchSuggestion extends Vue {
     this.suggestionScrollRef.refresh()
   }
   private getSuggestionList () {
-    search(this.keyword, this.page, true, pageSize).then(res => {
+    search(this.keyword, this.page, this.showSinger, pageSize).then(res => {
       const { code, data } = res
       if (code === ERR_OK) {
         this.normalizeSongData(data).then(res => {
