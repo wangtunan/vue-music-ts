@@ -235,7 +235,9 @@ export default class MPlayer extends Mixins(Player) {
   }
   public handleAudioReady () {
     this.setPlayHistory(this.currentSong)
-    this.currentLyric && this.currentLyric.seek(this.currentTime * 1000)
+    if (this.currentLyric && !this.isPureMusic) {
+      this.currentLyric.seek(this.currentTime * 1000)
+    }
   }
   public handleTimeUpdate (e: Event) {
     this.currentTime = (e.target as HTMLAudioElement).currentTime

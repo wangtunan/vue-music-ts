@@ -2,7 +2,10 @@
   <scroll
     ref="suggestionScroll"
     :data="resultList"
-    class="suggestion-list">
+    :pull-up="true"
+    class="suggestion-list"
+    @scrollToEnd="getSuggestionList(true)"
+    @beforeScroll="handleBeforeScroll">
     <ul v-show="resultList.length">
       <li
         v-for="(item, index) in resultList"
@@ -14,12 +17,14 @@
         </div>
         <p class="name">{{getDisplayName(item)}}</p>
       </li>
+      <loading v-show="hasMore" class="suggestion-loading" />
     </ul>
-    <empty v-if="!resultList.length" class="suggestion-empty" />
+    <empty v-show="!hasMore && !resultList.lenght" class="suggestion-empty" title="抱歉，暂无搜索结果!" />
   </scroll>
 </template>
 <script lang="ts">
 import Scroll from '@/base/scroll/index.vue'
+import Loading from '@/base/loading/index.vue'
 import Empty from '@/base/empty/index.vue'
 import Singer from '@/assets/js/singer'
 import { Component, Vue, Watch, Prop, Ref } from 'vue-property-decorator'
@@ -33,11 +38,14 @@ const singerType = 'singer'
 @Component({
   components: {
     Scroll,
+    Loading,
     Empty
   }
 })
 export default class SearchSuggestion extends Vue {
+  private timer!: number | undefined
   private page = 1
+  private hasMore = false
   private resultList: (Album | Song)[] = []
   @Ref('suggestionScroll') readonly suggestionScrollRef!: Scroll
   @Prop({ type: String, default: '' }) keyword!: string
@@ -49,9 +57,12 @@ export default class SearchSuggestion extends Vue {
     if (!newVal) {
       return
     }
-    this.getSuggestionList()
+    this.getSuggestionList(false)
   }
 
+  public handleBeforeScroll () {
+    this.$emit('listScroll')
+  }
   public handleSongClick (item: Song | Album) {
     if (item.type === singerType) {
       const album = item as Album
@@ -66,12 +77,25 @@ export default class SearchSuggestion extends Vue {
   public refresh () {
     this.suggestionScrollRef.refresh()
   }
-  private getSuggestionList () {
+  private getSuggestionList (isMore: boolean) {
+    if (isMore) {
+      if (!this.hasMore) {
+        return
+      }
+      this.page++
+    } else {
+      this.hasMore = true
+      this.page = 1
+    }
+    this.suggestionScrollRef.scrollTo(0, 0)
     search(this.keyword, this.page, this.showSinger, pageSize).then(res => {
       const { code, data } = res
       if (code === ERR_OK) {
-        this.normalizeSongData(data).then(res => {
-          this.resultList = res
+        this.normalizeSongData(data).then(result => {
+          this.resultList = isMore ? this.resultList.concat(result) : result
+          this.timer = setTimeout(() => {
+            this.checkMore(res.data)
+          }, 20)
         })
       }
     })
@@ -107,6 +131,15 @@ export default class SearchSuggestion extends Vue {
       return `${item.name}-${item.singer}`
     }
   }
+  private checkMore (data: any) {
+    const { list, curnum, curpage, totalnum } = data.song
+    if (!list.length || (curnum + (curpage - 1) * pageSize) >= totalnum) {
+      this.hasMore = false
+      // @ts-ignore hasVerticalScroll is lack
+    } else if (!this.suggestionScrollRef.scroll.hasVerticalScroll) {
+      this.getSuggestionList(true)
+    }
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -134,6 +167,12 @@ export default class SearchSuggestion extends Vue {
         @include ellipsis();
       }
     }
+  }
+  .suggestion-loading {
+    position: static;
+    left: initial;
+    right: initial;
+    transform: translateY(0);
   }
   .suggestion-empty {
     top: 40%;

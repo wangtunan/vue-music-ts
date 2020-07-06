@@ -41,7 +41,12 @@
 
     <!-- 搜索结果 -->
     <div v-show="keyword" class="suggestion-box" ref="searchSuggestionBox">
-      <suggestion :keyword="keyword" @select="handleSuggestionSelect" ref="searchSuggestion" />
+      <suggestion
+        ref="searchSuggestion"
+        :keyword="keyword"
+        @select="handleSuggestionSelect"
+        @listScroll="handleInputBlur"
+      />
     </div>
 
     <!-- confirm -->
@@ -97,6 +102,9 @@ export default class MSearch extends Mixins(Search, PlayList) {
   }
   public handleShowConfirm () {
     this.showConfirm = true
+  }
+  public handleInputBlur () {
+    this.searchBoxRef.blur()
   }
   private getHotKeysData () {
     getHotKeys().then(res => {

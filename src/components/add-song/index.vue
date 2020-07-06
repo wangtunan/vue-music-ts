@@ -1,6 +1,6 @@
 <template>
   <transition name="slide">
-    <div v-if="showAddSong" class="m-addsong" @click.stop>
+    <div v-show="showAddSong" class="m-addsong" @click.stop>
       <!-- 头部 -->
       <div class="addsong-header">
         <h2 class="addsong-title">添加歌曲到列表</h2>
@@ -42,7 +42,12 @@
 
       <!-- 搜索结果 -->
       <div v-show="keyword"  class="addsong-suggestion-box">
-        <suggestion :keyword="keyword" :showSinger="false" @select="handleSelectSuggestion" />
+        <suggestion
+          :keyword="keyword"
+          :showSinger="false"
+          @select="handleSelectSuggestion"
+          @listScroll="handleInputBlur"
+        />
       </div>
 
       <!-- 顶部通知 -->
@@ -93,6 +98,9 @@ export default class AddSong extends Mixins(Search) {
   public handleAddClick (keyword: string) {
     this.searchBoxRef.setKeyword(keyword)
     this.handleAddHistory(keyword)
+  }
+  public handleInputBlur () {
+    this.searchBoxRef.blur()
   }
 
   private get scrollList () {

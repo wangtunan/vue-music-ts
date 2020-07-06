@@ -2,9 +2,15 @@
 
 exports[`suggestion.vue match snaphots 1`] = `
 <div class="suggestion-list">
-  <ul style="display: none;"></ul>
+  <ul style="display: none;">
+    <div class="m-loading suggestion-loading" style="display: none;">
+      <div class="loading-content"><img src="@/assets/images/loading.gif" alt="">
+        <p class="title">加载中...</p>
+      </div>
+    </div>
+  </ul>
   <div class="m-empty suggestion-empty"><img src="" alt="" class="image">
-    <p class="title">抱歉，暂无数据</p>
+    <p class="title">抱歉，暂无搜索结果!</p>
   </div>
 </div>
 `;

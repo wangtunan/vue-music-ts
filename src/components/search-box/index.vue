@@ -1,23 +1,27 @@
 <template>
   <div class="m-searchbox">
     <i class="icon-search"></i>
-    <input v-model="keyword" type="text" class="search-input" :placeholder="placeholder"/>
+    <input v-model="keyword" ref="keyword" type="text" class="search-input" :placeholder="placeholder"/>
     <i v-show="keyword" class="icon-dismiss" @click="handleClearClick"></i>
   </div>
 </template>
 <script lang="ts">
 import { debounce } from '@/assets/js/throttle-debounce'
-import { Component, Vue, Prop } from 'vue-property-decorator'
+import { Component, Vue, Prop, Ref } from 'vue-property-decorator'
 @Component
 export default class SearchBox extends Vue {
   private keyword = ''
   @Prop({ type: String, default: '搜索歌曲、歌手' }) placeholder!: string
+  @Ref('keyword') keywordRef!: HTMLInputElement
 
   public handleClearClick () {
     this.keyword = ''
   }
   public setKeyword (keyword: string) {
     this.keyword = keyword.trim()
+  }
+  public blur () {
+    this.keywordRef.blur()
   }
 
   private created () {

@@ -15,6 +15,8 @@ export default class Scroll extends Vue {
   @Prop({ type: Number, default: 1 }) probeType!: number
   @Prop({ type: Boolean, default: false }) click!: boolean
   @Prop({ type: Boolean, default: false }) listenScroll!: boolean
+  @Prop({ type: Boolean, default: false }) pullUp!: boolean
+  @Prop({ type: Boolean, default: false }) beforeScroll!: boolean
   @Prop({ type: String, default: DirectionEnum.vertical }) direction!: Direction
   @Prop({ type: Array, default () { return [] } }) data!: any
   @Watch('data')
@@ -54,6 +56,18 @@ export default class Scroll extends Vue {
     if (this.listenScroll) {
       this.scroll.on('scroll', (pos) => {
         this.$emit('scroll', pos)
+      })
+    }
+    if (this.pullUp) {
+      this.scroll.on('scrollEnd', () => {
+        if (this.scroll.y <= (this.scroll.maxScrollY + 50)) {
+          this.$emit('scrollToEnd')
+        }
+      })
+    }
+    if (this.beforeScroll) {
+      this.scroll.on('beforeScrollStart', () => {
+        this.$emit('beforeScroll')
       })
     }
   }
