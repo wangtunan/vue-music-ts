@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`notify.vue match snapshot 1`] = `
+<transition-stub name="slide-down">
+  <div class="m-notify">
+    <p class="notify-message"><span class="notify-icon icon-ok"></span> <span>已添加到播放列表</span></p>
+  </div>
+</transition-stub>
+`;

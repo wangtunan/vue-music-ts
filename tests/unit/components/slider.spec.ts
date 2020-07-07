@@ -46,4 +46,23 @@ describe('slider.vue', () => {
       loop: true
     })
   })
+  it('auto play', () => {
+    jest.useFakeTimers()
+    wrapper = shallowMount(Slider, {
+      propsData: {
+        loop: false,
+        autoPlay: true,
+        interval: 1000
+      },
+      slots: {
+        default: `
+          <div>1</div>
+          <div>2</div>
+          <div>3</div>
+        `
+      }
+    })
+    jest.advanceTimersByTime(200)
+    expect(wrapper.props('autoPlay')).toBe(true)
+  })
 })

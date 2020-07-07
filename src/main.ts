@@ -3,13 +3,11 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import VueLazyload from 'vue-lazyload'
-// import confirm from '@/base/confirm/index'
 import 'normalize.css'
 import '@/assets/styles/index.scss'
 Vue.use(VueLazyload, {
   loading: require('@/assets/images/default.png')
 })
-// Vue.prototype.$confirm = confirm
 Vue.config.productionTip = false
 
 new Vue({

@@ -3,7 +3,9 @@ export function getUid (len = 10): string {
     return ''
   }
   const t = new Date().getMilliseconds()
-  return `${Math.round(2147483647 * Math.random()) * t % Math.pow(10, len)}`
+  let ret = `${Math.round(2147483647 * Math.random()) * t % Math.pow(10, len)}`
+  ret = fillString(ret, 0, len)
+  return ret
 }
 
 export function pxToVw (px: number, viewportWidth = 375, unitPrecision = 8): number {

@@ -10,19 +10,20 @@ describe('suggestion.vue', () => {
   it('match snaphots', () => {
     expect(wrapper).toMatchSnapshot()
   })
-  it('render empty when resultList is empty', async () => {
+  it('render empty when resultList is empty and no more', async () => {
     expect(wrapper.find('.suggestion-empty').exists()).toBe(true)
     wrapper.setData({
       resultList: [1, 2, 3]
     })
     await wrapper.vm.$nextTick()
-    // expect(wrapper.find('.suggestion-empty').exists()).toBe(false)
+    expect(wrapper.find('.suggestion-empty').isVisible()).toBe(false)
     expect(wrapper.find('ul').isVisible()).toBe(true)
     wrapper.setData({
+      hasMore: false,
       resultList: []
     })
     await wrapper.vm.$nextTick()
-    expect(wrapper.find('.suggestion-empty').exists()).toBe(true)
+    expect(wrapper.find('.suggestion-empty').isVisible()).toBe(true)
     expect(wrapper.find('ul').isVisible()).toBe(false)
   })
   it('change keyword and emit onKeywordChange function', async () => {

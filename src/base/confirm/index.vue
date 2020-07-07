@@ -15,9 +15,6 @@
 import { Component, Vue, Prop, PropSync } from 'vue-property-decorator'
 @Component
 export default class Comfirm extends Vue {
-  private resolve!: any
-  private reject!: any
-  private isProto!: boolean
   private active = ''
   @PropSync('visible', { type: Boolean, default: false }) show!: boolean
   @Prop({ type: String, default: '' }) message!: string
@@ -28,26 +25,10 @@ export default class Comfirm extends Vue {
 
   handleCancelClick () {
     this.show = false
-    this.active = 'cancel'
-    this.close()
   }
   handleConfirmClick () {
     this.show = false
-    if (this.isProto) {
-      this.active = 'confirm'
-      this.close()
-    } else {
-      this.$emit('confirm')
-    }
-  }
-  private close () {
-    if (!this.isProto) {
-      return
-    }
-    document.body.removeChild(this.$el)
-    if (this.active === 'confirm') {
-      this.resolve()
-    }
+    this.$emit('confirm')
   }
 }
 </script>

@@ -3,7 +3,7 @@
     <div v-if="showNotify" class="m-notify">
       <p class="notify-message">
         <span class="notify-icon" :class="icon"></span>
-        <span>{{message}}</span>
+        <span v-if="message">{{message}}</span>
       </p>
     </div>
   </transition>

@@ -19,7 +19,7 @@
       </li>
       <loading v-show="hasMore" class="suggestion-loading" />
     </ul>
-    <empty v-show="!hasMore && !resultList.lenght" class="suggestion-empty" title="抱歉，暂无搜索结果!" />
+    <empty v-show="!hasMore && !resultList.length" class="suggestion-empty" title="抱歉，暂无搜索结果!" />
   </scroll>
 </template>
 <script lang="ts">

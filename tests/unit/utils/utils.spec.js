@@ -12,7 +12,7 @@ describe('utils.ts', () => {
   it('test getUid function', () => {
     expect(getUid(0)).toBe('')
     expect(getUid().length).toBe(10)
-    // expect(getUid(5).length).toBe(5)
+    expect(getUid(5).length).toBe(5)
   })
   it('test pxToVw function', () => {
     expect(pxToVw(0)).toBe(0)

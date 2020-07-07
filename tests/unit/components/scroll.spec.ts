@@ -7,6 +7,9 @@ describe('scroll.vue', () => {
   beforeEach(() => {
     wrapper = shallowMount(Scroll,{
       propsData: {
+        beforeScroll: true,
+        listenScroll: true,
+        pullUp: true,
         data: [1, 2, 3]
       },
       slots: {
