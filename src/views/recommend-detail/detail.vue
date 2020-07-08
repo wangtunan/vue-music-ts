@@ -9,7 +9,7 @@ import { Component, Vue } from 'vue-property-decorator'
 import { Getter } from 'vuex-class'
 import { getSongList } from '@/api/recommend'
 import { ERR_OK } from '@/api/config'
-import { DiscConfig } from '@/types/recommend'
+import { Disc } from '@/types/recommend'
 import { SongData } from '@/types/search'
 import Song, { createSong, isValid, processSongUrl } from '@/assets/js/song'
 @Component({
@@ -19,7 +19,7 @@ import Song, { createSong, isValid, processSongUrl } from '@/assets/js/song'
 })
 export default class RecommendDetail extends Vue {
   private songList: Song[] = []
-  @Getter('disc') disc!: DiscConfig
+  @Getter('disc') disc!: Disc
 
   public getSongListData () {
     if (!this.disc.dissid) {

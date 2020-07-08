@@ -17,10 +17,10 @@ npm run test:unit
 npm run lint
 ```
 ## 前言
-项目使用主要`TypeScript`+`Jest`重构`Vue-Music`音乐app，所以重点在于对`TypeScript`、`Jest`的使用。本篇文章并不会花大量的篇幅去说明如何抓取接口，布局以及撰写CSS等方面的知识。也不会全面、系统的去介绍`TypeScript`或者`Jest`方面的基础知识，如果你对这两方面还不是很了解的话，你可以访问下面的链接去学习：
-[TypeScript官网](https://www.typescriptlang.org/)
-
-[Jest官网](https://jestjs.io/)
+项目使用主要`TypeScript`+`Jest`重构`Vue-Music`音乐app，所以重点在于对`TypeScript`、`Jest`的使用。本篇文章并不会花大量的篇幅去说明如何抓取接口，布局以及撰写CSS等方面的知识。也不会全面、系统的去介绍`TypeScript`或者`Jest`方面的基础知识，如果你对这两方面还不是很了解的话，你可以访问下面的链接去学习：<br/>
+[TypeScript官网](https://www.typescriptlang.org/)<br/>
+[Jest官网](https://jestjs.io/)<br/>
+ [Vue-Test-Utils官网](https://vue-test-utils.vuejs.org/zh/guides/)<br/>
 
 如果你想具体看`Vue-Music`是如何实现的，你可以观看正版视频[Vue2.0开发企业级移动端音乐Web App](https://coding.imooc.com/class/107.html)。
 
@@ -28,7 +28,6 @@ npm run lint
 
 ## 技术栈/工具
 * `normalize.css`：重置样式。
-* `fastclick`：解决移动端点击300ms延迟。
 * `good-storage`: 基于`localStorage`本地缓存封装的库。
 * `jsonp`：发送`jsonp`请求的库。
 * `vue-lazyload`：图片懒加载。
@@ -151,54 +150,6 @@ $ npm run serve
 启动完毕后，你将会看到`recommend`页面的内容，至此我们使用脚手架搭建项目就完毕了，下一步我们将安装一些工具。
 
 **注意：** 项目中需要使用到的图片、字体、以及样式等相关的东西需要自己去引入。
-
-### 安装fastclick
-```!
-你可以在[types搜索](https://www.npmjs.com/search?q=@types)中去找到，要安装的库是否有对应的类型定义文件。
-```
-
-我们首先需要安装`fastclick`及其类型定义文件：
-```sh
-# 安装fastclick到dependencies
-$ npm install fastclick --save
-
-# 安装fastclick类型定义文件到devDependencies
-$ npm install @types/fastclick -D
-```
-随后需要我们在`main.ts`中去使用`fastclick`:
-```ts
-import fastclick from 'fastclick'
-fastclick.attach(document.body)
-```
-
-**注意：** 如果你安装的`@types/fastclick`在`TypeScript`报`Property 'attach' does not exist on type 'typeof fastclick'`错误，那么你可以点击这个合并请求[Pull Request](https://github.com/DefinitelyTyped/DefinitelyTyped/pull/6938/commits/985fe32972172ba9286ffcc02efb5be4710f954e)去暂时解决报错问题，等`@types/fastclick`修复这个问题后，再去升级到对应的版本。
-
-
-### 安装Vue-Lazyload
-使用如下命令去安装`vue-lazyload`:
-```sh
-# 安装
-$ npm install vue-lazyload --save
-```
-
-安装完毕后，同样需要在`main.ts`中去使用它：
-```ts
-import Vue from 'vue'
-import VueLazyload from 'vue-lazyload'
-Vue.use(VueLazyload, {
-  loading: require('@/assets/images/default.png')
-})
-```
-
-`vue-lazyload`使用相对来说比较简单，可以像下面这样去使用：
-```html
-<!-- 不使用图片懒加载的写法 -->
-<img :src="src" />
-
-<!-- 使用图片懒加载的写法 -->
-<img v-lazy="src" />
-```
-
 
 
 ### 安装移动端适配工具
@@ -334,7 +285,7 @@ getLyric(mid).then(res => {
 })
 ```
 
-### 单元测试
+### Jest单元测试
 我们脚手架创建项目后，会在根目录下生成`tests`文件夹，它包含一个简单的测试用例：
 ```ts
 import { shallowMount } from '@vue/test-utils'
@@ -489,7 +440,7 @@ $ npm run test:unit
 ![测试覆盖率](https://user-gold-cdn.xitu.io/2020/6/29/172fef339db3536b?w=1177&h=1014&f=png&s=166491)
 
 ## TypeScript准备知识
-**注意**：此部分只涉及项目中已经使用过的知识，更多内容请阅读官方文档。
+**注意**：此部分只涉及项目中已经使用过的知识，更多内容请阅读其官方文档。
 ### 基本类型
 ### 字符串字面量
 ### 联合类型
@@ -501,9 +452,9 @@ $ npm run test:unit
 
 
 ## Vue组件的TS写法
-**注意**：此部分只涉及项目中已经使用过的知识，更多内容请阅读官方文档。
+**注意**：此部分只涉及项目中已经使用过的知识，更多内容请阅读其官方文档。
 ### 生命周期
-生命周期的写法非常简单，唯一一点值得注意的地方就是需要在生命周期函数前面添加`private`修饰符：
+生命周期的写法非常简单，唯一一点值得注意的地方就是需要在生命周期函数前面添加`private`修饰符，将其生命周期标记为私有的，其它修饰符还有`public`和`protected`：
 ```ts
 import { Component, Vue } from 'vue-property-decorator'
 @Component
@@ -637,6 +588,29 @@ export default class MPlayer extends Vue {
   }
 }
 ```
+根据以上代码我们可以发现：
+* `percent`、`playIcon`和`miniPlayIcon`都定义了属性的`get`方法，当访问属性的时候触发此属性的`get`方法，然后返回此方法的返回值。
+* `percent`除了`get`，还定义了`set`。一般而言我们不用去定义计算属性的`set`，上面代码定义`set`是为了处理其他业务逻辑。其中`set`里面的逻辑完全可以使用`Watch('percent')`去改写：
+```js
+import { Component, Vue, Watch } from 'vue-property-decorator'
+@Component
+export default class MPlayer extends Vue {
+  @Watch('percent')
+  onPercentChange (percent: number) {
+    this.currentTime = percent * this.currentSong.duration
+    this.currentLyric && this.currentLyric.seek(this.currentTime * 1000)
+  }
+  private get percent () {
+    return this.currentTime / this.currentSong.duration
+  }
+  private get playIcon () {
+    return this.playing ? 'icon-pause' : 'icon-play'
+  }
+  private get miniPlayIcon () {
+    return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
+  }
+}
+```
 ### 获取Getters和属性监听
 可以使用`@Watch`来监听某一个变量，这里依然以`@/components/player/index.vue`组件代码为例：
 ```ts
@@ -648,6 +622,20 @@ export default class MPlayer extends Vue {
   @Watch('playing')
   onPlayingChange (playing: boolean) {
     playing ? this.audio.play() : this.audio.pause()
+  }
+}
+```
+以上代码相当于：
+```js
+import { mapGetters } from 'vuex'
+export default {
+  computed: {
+    ...mapGetters(['playing']),
+  },
+  watch: {
+    playing (playing) {
+      playing ? this.audio.play() : this.audio.pause()
+    }
   }
 }
 ```
@@ -663,8 +651,23 @@ export default class MPlayer extends Vue {
   @Action('history/setPlayHistory') setPlayHistory!: (song: Song) => void
 }
 ```
+以上代码相当于：
+```js
+import { mapMutations, mapActions } from 'vuex'
+export default {
+  methods: {
+    ...mapMutations({
+      setFullScreen: 'player/SET_FULL_SCREEN',
+      setCurrentIndex: 'player/SET_CURRENT_INDEX'
+    })
+    ...mapActions({
+      setPlayHistory: 'history/setPlayHistory'
+    })
+  }
+}
+```
 ### 组件Mixin
-组件`mixin`有2种方式，第一种可以在`@Component`里面传递`mixins`参数，第二种可以使用`Mixins`，然后让组件去`extends`，以`@views/search/index.vue`代码为例：
+组件`mixin`有2种方式，第一种可以在`@Component`里面传递`mixins`参数，第二种可以使用`Mixins`装饰器，然后让组件去`extends`，以`@views/search/index.vue`代码为例：
 ```ts
 import Search from '@/assets/js/search'
 import PlayList from '@/assets/js/playList'
@@ -687,12 +690,51 @@ export default class MSearch extends Mixins(Search, PlayList) {
   // 省略其它代码
 }
 ```
-
 ### Ref类型
+`vue-property-decorator`提供了`Ref`装饰器，我们可以使用这个装饰器来获取`refs`，这里以`src/views/search/index.vue`组件为例：
+```js
+import { Component, Mixins, Ref } from 'vue-property-decorator'
+@Component
+export default class MSearch extends Mixins(Search, PlayList) {
+  @Ref('search') readonly searchRef!: HTMLElement
+  @Ref('searchBox') readonly searchBoxRef!: SearchBox
+  @Ref('searchScroll') readonly searchScrollRef!: Scroll
+  @Ref('searchSuggestion') readonly searchSuggestionRef!: Suggestion
+  @Ref('searchSuggestionBox') readonly searchSuggestionBoxRef!: HTMLElement
+  
+  // 省略其它
+}
+```
+以上代码相当于：
+```js
+export default {
+  mounted () {
+    this.searchRef = this.$refs.search
+    this.searchBoxRef = this.$refs.searchBox
+    this.searchScrollRef = this.$refs.searchScroll
+    this.searchSuggestionRef  = this.$refs.searchSuggestion
+    this.searchSuggestionBoxRef = this.$refs.searchSuggestionBox
+  }
+  // 省略其它
+}
+```
+当然如果你的组件及其简单，不用担心命名冲突问题的话，可以不给`Ref`传递参数，例如：
+```js
+import { Component, Ref, Vue } from 'vue-property-decorator'
+@Component
+export default class Search extends Vue {
+  @Ref() readonly button!: HTMLButtonElement  
+  // 省略其它
+  private mounted () {
+    console.log(this.button)
+  }
+}
+```
+
 
 
 ## Jest和Vue-Test-Utils准备知识
-**注意**：此部分只涉及项目中已经使用过的知识，更多内容请阅读官方文档。
+**注意**：此部分只涉及项目中已经使用过的知识，更多内容请阅读其官方文档。
 
 ## 重难点功能分析
 ### 推荐页面
@@ -703,7 +745,6 @@ export default class MSearch extends Mixins(Search, PlayList) {
 
 
 ## 后序计划
-* BEM撰写公共组件
 * 骨架屏Skeleton
 * 换肤
 * Vue3.0重构

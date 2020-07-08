@@ -114,6 +114,7 @@ const actions = {
     context.commit(types.SET_PLAY_LIST, [])
     context.commit(types.SET_SEQUENCE_LIST, [])
     context.commit(types.SET_PLAY_STATE, false)
+    context.commit(types.SET_FULL_SCREEN, false)
   }
 }
 

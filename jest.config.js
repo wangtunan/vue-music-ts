@@ -10,6 +10,7 @@ module.exports = {
   collectCoverageFrom: [
     'src/base/**/*.vue',
     'src/utils/**/*.ts',
+    'src/store/modules/*.ts',
     '!src/utils/axios.ts'
   ],
   collectCoverage: true,

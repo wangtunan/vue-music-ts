@@ -39,7 +39,7 @@ import Scroll from '@/base/scroll/index.vue'
 import Loading from '@/base/loading/index.vue'
 import PlayList from '@/assets/js/playList'
 import { Component, Mixins, Ref } from 'vue-property-decorator'
-import { RankListConfig } from '@/types/rank'
+import { RankList } from '@/types/rank'
 import { getRankList } from '@/api/rank'
 import { ERR_OK } from '@/api/config'
 import { Mutation } from 'vuex-class'
@@ -51,17 +51,17 @@ import { pxToVw } from '@/utils/utils'
   }
 })
 export default class Rank extends Mixins(PlayList) {
-  private rankList: RankListConfig[] = []
+  private rankList: RankList[] = []
   @Ref('rank') readonly rankRef!: HTMLElement
   @Ref('rankScroll') readonly rankScrollRef!: Scroll
-  @Mutation('top/SET_TOP_LIST') setTopList!: (topList: RankListConfig) => void
+  @Mutation('top/SET_TOP_LIST') setTopList!: (topList: RankList) => void
 
   public handlePlayList () {
     const bottom = this.playList.length > 0 ? `${pxToVw(60)}vw` : '0'
     this.rankRef.style.bottom = bottom
     this.rankScrollRef.refresh()
   }
-  public handleRankClick (topList: RankListConfig) {
+  public handleRankClick (topList: RankList) {
     this.$router.push(`/rank/${topList.id}`)
     this.setTopList(topList)
   }

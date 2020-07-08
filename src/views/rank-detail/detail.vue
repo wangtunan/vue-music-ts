@@ -7,7 +7,7 @@
 import MusicList from '@/components/music-list/index.vue'
 import { Component, Vue } from 'vue-property-decorator'
 import { Getter } from 'vuex-class'
-import { RankListConfig } from '@/types/rank'
+import { RankList } from '@/types/rank'
 import { getTopList } from '@/api/rank'
 import { ERR_OK } from '@/api/config'
 import Song, { isValid, createSong, processSongUrl } from '@/assets/js/song'
@@ -19,7 +19,7 @@ import { SongData } from '@/types/search'
 })
 export default class RankDetail extends Vue {
   private songs: Song[] = []
-  @Getter('topList') topList!: RankListConfig
+  @Getter('topList') topList!: RankList
 
   private getTopListData () {
     if (!this.topList.id) {

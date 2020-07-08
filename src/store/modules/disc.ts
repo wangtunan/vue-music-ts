@@ -1,12 +1,12 @@
 import * as types from '../mutation-type'
-import { DiscConfig } from '@/types/recommend'
+import { Disc } from '@/types/recommend'
 import { DiscState } from '../types'
 const state = {
   disc: {}
 }
 
 const mutations = {
-  [types.SET_DISC] (state: DiscState, disc: DiscConfig) {
+  [types.SET_DISC] (state: DiscState, disc: Disc) {
     state.disc = disc
   }
 }

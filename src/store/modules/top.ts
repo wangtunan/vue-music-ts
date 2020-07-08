@@ -1,13 +1,13 @@
 import * as types from '../mutation-type'
 import { TopState } from '../types'
-import { RankListConfig } from '@/types/rank'
+import { RankList } from '@/types/rank'
 
 const state = {
   topList: {}
 }
 
 const mutations = {
-  [types.SET_TOP_LIST] (state: TopState, topList: RankListConfig) {
+  [types.SET_TOP_LIST] (state: TopState, topList: RankList) {
     state.topList = topList
   }
 }

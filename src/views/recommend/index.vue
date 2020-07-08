@@ -50,7 +50,7 @@ import { Component, Mixins, Ref } from 'vue-property-decorator'
 import { Mutation } from 'vuex-class'
 import { getRecommendList, getDiscList } from '@/api/recommend'
 import { MusicResponse } from '@/types/index'
-import { BannerConfig, DiscConfig } from '@/types/recommend'
+import { Banner, Disc } from '@/types/recommend'
 import { ERR_OK } from '@/api/config'
 import { pxToVw } from '@/utils/utils'
 @Component({
@@ -61,18 +61,18 @@ import { pxToVw } from '@/utils/utils'
   }
 })
 export default class Recommend extends Mixins(PlayList) {
-  private recommendList: BannerConfig[] = []
-  private discList: DiscConfig[] = []
+  private recommendList: Banner[] = []
+  private discList: Disc[] = []
   @Ref('recommend') readonly recommendRef!: HTMLElement
   @Ref('recommendScroll') readonly recommendScrollRef!: Scroll
-  @Mutation('disc/SET_DISC') setDisc!: (disc: DiscConfig) => void
+  @Mutation('disc/SET_DISC') setDisc!: (disc: Disc) => void
 
   public handlePlayList () {
     const bottom = this.playList.length > 0 ? `${pxToVw(60)}vw` : '0'
     this.recommendRef.style.bottom = bottom
     this.recommendScrollRef.refresh()
   }
-  public handleItemClick (item: DiscConfig) {
+  public handleItemClick (item: Disc) {
     this.$router.push(`/recommend/${item.dissid}`)
     this.setDisc(item)
   }

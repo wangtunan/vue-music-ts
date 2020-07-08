@@ -1,10 +1,10 @@
 import Singer from '@/assets/js/singer'
 import Song from '@/assets/js/song'
-import { DiscConfig } from '@/types/recommend'
-import { RankListConfig } from '@/types/rank'
+import { Disc } from '@/types/recommend'
+import { RankList } from '@/types/rank'
 
 export interface DiscState {
-  disc: DiscConfig;
+  disc: Disc;
 }
 
 export interface SingerState {
@@ -12,7 +12,7 @@ export interface SingerState {
 }
 
 export interface TopState {
-  topList: RankListConfig;
+  topList: RankList;
 }
 
 export interface HistoryState {

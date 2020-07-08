@@ -172,7 +172,7 @@ export default class MPlayer extends Mixins(Player) {
   @Getter('currentIndex') currentIndex!: number
   @Mutation('player/SET_FULL_SCREEN') setFullScreen!: (fullscreen: boolean) => void
   @Mutation('player/SET_CURRENT_INDEX') setCurrentIndex!: (index: number) => void
-  @Action('history/setPlayHistory') setPlayHistory!: (song: Song) => void
+  @Action('history/savePlayHistory') savePlayHistory!: (song: Song) => void
   @Watch('playing')
   onPlayingChange (playing: boolean) {
     playing ? this.audioRef.play() : this.audioRef.pause()
@@ -234,7 +234,7 @@ export default class MPlayer extends Mixins(Player) {
     }
   }
   public handleAudioReady () {
-    this.setPlayHistory(this.currentSong)
+    this.savePlayHistory(this.currentSong)
     if (this.currentLyric && !this.isPureMusic) {
       this.currentLyric.seek(this.currentTime * 1000)
     }

@@ -27,7 +27,7 @@ const actions = {
   clearSearchHistory (context: { commit: Commit }) {
     context.commit(types.SET_SEARCH_HISTORY, clearSearchHistory())
   },
-  setPlayHistory (context: { commit: Commit }, song: Song) {
+  savePlayHistory (context: { commit: Commit }, song: Song) {
     context.commit(types.SET_PLAY_HISTORY, savePlayHistory(song))
   }
 }

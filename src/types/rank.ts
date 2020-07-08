@@ -1,12 +1,10 @@
 export interface SongConfig {
   singername: string;
   songname: string;
-  [propName: string]: any;
 }
-export interface RankListConfig {
+export interface RankList {
   id: number;
   picUrl: string;
   topTitle: string;
   songList: SongConfig[];
-  [propName: string]: any;
 }

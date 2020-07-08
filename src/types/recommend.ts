@@ -1,4 +1,4 @@
-export interface BannerConfig {
+export interface Banner {
   id: string
   linkUrl: string
   picUrl: string
@@ -9,7 +9,7 @@ export interface DiscCreator {
   avatarUrl?: string
 }
 
-export interface DiscConfig {
+export interface Disc {
   dissid: string | number
   dissname: string
   imgurl: string
