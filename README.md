@@ -451,6 +451,7 @@ $ npm run test:unit
 ### 类
 
 
+
 ## Vue组件的TS写法
 **注意**：此部分只涉及项目中已经使用过的知识，更多内容请阅读其官方文档。
 ### 生命周期
@@ -743,8 +744,3 @@ export default class Search extends Vue {
 ### 播放器页面
 ### 个人中心页面
 
-
-## 后序计划
-* 骨架屏Skeleton
-* 换肤
-* Vue3.0重构
